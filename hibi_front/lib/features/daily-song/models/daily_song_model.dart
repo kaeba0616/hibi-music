@@ -106,6 +106,49 @@ class ExternalLinks {
   bool get hasAnyLink => spotify != null || appleMusic != null || youtube != null;
 }
 
+/// 연관곡 모델 (F15)
+class RelatedSong {
+  final int id;
+  final String titleKor;
+  final String titleJp;
+  final Artist artist;
+  final Album album;
+  final String reason;
+
+  RelatedSong({
+    required this.id,
+    required this.titleKor,
+    required this.titleJp,
+    required this.artist,
+    required this.album,
+    required this.reason,
+  });
+
+  factory RelatedSong.fromJson(Map<String, dynamic> json) {
+    return RelatedSong(
+      id: json['id'] ?? 0,
+      titleKor: json['titleKor'] ?? '',
+      titleJp: json['titleJp'] ?? '',
+      artist: json['artist'] != null
+          ? Artist.fromJson(json['artist'])
+          : Artist.empty(),
+      album: json['album'] != null ? Album.fromJson(json['album']) : Album.empty(),
+      reason: json['reason'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'titleKor': titleKor,
+      'titleJp': titleJp,
+      'artist': artist.toJson(),
+      'album': album.toJson(),
+      'reason': reason,
+    };
+  }
+}
+
 /// 오늘의 노래 모델 (Daily Song)
 class DailySong {
   final int id;
@@ -117,6 +160,8 @@ class DailySong {
   final String genre;
   final DateTime recommendedDate;
   final ExternalLinks externalLinks;
+  final String? youtubeUrl;
+  final List<RelatedSong> relatedSongs;
   final bool isLiked;
   final int likeCount;
 
@@ -130,6 +175,8 @@ class DailySong {
     required this.genre,
     required this.recommendedDate,
     required this.externalLinks,
+    this.youtubeUrl,
+    this.relatedSongs = const [],
     this.isLiked = false,
     this.likeCount = 0,
   });
@@ -144,6 +191,8 @@ class DailySong {
         genre = '',
         recommendedDate = DateTime.now(),
         externalLinks = ExternalLinks.empty(),
+        youtubeUrl = null,
+        relatedSongs = const [],
         isLiked = false,
         likeCount = 0;
 
@@ -165,6 +214,12 @@ class DailySong {
       externalLinks: json['externalLinks'] != null
           ? ExternalLinks.fromJson(json['externalLinks'])
           : ExternalLinks.empty(),
+      youtubeUrl: json['youtubeUrl'],
+      relatedSongs: json['relatedSongs'] != null
+          ? (json['relatedSongs'] as List)
+              .map((e) => RelatedSong.fromJson(e))
+              .toList()
+          : [],
       isLiked: json['isLiked'] ?? false,
       likeCount: json['likeCount'] ?? 0,
     );
@@ -181,6 +236,8 @@ class DailySong {
       'genre': genre,
       'recommendedDate': recommendedDate.toIso8601String(),
       'externalLinks': externalLinks.toJson(),
+      'youtubeUrl': youtubeUrl,
+      'relatedSongs': relatedSongs.map((e) => e.toJson()).toList(),
       'isLiked': isLiked,
       'likeCount': likeCount,
     };
@@ -196,6 +253,8 @@ class DailySong {
     String? genre,
     DateTime? recommendedDate,
     ExternalLinks? externalLinks,
+    String? youtubeUrl,
+    List<RelatedSong>? relatedSongs,
     bool? isLiked,
     int? likeCount,
   }) {
@@ -209,6 +268,8 @@ class DailySong {
       genre: genre ?? this.genre,
       recommendedDate: recommendedDate ?? this.recommendedDate,
       externalLinks: externalLinks ?? this.externalLinks,
+      youtubeUrl: youtubeUrl ?? this.youtubeUrl,
+      relatedSongs: relatedSongs ?? this.relatedSongs,
       isLiked: isLiked ?? this.isLiked,
       likeCount: likeCount ?? this.likeCount,
     );

@@ -5,6 +5,8 @@ import 'package:hidi/features/artists/views/artist_view.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/viewmodels/daily_song_viewmodel.dart';
 import 'package:hidi/features/daily-song/views/widgets/like_button.dart';
+import 'package:hidi/features/daily-song/views/widgets/related_song_tile.dart';
+import 'package:hidi/features/daily-song/views/widgets/youtube_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// 노래 상세 화면 (DS-02)
@@ -144,8 +146,20 @@ class _SongDetailViewState extends ConsumerState<SongDetailView> {
                 _buildAlbumInfo(song, colorScheme, textTheme),
                 const Divider(height: 32),
 
+                // 유튜브 영상 (F15)
+                if (song.youtubeUrl != null && song.youtubeUrl!.isNotEmpty) ...[
+                  YoutubeSection(youtubeUrl: song.youtubeUrl!),
+                  const Divider(height: 32),
+                ],
+
                 // 가사
                 _buildLyricsSection(song, colorScheme, textTheme),
+
+                // 연관곡 (F15)
+                if (song.relatedSongs.isNotEmpty) ...[
+                  const Divider(height: 32),
+                  _buildRelatedSongsSection(song.relatedSongs, colorScheme, textTheme),
+                ],
 
                 // 외부 링크
                 if (song.externalLinks.hasAnyLink) ...[
@@ -427,6 +441,42 @@ class _SongDetailViewState extends ConsumerState<SongDetailView> {
           if (japaneseLines[i].isEmpty && i < koreanLines.length && koreanLines[i].isEmpty)
             const SizedBox(height: 8),
         ],
+      ],
+    );
+  }
+
+  Widget _buildRelatedSongsSection(
+    List<RelatedSong> relatedSongs,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.queue_music, size: 20, color: colorScheme.primary),
+            const SizedBox(width: 8),
+            Text(
+              '연관곡',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...relatedSongs.map(
+          (song) => RelatedSongTile(
+            song: song,
+            onTap: () {
+              context.pushNamed(
+                SongDetailView.routeName,
+                pathParameters: {'songId': song.id.toString()},
+              );
+            },
+          ),
+        ),
       ],
     );
   }
