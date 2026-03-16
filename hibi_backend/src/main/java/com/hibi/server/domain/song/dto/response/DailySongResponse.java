@@ -6,6 +6,7 @@ import com.hibi.server.domain.song.entity.Song;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 public record DailySongResponse(
@@ -18,10 +19,16 @@ public record DailySongResponse(
         String genre,
         LocalDate recommendedDate,
         ExternalLinksResponse externalLinks,
+        String youtubeUrl,
+        List<RelatedSongResponse> relatedSongs,
         boolean isLiked,
         long likeCount
 ) {
     public static DailySongResponse from(Song song, boolean isLiked, long likeCount) {
+        return from(song, isLiked, likeCount, List.of());
+    }
+
+    public static DailySongResponse from(Song song, boolean isLiked, long likeCount, List<RelatedSongResponse> relatedSongs) {
         return DailySongResponse.builder()
                 .id(song.getId())
                 .titleKor(song.getTitleKor())
@@ -36,12 +43,14 @@ public record DailySongResponse(
                         song.getLinkAppleMusic(),
                         song.getLinkYoutube()
                 ))
+                .youtubeUrl(song.getLinkYoutube())
+                .relatedSongs(relatedSongs)
                 .isLiked(isLiked)
                 .likeCount(likeCount)
                 .build();
     }
 
     public static DailySongResponse from(Song song) {
-        return from(song, false, 0);
+        return from(song, false, 0, List.of());
     }
 }

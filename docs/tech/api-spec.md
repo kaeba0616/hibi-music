@@ -146,6 +146,55 @@ Authorization: Bearer {access_token}  // 인증 필요 API
 
 ---
 
+## 2b. Daily Song 확장 API (F15)
+
+### GET /api/v1/daily-songs/liked
+좋아요 곡 목록 조회 (인증 필요)
+
+**Response (200)**
+```json
+{
+  "success": true,
+  "message": "좋아요 곡 조회 성공",
+  "data": [
+    {
+      "id": 1,
+      "titleKor": "밤을 달리다",
+      "titleJp": "夜に駆ける",
+      "artist": { "id": 1, "nameKor": "요아소비" },
+      "album": { "id": 1, "name": "THE BOOK", "imageUrl": "..." },
+      "youtubeUrl": "https://www.youtube.com/watch?v=...",
+      "relatedSongs": [],
+      "isLiked": true,
+      "likeCount": 1542,
+      "recommendedDate": "2026-03-17"
+    }
+  ]
+}
+```
+
+### GET /api/v1/daily-songs/{songId} (확장)
+노래 상세 조회 - `youtubeUrl`, `relatedSongs` 필드 추가
+
+**Response 추가 필드**:
+```json
+{
+  "youtubeUrl": "https://www.youtube.com/watch?v=x8VYWazR5mE",
+  "relatedSongs": [
+    {
+      "id": 6,
+      "titleKor": "아이돌",
+      "titleJp": "アイドル",
+      "artist": { "id": 1, "nameKor": "요아소비" },
+      "album": { "id": 6, "name": "THE BOOK 3", "imageUrl": "..." },
+      "reason": "같은 아티스트의 곡"
+    }
+  ]
+}
+```
+
+---
+
 ## 3. 회원 API
 
 ### GET /api/v1/members/me

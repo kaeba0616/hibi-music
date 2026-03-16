@@ -90,7 +90,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ---
 
-### F15: 연관곡 & 유튜브 임베드 [status: in-progress]
+### F15: 연관곡 & 유튜브 임베드 [status: completed]
 
 #### 설명
 오늘의 곡 상세 화면에 유튜브 영상 임베드와 연관곡 목록을 추가하고, 좋아요 곡 모아보기 페이지를 구현한다.
@@ -230,9 +230,9 @@ F17 (마이페이지 강화) ──→ 독립
 |---------|--------|--------|--------|--------|--------|
 | F13: 온보딩 & 소셜 로그인 | Done | Done | Done | Done | **completed** |
 | F14: 이메일 인증 & 강화 | - | - | - | - | todo |
-| F15: 연관곡 & 유튜브 | Done | Done | - | - | in-progress |
+| F15: 연관곡 & 유튜브 | Done | Done | Done | Done | **completed** |
 | F16: 댓글 강화 | - | - | - | - | todo |
 | F17: 마이페이지 강화 | - | - | - | - | todo |
 | F18: 관리자 강화 | - | - | - | - | todo |
 
-**Phase 4 진행률**: 1/6 Features (17%)
+**Phase 4 진행률**: 2/6 Features (33%)

@@ -107,6 +107,24 @@ JPA Entity 기반으로 자동 생성된 테이블 구조를 문서화합니다.
 
 ---
 
+### 3.1b related_songs (연관곡) - F15
+
+| 컬럼명 | 타입 | 제약조건 | 설명 |
+|--------|------|----------|------|
+| id | BIGINT | PK, AUTO_INCREMENT | 고유 식별자 |
+| song_id | BIGINT | FK, NOT NULL | 원곡 ID (songs.id) |
+| related_song_id | BIGINT | FK, NOT NULL | 연관곡 ID (songs.id) |
+| reason | VARCHAR(100) | NOT NULL | 선정 이유 ("같은 아티스트의 곡" 등) |
+| display_order | INT | DEFAULT 0 | 표시 순서 |
+
+**인덱스**: `idx_related_songs_song` (song_id)
+
+**관계**:
+- `song_id` → `songs.id` (N:1)
+- `related_song_id` → `songs.id` (N:1)
+
+---
+
 ### 3.2 artists (아티스트) - F3에서 확장
 
 | 컬럼명 | 타입 | 제약조건 | 설명 |

@@ -81,6 +81,23 @@ public class DailySongController {
         return ResponseEntity.ok(SuccessResponse.success("월별 노래 조회 성공", songs));
     }
 
+    @GetMapping("/liked")
+    @Operation(
+            summary = "좋아요 곡 목록 조회 (F15)",
+            description = "사용자가 좋아요한 노래 목록을 조회합니다."
+    )
+    public ResponseEntity<SuccessResponse<List<DailySongResponse>>> getLikedSongs(
+            @AuthMember Member member
+    ) {
+        if (member == null) {
+            return ResponseEntity.status(401)
+                    .body(SuccessResponse.success("로그인이 필요합니다", null));
+        }
+
+        List<DailySongResponse> songs = dailySongService.getLikedSongs(member.getId());
+        return ResponseEntity.ok(SuccessResponse.success("좋아요 곡 조회 성공", songs));
+    }
+
     @PostMapping("/{songId}/like")
     @Operation(
             summary = "좋아요 토글",
