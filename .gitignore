@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / Environment
+.env
+.env.local
+*.key
+*.pem
+credentials.json
+application-local.yml
