@@ -20,7 +20,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ## Features 상세
 
-### F13: 온보딩 & 소셜 로그인 [status: in-progress]
+### F13: 온보딩 & 소셜 로그인 [status: completed]
 
 #### 설명
 앱 시작 시 온보딩 화면을 제공하고, 카카오/구글/네이버 소셜 로그인을 지원한다.
@@ -33,7 +33,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 - [x] Step 1: UX Planning
 - [x] Step 2: Flutter Mock UI
 - [x] Step 3: JPA Entity Design (기존 Entity 활용, 신규 생성 불필요)
-- [ ] Step 4: Spring Boot API
+- [x] Step 4: Spring Boot API
 
 #### 관련 파일
 - UX 문서: `docs/ux/features/onboarding-social-login-flow.md`, `onboarding-social-login-screens.md`
@@ -228,11 +228,11 @@ F17 (마이페이지 강화) ──→ 독립
 
 | Feature | Step 1 | Step 2 | Step 3 | Step 4 | Status |
 |---------|--------|--------|--------|--------|--------|
-| F13: 온보딩 & 소셜 로그인 | Done | Done | Done | - | in-progress |
+| F13: 온보딩 & 소셜 로그인 | Done | Done | Done | Done | **completed** |
 | F14: 이메일 인증 & 강화 | - | - | - | - | todo |
 | F15: 연관곡 & 유튜브 | - | - | - | - | todo |
 | F16: 댓글 강화 | - | - | - | - | todo |
 | F17: 마이페이지 강화 | - | - | - | - | todo |
 | F18: 관리자 강화 | - | - | - | - | todo |
 
-**Phase 4 진행률**: 0/6 Features (0%)
+**Phase 4 진행률**: 1/6 Features (17%)

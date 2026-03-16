@@ -9,11 +9,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.hibi.server.domain.member.entity.ProviderType;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
+
+    // F13: 소셜 로그인 - provider + providerId로 회원 조회
+    Optional<Member> findByProviderAndProviderId(ProviderType provider, String providerId);
 
     Optional<Member> findByIdAndDeletedAtIsNull(Long id);
 

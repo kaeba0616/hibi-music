@@ -84,6 +84,45 @@ Authorization: Bearer {access_token}  // 인증 필요 API
 
 ---
 
+### POST /api/v1/auth/social-login (F13)
+소셜 로그인 (카카오/구글/네이버)
+
+**Request**
+```json
+{
+  "provider": "KAKAO",
+  "accessToken": "소셜_제공자_액세스_토큰",
+  "nickname": "닉네임"
+}
+```
+
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| provider | String | O | KAKAO, GOOGLE, NAVER |
+| accessToken | String | O | 소셜 제공자로부터 받은 액세스 토큰 |
+| nickname | String | X | 신규 회원 시 닉네임 (미입력 시 자동 생성) |
+
+**Response (200)**
+```json
+{
+  "success": true,
+  "message": "소셜 로그인에 성공하였습니다.",
+  "data": {
+    "accessToken": "jwt_access_token",
+    "refreshToken": "jwt_refresh_token",
+    "memberId": 1,
+    "roleType": "USER",
+    "isNewUser": false
+  }
+}
+```
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| isNewUser | boolean | 신규 회원 여부 (true: 최초 가입, false: 기존 회원) |
+
+---
+
 ### POST /api/v1/auth/refresh
 토큰 갱신
 

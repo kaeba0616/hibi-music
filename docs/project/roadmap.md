@@ -62,7 +62,7 @@ Notion PRD 신규 요구사항 구현 및 기존 기능 강화
 
 | ID | Feature | 설명 | Status |
 |----|---------|------|--------|
-| F13 | 온보딩 & 소셜 로그인 | 온보딩 화면 + 카카오/구글/네이버 | **in-progress** |
+| F13 | 온보딩 & 소셜 로그인 | 온보딩 화면 + 카카오/구글/네이버 | **completed** |
 | F14 | 이메일 인증 & 강화 | 이메일 인증, 비밀번호 규칙, 닉네임 제한 | todo |
 | F15 | 연관곡 & 유튜브 | 연관곡 표시, 유튜브 임베드, 좋아요 모아보기 | todo |
 | F16 | 댓글 강화 | 추천 Top3, 댓글 신고, 필터링 | todo |
@@ -81,6 +81,6 @@ Notion PRD 신규 요구사항 구현 및 기존 기능 강화
 | Phase 1: MVP Core | **completed** | 4/4 (100%) |
 | Phase 2: Social | **completed** | 4/4 (100%) |
 | Phase 3: Advanced | **completed** | 4/4 (100%) |
-| Phase 4: Enhancement | **in-progress** | 0/6 (0%) |
+| Phase 4: Enhancement | **in-progress** | 1/6 (17%) |
 
-**전체 진행률**: 12/18 Features (67%)
+**전체 진행률**: 13/18 Features (72%)

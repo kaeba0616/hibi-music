@@ -3,10 +3,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hidi/features/main-screen/views/main_navigation_view.dart';
 import 'package:hidi/features/onboarding/models/social_provider.dart';
-import 'package:hidi/features/onboarding/mocks/onboarding_mock.dart';
+import 'package:hidi/features/onboarding/repos/social_auth_repo.dart';
 
 /// 소셜 로그인 상태
 enum SocialLoginStatus { idle, loading, success, error }
@@ -40,7 +41,10 @@ class SocialLoginState {
 }
 
 class OnboardingViewModel extends StateNotifier<SocialLoginState> {
-  OnboardingViewModel() : super(const SocialLoginState());
+  final SocialAuthRepository _repo;
+  static const _storage = FlutterSecureStorage();
+
+  OnboardingViewModel(this._repo) : super(const SocialLoginState());
 
   Future<void> socialLogin(
     BuildContext context,
@@ -52,10 +56,19 @@ class OnboardingViewModel extends StateNotifier<SocialLoginState> {
     );
 
     try {
-      // Mock: 소셜 로그인 시뮬레이션
-      final result = await mockSocialLogin();
+      final result = await _repo.postSocialLogin(
+        provider: provider,
+        socialAccessToken: 'mock_social_token_${provider.name}',
+      );
 
-      final isNewUser = result['data']['isNewUser'] as bool;
+      final data = result['data'] as Map<String, dynamic>;
+      final isNewUser = data['isNewUser'] as bool;
+
+      // 토큰 저장
+      if (data['accessToken'] != null) {
+        await _storage.write(key: 'accessToken', value: data['accessToken']);
+        await _storage.write(key: 'refreshToken', value: data['refreshToken']);
+      }
 
       state = state.copyWith(
         status: SocialLoginStatus.success,
@@ -63,13 +76,11 @@ class OnboardingViewModel extends StateNotifier<SocialLoginState> {
       );
 
       if (isNewUser) {
-        // 신규 회원 → 닉네임 설정 (기존 회원가입 플로우의 nickname_view 재활용)
         log('Social login: new user, redirect to nickname setup');
         if (context.mounted) {
-          context.go('/sign-up'); // 닉네임 설정으로 이동
+          context.go('/sign-up');
         }
       } else {
-        // 기존 회원 → 메인 화면
         log('Social login: existing user, redirect to main');
         if (context.mounted) {
           context.go('/${MainNavigationView.initialTab}');
@@ -95,6 +106,7 @@ class OnboardingViewModel extends StateNotifier<SocialLoginState> {
 }
 
 final onboardingViewModelProvider =
-    StateNotifierProvider<OnboardingViewModel, SocialLoginState>(
-  (ref) => OnboardingViewModel(),
-);
+    StateNotifierProvider<OnboardingViewModel, SocialLoginState>((ref) {
+  final repo = ref.watch(socialAuthRepoProvider);
+  return OnboardingViewModel(repo);
+});
