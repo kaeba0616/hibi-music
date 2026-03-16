@@ -32,7 +32,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 #### Step 완료 현황
 - [x] Step 1: UX Planning
 - [x] Step 2: Flutter Mock UI
-- [ ] Step 3: JPA Entity Design
+- [x] Step 3: JPA Entity Design (기존 Entity 활용, 신규 생성 불필요)
 - [ ] Step 4: Spring Boot API
 
 #### 관련 파일
@@ -228,7 +228,7 @@ F17 (마이페이지 강화) ──→ 독립
 
 | Feature | Step 1 | Step 2 | Step 3 | Step 4 | Status |
 |---------|--------|--------|--------|--------|--------|
-| F13: 온보딩 & 소셜 로그인 | Done | Done | - | - | in-progress |
+| F13: 온보딩 & 소셜 로그인 | Done | Done | Done | - | in-progress |
 | F14: 이메일 인증 & 강화 | - | - | - | - | todo |
 | F15: 연관곡 & 유튜브 | - | - | - | - | todo |
 | F16: 댓글 강화 | - | - | - | - | todo |

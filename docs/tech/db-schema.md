@@ -80,13 +80,23 @@ JPA Entity 기반으로 자동 생성된 테이블 구조를 문서화합니다.
 | email | VARCHAR(255) | NOT NULL, UNIQUE | 이메일 |
 | password | VARCHAR(255) | NOT NULL | 비밀번호 (암호화) |
 | nickname | VARCHAR(50) | NOT NULL | 닉네임 |
-| profile_image | VARCHAR(500) | | 프로필 이미지 URL |
+| provider | VARCHAR(20) | NOT NULL, DEFAULT 'NATIVE' | 로그인 제공자 (NATIVE, KAKAO, GOOGLE, NAVER) - F13 |
+| provider_id | VARCHAR(255) | | OAuth 제공자 사용자 ID - F13 |
+| profile_url | VARCHAR(512) | | 프로필 이미지 URL |
 | role | VARCHAR(20) | NOT NULL | 권한 (USER, ADMIN) |
 | status | VARCHAR(20) | NOT NULL, DEFAULT 'ACTIVE' | 상태 (ACTIVE, SUSPENDED, BANNED) - F12 |
 | suspended_until | DATETIME | | 정지 해제일 - F12 |
 | suspended_reason | VARCHAR(300) | | 정지 사유 - F12 |
 | created_at | DATETIME | NOT NULL | 가입일 |
 | updated_at | DATETIME | | 수정일 |
+
+**로그인 제공자 ENUM 값** (F13):
+| 값 | 설명 |
+|----|------|
+| NATIVE | 이메일/비밀번호 직접 가입 |
+| KAKAO | 카카오 소셜 로그인 |
+| GOOGLE | 구글 소셜 로그인 |
+| NAVER | 네이버 소셜 로그인 |
 
 **회원 상태 ENUM 값** (F12):
 | 값 | 설명 |
