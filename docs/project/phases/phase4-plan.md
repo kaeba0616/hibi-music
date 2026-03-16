@@ -31,12 +31,23 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 #### Step 완료 현황
 - [x] Step 1: UX Planning
-- [ ] Step 2: Flutter Mock UI
+- [x] Step 2: Flutter Mock UI
 - [ ] Step 3: JPA Entity Design
 - [ ] Step 4: Spring Boot API
 
 #### 관련 파일
 - UX 문서: `docs/ux/features/onboarding-social-login-flow.md`, `onboarding-social-login-screens.md`
+- Frontend: `hibi_front/lib/features/onboarding/`
+  - models/social_provider.dart - SocialProvider enum (카카오/구글/네이버)
+  - mocks/onboarding_mock.dart - Mock 소셜 로그인 응답
+  - viewmodels/onboarding_viewmodel.dart - SocialLoginState + OnboardingViewModel
+  - widgets/social_login_button.dart - SocialLoginButton, SocialLoginButtonRow, SocialDivider
+  - views/onboarding_view.dart - OB-01 온보딩 화면 (재구현)
+  - views/social_auth_waiting_view.dart - OB-03 소셜 인증 대기 화면
+- Frontend 확장:
+  - authentication/views/login_view.dart - OB-02 로그인 화면 (소셜 버튼 통합)
+  - authentication/viewmodels/login_view_model.dart - 로그아웃 → 온보딩 이동
+  - router.dart - 온보딩 라우트 추가, 비로그인 → 온보딩 리다이렉트
 
 #### 구현 범위
 - **온보딩 화면**: 앱 최초 진입/로그아웃 시 표시, 3개 버튼(메인 이동, 로그인, 회원가입)
@@ -217,7 +228,7 @@ F17 (마이페이지 강화) ──→ 독립
 
 | Feature | Step 1 | Step 2 | Step 3 | Step 4 | Status |
 |---------|--------|--------|--------|--------|--------|
-| F13: 온보딩 & 소셜 로그인 | Done | - | - | - | in-progress |
+| F13: 온보딩 & 소셜 로그인 | Done | Done | - | - | in-progress |
 | F14: 이메일 인증 & 강화 | - | - | - | - | todo |
 | F15: 연관곡 & 유튜브 | - | - | - | - | todo |
 | F16: 댓글 강화 | - | - | - | - | todo |

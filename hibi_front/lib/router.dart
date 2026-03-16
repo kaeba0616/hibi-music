@@ -7,6 +7,7 @@ import 'package:hidi/features/authentication/views/login_view.dart';
 import 'package:hidi/features/authentication/views/sign_up_view.dart';
 import 'package:hidi/features/daily-song/views/song_detail_view.dart';
 import 'package:hidi/features/main-screen/views/main_navigation_view.dart';
+import 'package:hidi/features/onboarding/views/onboarding_view.dart';
 import 'package:hidi/features/posts/views/post_view.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -15,23 +16,45 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/${MainNavigationView.initialTab}',
 
     redirect: (context, state) {
-      final isLoggIned = ref.read(authRepo).isLoggedIn;
-      log("isLoggIned :$isLoggIned");
+      final isLoggedIn = ref.read(authRepo).isLoggedIn;
+      log("isLoggedIn :$isLoggedIn");
 
-      if (!isLoggIned) {
-        if (state.matchedLocation != SignUpView.routeURL &&
-            state.matchedLocation != LoginView.routeURL) {
-          return LoginView.routeURL;
+      // 비로그인 시 허용되는 경로
+      final allowedPaths = [
+        OnboardingView.routeURL,
+        LoginView.routeURL,
+        SignUpView.routeURL,
+      ];
+
+      if (!isLoggedIn) {
+        if (!allowedPaths.contains(state.matchedLocation)) {
+          return OnboardingView.routeURL;
         }
       }
+
+      // 로그인 상태에서 온보딩/로그인 접근 시 메인으로
+      if (isLoggedIn) {
+        if (state.matchedLocation == OnboardingView.routeURL ||
+            state.matchedLocation == LoginView.routeURL) {
+          return '/${MainNavigationView.initialTab}';
+        }
+      }
+
       return null;
     },
     routes: <RouteBase>[
       GoRoute(
+        path: OnboardingView.routeURL,
+        name: OnboardingView.routeName,
+        builder: (context, state) {
+          return const OnboardingView();
+        },
+      ),
+      GoRoute(
         path: LoginView.routeURL,
         name: LoginView.routeName,
         builder: (context, state) {
-          return LoginView();
+          return const LoginView();
         },
       ),
       GoRoute(
