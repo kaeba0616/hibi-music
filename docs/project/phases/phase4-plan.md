@@ -20,7 +20,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ## Features 상세
 
-### F13: 온보딩 & 소셜 로그인 [status: todo]
+### F13: 온보딩 & 소셜 로그인 [status: in-progress]
 
 #### 설명
 앱 시작 시 온보딩 화면을 제공하고, 카카오/구글/네이버 소셜 로그인을 지원한다.
@@ -30,10 +30,13 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 - AC-F1-6: 소셜 로그인 (카카오/구글/네이버)
 
 #### Step 완료 현황
-- [ ] Step 1: UX Planning
+- [x] Step 1: UX Planning
 - [ ] Step 2: Flutter Mock UI
 - [ ] Step 3: JPA Entity Design
 - [ ] Step 4: Spring Boot API
+
+#### 관련 파일
+- UX 문서: `docs/ux/features/onboarding-social-login-flow.md`, `onboarding-social-login-screens.md`
 
 #### 구현 범위
 - **온보딩 화면**: 앱 최초 진입/로그아웃 시 표시, 3개 버튼(메인 이동, 로그인, 회원가입)
@@ -214,7 +217,7 @@ F17 (마이페이지 강화) ──→ 독립
 
 | Feature | Step 1 | Step 2 | Step 3 | Step 4 | Status |
 |---------|--------|--------|--------|--------|--------|
-| F13: 온보딩 & 소셜 로그인 | - | - | - | - | todo |
+| F13: 온보딩 & 소셜 로그인 | Done | - | - | - | in-progress |
 | F14: 이메일 인증 & 강화 | - | - | - | - | todo |
 | F15: 연관곡 & 유튜브 | - | - | - | - | todo |
 | F16: 댓글 강화 | - | - | - | - | todo |
