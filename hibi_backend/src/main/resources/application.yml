@@ -1,0 +1,36 @@
+# application.yml
+
+# 서버 설정
+server:
+  port: 8080  # 서버 포트 (기본값은 8080)
+
+# Spring 프로파일 설정
+spring:
+  profiles:
+    active: dev  # dev, prod 등 환경별 프로파일 설정
+
+  # 데이터베이스 연결 설정
+  datasource:
+    url: jdbc:mysql://${DATABASE_URL}:3306/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME} # MySQL DB 사용자명
+    password: ${DATABASE_PASSWORD} # MySQL DB 비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 드라이버 클래스
+    hikari:
+      pool-name: HikariCP
+
+  # JPA 설정 (Hibernate)
+  jpa:
+    hibernate:
+      ddl-auto: update  # 자동 스키마 관리 (none, update, create, create-drop)
+    show-sql: true  # 실행된 SQL 쿼리를 콘솔에 출력
+    properties:
+      hibernate:
+        format_sql: true  # SQL 포매팅
+jwt:
+  secret: yourVerySecretKeyForAccessTokenGenerationWhichIsLongEnoughForHS256AlgorithmThankYouVeryMuch
+  expiration: 3600000
+  refresh-expiration: 6048000
+
+api:
+  version: v1
+  base-url: ${EC2_HOST}

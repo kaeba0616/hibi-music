@@ -1,0 +1,126 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Gradle 캐시 추가
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: jar-file
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "jar-file/*.jar"
+          target: "~/app"
+          strip_components: 1
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/app
+            # 기존 서버 프로세스 찾아서 종료
+            PID=$(ps -ef | grep java | grep hibi-app.jar | grep -v grep | awk '{print $2}')
+            if [ ! -z "$PID" ]; then
+              echo "Killing process $PID"
+              kill -15 $PID
+              sleep 5
+              # 프로세스가 여전히 살아있다면 강제 종료
+              if ps -p $PID > /dev/null; then
+                kill -9 $PID
+              fi
+            fi
+            
+            # 새 JAR 파일 확인 및 실행 파일로 설정
+            if ls *SNAPSHOT.jar 1> /dev/null 2>&1; then
+              # SNAPSHOT.jar 파일이 존재하는 경우
+              mv *SNAPSHOT.jar hibi-app.jar
+              echo "SNAPSHOT.jar 파일을 hibi-app.jar로 이름 변경 완료"
+            elif ls *.jar 1> /dev/null 2>&1; then
+              # 다른 JAR 파일이 존재하는 경우 (SNAPSHOT 접미사가 없는 경우)
+              mv *.jar hibi-app.jar
+              echo "JAR 파일을 hibi-app.jar로 이름 변경 완료"
+            else
+              # JAR 파일이 없는 경우
+              echo "오류: JAR 파일을 찾을 수 없습니다."
+              exit 1
+            fi
+            
+            # 로그 파일 정리
+            if [ -f nohup.out ]; then
+              mv nohup.out nohup.out.$(date +%Y%m%d%H%M%S)
+            fi
+            
+            # nohup java -jar hibi-app.jar > nohup.out 2>&1 &
+            nohup java \
+              -Dspring.datasource.url=jdbc:mysql://${{ secrets.DATABASE_URL }}:3306/${{ secrets.DATABASE_NAME }} \
+              -Dspring.datasource.username=${{ secrets.DATABASE_USERNAME }}\
+              -Dspring.datasource.password=${{ secrets.DATABASE_PASSWORD }} \
+              -jar hibi-app.jar > nohup.out 2>&1 &
+            echo "서버가 백그라운드에서 실행 중입니다"
+            # 프로세스 실행 확인
+            sleep 5
+            ps -ef | grep java
+
+
