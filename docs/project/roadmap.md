@@ -53,6 +53,27 @@ hibi (日々)는 매일 JPOP 한 곡을 추천받고, 팬들과 소통하는 일
 
 ---
 
+## Phase 4: Enhancement & Notion PRD Sync [status: planned]
+
+### 목표
+Notion PRD 신규 요구사항 구현 및 기존 기능 강화
+
+### Features
+
+| ID | Feature | 설명 | Status |
+|----|---------|------|--------|
+| F13 | 온보딩 & 소셜 로그인 | 온보딩 화면 + 카카오/구글/네이버 | todo |
+| F14 | 이메일 인증 & 강화 | 이메일 인증, 비밀번호 규칙, 닉네임 제한 | todo |
+| F15 | 연관곡 & 유튜브 | 연관곡 표시, 유튜브 임베드, 좋아요 모아보기 | todo |
+| F16 | 댓글 강화 | 추천 Top3, 댓글 신고, 필터링 | todo |
+| F17 | 마이페이지 강화 | 내가 쓴 댓글, 푸시 알림, 문의 제한 | todo |
+| F18 | 관리자 강화 | 곡 등록 상세, 예약 게시, 댓글 관리 | todo |
+
+### 상세 계획
+`docs/project/phases/phase4-plan.md` 참조
+
+---
+
 ## 진행 상황 요약
 
 | Phase | Status | Progress |
@@ -60,5 +81,6 @@ hibi (日々)는 매일 JPOP 한 곡을 추천받고, 팬들과 소통하는 일
 | Phase 1: MVP Core | **completed** | 4/4 (100%) |
 | Phase 2: Social | **completed** | 4/4 (100%) |
 | Phase 3: Advanced | **completed** | 4/4 (100%) |
+| Phase 4: Enhancement | **planned** | 0/6 (0%) |
 
-**전체 진행률**: 12/12 Features (100%)
+**전체 진행률**: 12/18 Features (67%)
