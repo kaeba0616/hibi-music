@@ -145,7 +145,15 @@ Claude Code는 이 파일을 이 레포지토리의 **헌법(constitution)** 으
 
 ---
 
-## 5. 금지사항
+## 5. Git 규칙
+
+- **작업 완료 시 반드시 commit + push**: 하나의 작업 단위(기능 구현, 문서 작성, 버그 수정 등)가 완료되면 즉시 `git add` → `git commit` → `git push origin <현재브랜치>` 를 실행한다.
+- 커밋 메시지는 변경 내용을 명확히 설명한다.
+- push 전에 현재 브랜치를 확인하고, 올바른 브랜치에 push한다.
+
+---
+
+## 6. 금지사항
 
 - 문서 무시하고 코드 변경
 - 테스트 없이 기능 추가
@@ -156,7 +164,7 @@ Claude Code는 이 파일을 이 레포지토리의 **헌법(constitution)** 으
 
 ---
 
-## 6. 개발 명령어
+## 7. 개발 명령어
 
 ### Backend (Spring Boot)
 ```bash
@@ -178,7 +186,7 @@ dart format --set-exit-if-changed .    # 코드 포맷팅 검사
 
 ---
 
-## 7. 코드 패턴 (hibi 스타일)
+## 8. 코드 패턴 (hibi 스타일)
 
 ### Backend - JPA Entity
 ```java
@@ -240,7 +248,7 @@ final songRepoProvider = Provider((ref) {
 
 ---
 
-## 8. 프로젝트 상황 확인
+## 9. 프로젝트 상황 확인
 
 세션 시작 시: `/next` 명령으로 현재 Phase/Feature 상태 파악 후 진행
 
