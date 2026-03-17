@@ -192,6 +192,9 @@ JPA Entity 기반으로 자동 생성된 테이블 구조를 문서화합니다.
 | link_apple_music | VARCHAR(512) | | Apple Music 링크 |
 | link_youtube | VARCHAR(512) | | YouTube 링크 |
 | recommend_date | DATE | UNIQUE | 추천 날짜 (Daily Song) |
+| story | TEXT | | 추천 스토리/이유 - F18 |
+| scheduled_publish_at | DATETIME | | 예약 게시 시각 - F18 |
+| is_published | BOOLEAN | NOT NULL, DEFAULT false | 게시 여부 - F18 |
 
 **인덱스**:
 - `idx_songs_artist`: artist_id

@@ -178,4 +178,56 @@ public class AdminController {
         adminService.deleteFaq(faqId);
         return ResponseEntity.ok(SuccessResponse.success("FAQ 삭제 완료"));
     }
+
+    // ========== F18: 관리자 곡 등록 (Enhanced) ==========
+
+    @Operation(summary = "관리자 곡 등록 (상세)")
+    @PostMapping("/songs")
+    public ResponseEntity<SuccessResponse<?>> createAdminSong(
+            @RequestBody @Valid AdminSongCreateRequest request
+    ) {
+        adminService.createAdminSong(request);
+        return ResponseEntity.ok(SuccessResponse.success("곡 등록 완료"));
+    }
+
+    @Operation(summary = "예약 게시 등록")
+    @PostMapping("/songs/{songId}/schedule")
+    public ResponseEntity<SuccessResponse<?>> scheduleSongPublish(
+            @PathVariable Long songId,
+            @RequestBody @Valid SchedulePublishRequest request
+    ) {
+        adminService.scheduleSongPublish(songId, request);
+        return ResponseEntity.ok(SuccessResponse.success("예약 게시 등록 완료"));
+    }
+
+    @Operation(summary = "예약 취소")
+    @DeleteMapping("/songs/schedule/{songId}")
+    public ResponseEntity<SuccessResponse<?>> cancelScheduledPublish(
+            @PathVariable Long songId
+    ) {
+        adminService.cancelScheduledPublish(songId);
+        return ResponseEntity.ok(SuccessResponse.success("예약 취소 완료"));
+    }
+
+    // ========== F18: 관리자 댓글 관리 ==========
+
+    @Operation(summary = "관리자 댓글 목록 조회")
+    @GetMapping("/comments")
+    public ResponseEntity<SuccessResponse<AdminCommentListResponse>> getAdminComments(
+            @RequestParam(required = false, defaultValue = "false") boolean reported,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        AdminCommentListResponse response = adminService.getAdminComments(reported, page, size);
+        return ResponseEntity.ok(SuccessResponse.success("댓글 목록 조회 성공", response));
+    }
+
+    @Operation(summary = "관리자 댓글 삭제")
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<SuccessResponse<?>> deleteAdminComment(
+            @PathVariable Long commentId
+    ) {
+        adminService.deleteAdminComment(commentId);
+        return ResponseEntity.ok(SuccessResponse.success("댓글 삭제 완료"));
+    }
 }

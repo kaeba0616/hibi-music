@@ -2,6 +2,9 @@ package com.hibi.server.domain.admin.service;
 
 import com.hibi.server.domain.admin.dto.request.*;
 import com.hibi.server.domain.admin.dto.response.*;
+import com.hibi.server.domain.artist.entity.Artist;
+import com.hibi.server.domain.artist.repository.ArtistRepository;
+import com.hibi.server.domain.comment.entity.Comment;
 import com.hibi.server.domain.comment.repository.CommentRepository;
 import com.hibi.server.domain.faq.entity.FAQ;
 import com.hibi.server.domain.faq.entity.FAQCategory;
@@ -19,12 +22,17 @@ import com.hibi.server.domain.report.entity.Report;
 import com.hibi.server.domain.report.entity.ReportStatus;
 import com.hibi.server.domain.report.entity.ReportTargetType;
 import com.hibi.server.domain.report.repository.ReportRepository;
+import com.hibi.server.domain.song.entity.RelatedSong;
+import com.hibi.server.domain.song.entity.Song;
+import com.hibi.server.domain.song.repository.RelatedSongRepository;
+import com.hibi.server.domain.song.repository.SongRepository;
 import com.hibi.server.global.exception.CustomException;
 import com.hibi.server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +55,9 @@ public class AdminService {
     private final FeedPostRepository feedPostRepository;
     private final CommentRepository commentRepository;
     private final MemberFollowRepository memberFollowRepository;
+    private final SongRepository songRepository;
+    private final ArtistRepository artistRepository;
+    private final RelatedSongRepository relatedSongRepository;
 
     // ========== 대시보드 ==========
 
@@ -330,6 +341,114 @@ public class AdminService {
             throw new CustomException(ErrorCode.FAQ_NOT_FOUND);
         }
         faqRepository.deleteById(faqId);
+    }
+
+    // ========== F18: 관리자 곡 등록 (Enhanced) ==========
+
+    /**
+     * 관리자 곡 등록 (상세)
+     */
+    @Transactional
+    public void createAdminSong(AdminSongCreateRequest request) {
+        Artist artist = artistRepository.findById(request.artistId())
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Song song = Song.builder()
+                .titleKor(request.titleKor())
+                .titleEng(request.titleEng())
+                .titleJp(request.titleJp())
+                .artist(artist)
+                .story(request.story())
+                .lyricsJp(request.lyricsJp())
+                .lyricsKr(request.lyricsKr())
+                .linkYoutube(request.youtubeUrl())
+                .build();
+
+        Song savedSong = songRepository.save(song);
+
+        // 연관곡 등록
+        if (request.relatedSongIds() != null && !request.relatedSongIds().isEmpty()) {
+            for (AdminSongCreateRequest.RelatedSongInput input : request.relatedSongIds()) {
+                Song relatedSongRef = songRepository.findById(input.relatedSongId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+                RelatedSong relatedSong = RelatedSong.of(savedSong, relatedSongRef, input.reason());
+                relatedSongRepository.save(relatedSong);
+            }
+        }
+    }
+
+    /**
+     * 예약 게시 등록
+     */
+    @Transactional
+    public void scheduleSongPublish(Long songId, SchedulePublishRequest request) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if (!song.isComplete()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+
+        song.updateScheduledPublishAt(request.scheduledAt());
+        songRepository.save(song);
+    }
+
+    /**
+     * 예약 취소
+     */
+    @Transactional
+    public void cancelScheduledPublish(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        song.cancelSchedule();
+        songRepository.save(song);
+    }
+
+    // ========== F18: 관리자 댓글 관리 ==========
+
+    /**
+     * 관리자 댓글 목록 조회
+     */
+    public AdminCommentListResponse getAdminComments(boolean onlyReported, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Comment> commentPage;
+
+        if (onlyReported) {
+            // 신고된 댓글만 조회 - 간단히 필터링된 댓글 조회
+            commentPage = commentRepository.findAll(pageable);
+            // 신고 수가 있는 댓글만 필터 (실제 구현에서는 별도 쿼리 사용)
+        } else {
+            commentPage = commentRepository.findAll(pageable);
+        }
+
+        List<AdminCommentResponse> comments = commentPage.getContent().stream()
+                .map(comment -> {
+                    int reportCount = (int) reportRepository.countByTargetTypeAndTargetId(
+                            ReportTargetType.COMMENT, comment.getId());
+                    return AdminCommentResponse.from(comment, reportCount);
+                })
+                .collect(Collectors.toList());
+
+        if (onlyReported) {
+            comments = comments.stream()
+                    .filter(c -> c.reportCount() > 0)
+                    .collect(Collectors.toList());
+        }
+
+        return AdminCommentListResponse.of(comments, commentPage.getTotalElements(), page, size);
+    }
+
+    /**
+     * 관리자 댓글 삭제
+     */
+    @Transactional
+    public void deleteAdminComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        commentRepository.delete(comment);
     }
 
     // ========== Private 메서드 ==========

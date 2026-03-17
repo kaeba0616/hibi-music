@@ -1949,6 +1949,129 @@ FAQ 삭제
 
 ---
 
+## 13b. 관리자 확장 API (F18)
+
+> 모든 F18 API는 `ADMIN` 권한이 필요합니다.
+
+### POST /api/v1/admin/songs
+관리자 곡 등록 (상세)
+
+**Request**
+```json
+{
+  "titleKor": "밤을 달리다",
+  "titleEng": "Racing into the Night",
+  "titleJp": "夜に駆ける",
+  "artistId": 1,
+  "story": "2020년 일본 음악 씬을 뒤흔든 곡. 소설 기반의 스토리텔링이 특징.",
+  "lyricsJp": "沈むように溶けてゆくように...",
+  "lyricsKr": "가라앉듯이 녹아가듯이...",
+  "youtubeUrl": "https://www.youtube.com/watch?v=x8VYWazR5mE",
+  "relatedSongIds": [
+    {
+      "relatedSongId": 6,
+      "reason": "같은 아티스트의 곡"
+    }
+  ]
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "곡 등록 완료"
+}
+```
+
+---
+
+### POST /api/v1/admin/songs/{songId}/schedule
+예약 게시 등록
+
+**Request**
+```json
+{
+  "songId": 1,
+  "scheduledAt": "2026-03-18T09:00:00"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "예약 게시 등록 완료"
+}
+```
+
+**Error Cases**
+- `400 INVALID_INPUT`: 곡 정보 미완성 (필수 필드 누락)
+
+---
+
+### DELETE /api/v1/admin/songs/schedule/{songId}
+예약 취소
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "예약 취소 완료"
+}
+```
+
+---
+
+### GET /api/v1/admin/comments
+관리자 댓글 목록 조회
+
+**Query Parameters**
+- `reported`: 신고된 댓글만 (true/false, default: false)
+- `page`: 페이지 번호 (default: 0)
+- `size`: 페이지 크기 (default: 20)
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "댓글 목록 조회 성공",
+  "data": {
+    "comments": [
+      {
+        "id": 1,
+        "feedPostId": 10,
+        "authorNickname": "music_lover",
+        "authorId": 1,
+        "content": "오늘 추천곡 정말 좋아요!",
+        "likeCount": 15,
+        "reportCount": 0,
+        "isFiltered": false,
+        "createdAt": "2026-03-17T10:00:00"
+      }
+    ],
+    "totalCount": 50,
+    "page": 0,
+    "pageSize": 20
+  }
+}
+```
+
+---
+
+### DELETE /api/v1/admin/comments/{commentId}
+관리자 댓글 삭제
+
+**Response**
+```json
+{
+  "success": true,
+  "message": "댓글 삭제 완료"
+}
+```
+
+---
+
 ## 14. 에러 코드
 
 | Code | HTTP Status | 설명 |

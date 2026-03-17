@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "songs", indexes = {
@@ -63,6 +64,17 @@ public class Song {
     @Column(name = "recommend_date", unique = true)
     private LocalDate recommendDate;
 
+    @Lob
+    @Column(name = "story", columnDefinition = "TEXT")
+    private String story;
+
+    @Column(name = "scheduled_publish_at")
+    private LocalDateTime scheduledPublishAt;
+
+    @Column(name = "is_published", nullable = false)
+    @Builder.Default
+    private Boolean isPublished = false;
+
     public static Song of(SongCreateRequest request, Artist artist) {
         return Song.builder()
                 .titleKor(request.titleKor())
@@ -109,5 +121,30 @@ public class Song {
 
     public void updateRecommendDate(LocalDate recommendDate) {
         this.recommendDate = recommendDate;
+    }
+
+    public void updateStory(String story) {
+        this.story = story;
+    }
+
+    public void updateScheduledPublishAt(LocalDateTime scheduledPublishAt) {
+        this.scheduledPublishAt = scheduledPublishAt;
+    }
+
+    public void publish() {
+        this.isPublished = true;
+    }
+
+    public void cancelSchedule() {
+        this.scheduledPublishAt = null;
+    }
+
+    /**
+     * 곡 정보가 완성되었는지 확인 (예약 게시 가능 여부)
+     */
+    public boolean isComplete() {
+        return titleKor != null && !titleKor.isBlank()
+                && titleJp != null && !titleJp.isBlank()
+                && artist != null;
     }
 }

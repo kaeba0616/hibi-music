@@ -3,7 +3,7 @@
 ## 개요
 - Phase ID: 4
 - Phase 이름: Enhancement & Notion PRD Sync
-- Status: [status: planned]
+- Status: [status: done]
 - 목표: Notion PRD에서 발견된 미구현 요구사항을 기존 기능에 통합 구현
 
 ---
@@ -198,7 +198,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ---
 
-### F18: 관리자 기능 강화 [status: todo]
+### F18: 관리자 기능 강화 [status: completed]
 
 #### 설명
 오늘의 곡 등록 상세화, 예약 게시 기능, 관리자 댓글 관리를 추가한다.
@@ -209,15 +209,37 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 - AC-F12-14: 관리자 댓글 관리 (목록 조회, 삭제)
 
 #### Step 완료 현황
-- [ ] Step 1: UX Planning
-- [ ] Step 2: Flutter Mock UI
-- [ ] Step 3: JPA Entity Design
-- [ ] Step 4: Spring Boot API
+- [x] Step 1: UX Planning
+- [x] Step 2: Flutter Mock UI
+- [x] Step 3: JPA Entity Design
+- [x] Step 4: Spring Boot API
+
+#### 관련 파일
+- UX 문서: `docs/ux/features/admin-enhancement-flow.md`, `admin-enhancement-screens.md`
+- Frontend:
+  - `hibi_front/lib/features/management/models/admin_song_models.dart` - 곡 등록/예약/댓글 모델
+  - `hibi_front/lib/features/management/mocks/admin_song_mock.dart` - Mock 데이터
+  - `hibi_front/lib/features/management/viewmodels/admin_song_viewmodel.dart` - 곡 등록 ViewModel
+  - `hibi_front/lib/features/management/viewmodels/admin_schedule_viewmodel.dart` - 예약 게시 ViewModel
+  - `hibi_front/lib/features/management/viewmodels/admin_comment_viewmodel.dart` - 댓글 관리 ViewModel
+  - `hibi_front/lib/features/management/views/admin_song_register_view.dart` - AE-01 곡 등록 화면
+  - `hibi_front/lib/features/management/views/admin_scheduled_publish_view.dart` - AE-02 예약 게시 화면
+  - `hibi_front/lib/features/management/views/admin_comment_list_view.dart` - AE-03 댓글 관리 화면
+  - `hibi_front/lib/features/management/repos/admin_repo.dart` - F18 API 메서드 추가
+  - `hibi_front/lib/features/management/views/admin_dashboard_view.dart` - F18 메뉴 추가
+- Backend:
+  - `hibi_backend/.../domain/admin/dto/request/AdminSongCreateRequest.java` - 곡 등록 DTO
+  - `hibi_backend/.../domain/admin/dto/request/SchedulePublishRequest.java` - 예약 게시 DTO
+  - `hibi_backend/.../domain/admin/dto/response/AdminCommentResponse.java` - 댓글 응답 DTO
+  - `hibi_backend/.../domain/admin/dto/response/AdminCommentListResponse.java` - 댓글 목록 응답 DTO
+  - `hibi_backend/.../domain/admin/controller/AdminController.java` - F18 엔드포인트 추가
+  - `hibi_backend/.../domain/admin/service/AdminService.java` - F18 비즈니스 로직
+  - `hibi_backend/.../domain/song/entity/Song.java` - story, scheduledPublishAt, isPublished 필드 추가
 
 #### 구현 범위
-- **곡 등록 상세**: 곡 제목 3개 언어(한/영/일), 아티스트 자동완성, 스토리/가사 입력, 연관곡 리스트 연결
-- **예약 게시**: ScheduledPublish 엔티티, 공개 시간 설정 UI, 스케줄러(Spring @Scheduled)
-- **댓글 관리**: 관리자 댓글 목록 화면 (작성일/내용/작성자), 삭제 기능
+- **곡 등록 상세**: 곡 제목 3개 언어(한/영/일), 아티스트 자동완성, 스토리/가사 입력, 연관곡 리스트 연결, YouTube URL
+- **예약 게시**: Song 엔티티에 scheduledPublishAt 필드, 공개 시간 설정 UI, 예약 목록 관리
+- **댓글 관리**: 관리자 댓글 목록 화면 (작성일/내용/작성자), 필터(전체/신고), 삭제 기능
 - **기존 코드 확장**: `hibi_front/lib/features/management/`, `hibi_backend/.../domain/admin/`, `domain/song/`
 
 #### 의존성
@@ -260,6 +282,6 @@ F17 (마이페이지 강화) ──→ 독립
 | F15: 연관곡 & 유튜브 | Done | Done | Done | Done | **completed** |
 | F16: 댓글 강화 | Done | Done | Done | Done | **completed** |
 | F17: 마이페이지 강화 | Done | Done | Done | Done | **completed** |
-| F18: 관리자 강화 | - | - | - | - | todo |
+| F18: 관리자 강화 | Done | Done | Done | Done | **completed** |
 
-**Phase 4 진행률**: 5/6 Features (83%)
+**Phase 4 진행률**: 6/6 Features (100%)

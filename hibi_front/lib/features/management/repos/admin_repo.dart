@@ -16,7 +16,9 @@ import '../models/admin_models.dart';
 import '../models/admin_report_models.dart';
 import '../models/admin_question_models.dart';
 import '../models/admin_faq_models.dart';
+import '../models/admin_song_models.dart';
 import '../mocks/admin_mock.dart';
+import '../mocks/admin_song_mock.dart' as song_mock;
 
 /// Admin Repository
 class AdminRepository {
@@ -475,6 +477,158 @@ class AdminRepository {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(body['message'] ?? '회원 제재 실패');
+    }
+  }
+
+  // ==================== F18: Admin Enhancement ====================
+
+  /// 관리자 곡 등록 (Enhanced)
+  Future<void> createAdminSong(AdminSongCreateRequest request) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      return;
+    }
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (token) => http.post(
+        Uri.http(baseHost, '$basePath/songs'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(request.toJson()),
+      ),
+    );
+
+    log('createAdminSong: ${response.statusCode}');
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(body['message'] ?? '곡 등록 실패');
+    }
+  }
+
+  /// 예약 게시 등록
+  Future<void> scheduleSongPublish(SchedulePublishRequest request) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      return;
+    }
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (token) => http.post(
+        Uri.http(baseHost, '$basePath/songs/${request.songId}/schedule'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(request.toJson()),
+      ),
+    );
+
+    log('scheduleSongPublish: ${response.statusCode}');
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(body['message'] ?? '예약 등록 실패');
+    }
+  }
+
+  /// 예약 취소
+  Future<void> cancelScheduledPublish(int scheduleId) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return;
+    }
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (token) => http.delete(
+        Uri.http(baseHost, '$basePath/songs/schedule/$scheduleId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    log('cancelScheduledPublish: ${response.statusCode}');
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(body['message'] ?? '예약 취소 실패');
+    }
+  }
+
+  /// 관리자 댓글 목록 조회
+  Future<AdminCommentListResponse> getAdminComments({
+    bool onlyReported = false,
+    int page = 0,
+    int pageSize = 20,
+  }) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      var comments = song_mock.mockAdminComments;
+      if (onlyReported) {
+        comments = comments.where((c) => c.reportCount > 0).toList();
+      }
+      return AdminCommentListResponse(
+        comments: comments,
+        totalCount: comments.length,
+        page: page,
+        pageSize: pageSize,
+      );
+    }
+
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'size': pageSize.toString(),
+    };
+    if (onlyReported) {
+      queryParams['reported'] = 'true';
+    }
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (token) => http.get(
+        Uri.http(baseHost, '$basePath/comments', queryParams),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    log('getAdminComments: ${response.statusCode}');
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return AdminCommentListResponse.fromJson(body['data']);
+    } else {
+      throw Exception(body['message'] ?? '댓글 목록 조회 실패');
+    }
+  }
+
+  /// 관리자 댓글 삭제
+  Future<void> deleteAdminComment(int commentId) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return;
+    }
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (token) => http.delete(
+        Uri.http(baseHost, '$basePath/comments/$commentId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    log('deleteAdminComment: ${response.statusCode}');
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(body['message'] ?? '댓글 삭제 실패');
     }
   }
 

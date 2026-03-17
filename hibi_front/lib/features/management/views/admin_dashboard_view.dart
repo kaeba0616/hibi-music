@@ -7,6 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../viewmodels/admin_dashboard_viewmodel.dart';
 import '../widgets/admin_menu_tile.dart';
 import '../widgets/admin_stat_card.dart';
+import 'admin_song_register_view.dart';
+import 'admin_scheduled_publish_view.dart';
+import 'admin_comment_list_view.dart';
 
 class AdminDashboardView extends ConsumerStatefulWidget {
   const AdminDashboardView({super.key});
@@ -148,6 +151,39 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView> {
                                 icon: Icons.people,
                                 title: '회원 관리',
                                 onTap: () => context.push('/admin/members'),
+                              ),
+                              const Divider(height: 1),
+                              AdminMenuTile(
+                                icon: Icons.music_note,
+                                title: '곡 등록',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AdminSongRegisterView(),
+                                  ),
+                                ),
+                              ),
+                              const Divider(height: 1),
+                              AdminMenuTile(
+                                icon: Icons.schedule_send,
+                                title: '예약 게시',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AdminScheduledPublishView(),
+                                  ),
+                                ),
+                              ),
+                              const Divider(height: 1),
+                              AdminMenuTile(
+                                icon: Icons.comment,
+                                title: '댓글 관리',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AdminCommentListView(),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
