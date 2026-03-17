@@ -265,3 +265,32 @@ final questionFormProvider =
   final repository = ref.watch(questionRepoProvider);
   return QuestionFormViewModel(repository);
 });
+
+/// 오늘의 문의 작성 수 ViewModel (F17)
+class QuestionDailyCountViewModel extends StateNotifier<int> {
+  final QuestionRepository _repository;
+
+  QuestionDailyCountViewModel(this._repository) : super(0);
+
+  /// 오늘의 문의 작성 수 로드
+  Future<void> loadTodayCount() async {
+    try {
+      final count = await _repository.getTodayQuestionCount();
+      state = count;
+    } catch (e) {
+      // 실패 시 0 유지
+    }
+  }
+
+  /// 문의 작성 후 카운트 증가
+  void increment() {
+    state = state + 1;
+  }
+}
+
+/// 오늘의 문의 작성 수 Provider (F17)
+final questionDailyCountProvider =
+    StateNotifierProvider<QuestionDailyCountViewModel, int>((ref) {
+  final repository = ref.watch(questionRepoProvider);
+  return QuestionDailyCountViewModel(repository);
+});

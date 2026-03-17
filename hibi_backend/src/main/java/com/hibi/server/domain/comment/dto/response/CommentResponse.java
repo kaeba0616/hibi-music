@@ -21,6 +21,7 @@ public record CommentResponse(
         Integer likeCount,
         Boolean isLiked,
         Boolean isDeleted,
+        Boolean isFiltered,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<CommentResponse> replies
@@ -40,22 +41,27 @@ public record CommentResponse(
                     .likeCount(0)
                     .isLiked(false)
                     .isDeleted(true)
+                    .isFiltered(false)
                     .createdAt(comment.getCreatedAt())
                     .updatedAt(comment.getUpdatedAt())
                     .replies(replies != null ? replies : List.of())
                     .build();
         }
 
+        // F16: 필터링된 댓글은 내용을 빈 문자열로 응답 (AC-F6-8)
+        boolean filtered = Boolean.TRUE.equals(comment.getIsFiltered());
+
         return CommentResponse.builder()
                 .id(comment.getId())
                 .postId(comment.getFeedPost().getId())
                 .author(CommentAuthorResponse.from(comment.getMember()))
-                .content(comment.getContent())
+                .content(filtered ? "" : comment.getContent())
                 .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                 .parentAuthorNickname(comment.getParentAuthorNickname())
                 .likeCount(comment.getLikeCount())
                 .isLiked(isLiked)
                 .isDeleted(false)
+                .isFiltered(filtered)
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .replies(replies != null ? replies : List.of())

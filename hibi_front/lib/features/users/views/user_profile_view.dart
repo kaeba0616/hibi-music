@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/features/settings/views/settings_view.dart';
 import 'package:hidi/features/users/viewmodels/user_profile_view_model.dart';
+import 'package:hidi/features/users/views/my_comments_view.dart';
 import 'package:hidi/features/users/views/user_profile_edit_view.dart';
 
 class MyPageView extends ConsumerStatefulWidget {
@@ -19,6 +20,10 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
 
   final List<Map<String, dynamic>> playlists = [
     {'name': 'Liked Songs', 'count': 128, 'icon': Icons.favorite},
+  ];
+
+  final List<Map<String, dynamic>> myActivities = [
+    {'name': '내가 쓴 댓글', 'icon': Icons.chat_bubble_outline},
   ];
   final ScrollController _scrollController = ScrollController();
 
@@ -73,6 +78,8 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 _buildUserInfo(),
+                _buildSectionHeader('My Activity'),
+                _buildMyActivities(),
                 _buildSectionHeader('Public Playlists'),
                 _buildPlaylists(),
                 SliverFillRemaining(),
@@ -187,6 +194,31 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
         ),
       ),
+    );
+  }
+
+  SliverList _buildMyActivities() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        final activity = myActivities[index];
+        return ListTile(
+          leading: Icon(activity['icon'], size: 30, color: Colors.teal),
+          title: Text(
+            activity['name'],
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            if (activity['name'] == '내가 쓴 댓글') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MyCommentsView()),
+              );
+            }
+          },
+        );
+      }, childCount: myActivities.length),
     );
   }
 

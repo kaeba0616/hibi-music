@@ -1,8 +1,10 @@
 package com.hibi.server.domain.member.controller;
 
 import com.hibi.server.domain.auth.dto.CustomUserDetails;
+import com.hibi.server.domain.comment.dto.response.CommentResponse;
 import com.hibi.server.domain.member.dto.request.MemberUpdateRequest;
 import com.hibi.server.domain.member.dto.response.MemberProfileResponse;
+import com.hibi.server.domain.member.dto.response.MyCommentResponse;
 import com.hibi.server.domain.member.service.MemberService;
 import com.hibi.server.global.annotation.AuthMember;
 import com.hibi.server.global.response.SuccessResponse;
@@ -30,6 +32,18 @@ public class MemberController {
         long memberId = userDetails.getId();
         MemberProfileResponse memberProfile = memberService.getMyProfileById(memberId);
         return ResponseEntity.ok(SuccessResponse.success("내 정보 조회에 성공했습니다.", memberProfile));
+    }
+
+    @Operation(
+            summary = "내가 쓴 댓글 목록 조회 (F17)",
+            description = "로그인한 사용자가 작성한 댓글 목록을 조회합니다."
+    )
+    @GetMapping("/me/comments")
+    public ResponseEntity<SuccessResponse<List<MyCommentResponse>>> getMyComments(
+            @AuthMember CustomUserDetails userDetails
+    ) {
+        List<MyCommentResponse> comments = memberService.getMyComments(userDetails.getId());
+        return ResponseEntity.ok(SuccessResponse.success("내가 쓴 댓글 조회 성공", comments));
     }
 
     @Operation(

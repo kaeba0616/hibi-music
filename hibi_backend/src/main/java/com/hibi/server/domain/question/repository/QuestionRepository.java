@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,4 +74,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
      * 상태별 문의 목록 조회 (관리자용)
      */
     List<Question> findByStatusOrderByCreatedAtDesc(QuestionStatus status);
+
+    /**
+     * 특정 회원의 오늘 작성한 문의 수 조회 (F17 일일 3개 제한)
+     */
+    @Query("SELECT COUNT(q) FROM Question q WHERE q.member.id = :memberId AND q.createdAt >= :startOfDay")
+    long countTodayQuestionsByMemberId(@Param("memberId") Long memberId, @Param("startOfDay") LocalDateTime startOfDay);
 }

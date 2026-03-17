@@ -57,6 +57,18 @@ public class QuestionController {
         return ResponseEntity.ok(SuccessResponse.success("문의 조회 성공", response));
     }
 
+    @GetMapping("/today-count")
+    @Operation(
+            summary = "오늘 문의 작성 수 조회 (F17)",
+            description = "로그인한 사용자가 오늘 작성한 문의 수를 반환합니다."
+    )
+    public ResponseEntity<SuccessResponse<Long>> getTodayQuestionCount(
+            @AuthMember CustomUserDetails userDetails
+    ) {
+        long count = questionService.getTodayQuestionCount(userDetails.getId());
+        return ResponseEntity.ok(SuccessResponse.success("오늘 문의 작성 수 조회 성공", count));
+    }
+
     @PostMapping
     @Operation(
             summary = "문의 작성",

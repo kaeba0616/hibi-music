@@ -13,6 +13,7 @@ class CommentCard extends StatelessWidget {
   final VoidCallback? onDeleteTap;
   final VoidCallback? onAuthorTap;
   final VoidCallback? onMentionTap;
+  final VoidCallback? onReportTap;
 
   const CommentCard({
     super.key,
@@ -24,6 +25,7 @@ class CommentCard extends StatelessWidget {
     this.onDeleteTap,
     this.onAuthorTap,
     this.onMentionTap,
+    this.onReportTap,
   });
 
   @override
@@ -33,6 +35,11 @@ class CommentCard extends StatelessWidget {
     // 삭제된 댓글
     if (comment.isDeleted) {
       return _buildDeletedComment(context, colorScheme);
+    }
+
+    // 필터링된 댓글 (F16: AC-F6-8)
+    if (comment.isFiltered) {
+      return _buildFilteredComment(context, colorScheme);
     }
 
     return Padding(
@@ -86,12 +93,14 @@ class CommentCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    // 본인 댓글에만 더보기 메뉴
-                    if (isOwnComment)
+                    // 더보기 메뉴: 본인 → 삭제, 타인 → 신고하기 (F16)
+                    if (isOwnComment || onReportTap != null)
                       PopupMenuButton<String>(
                         onSelected: (value) {
                           if (value == 'delete') {
                             onDeleteTap?.call();
+                          } else if (value == 'report') {
+                            onReportTap?.call();
                           }
                         },
                         padding: EdgeInsets.zero,
@@ -102,10 +111,16 @@ class CommentCard extends StatelessWidget {
                           size: 18,
                         ),
                         itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Text('삭제'),
-                          ),
+                          if (isOwnComment)
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('삭제'),
+                            ),
+                          if (!isOwnComment && onReportTap != null)
+                            const PopupMenuItem(
+                              value: 'report',
+                              child: Text('신고하기'),
+                            ),
                         ],
                       ),
                   ],
@@ -212,6 +227,40 @@ class CommentCard extends StatelessWidget {
       style: TextStyle(
         fontSize: isReply ? 13 : 14,
         height: 1.4,
+      ),
+    );
+  }
+
+  /// 필터링된 댓글 표시 (F16: AC-F6-8)
+  Widget _buildFilteredComment(BuildContext context, ColorScheme colorScheme) {
+    return Padding(
+      padding: EdgeInsets.only(left: isReply ? 40 : 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: colorScheme.errorContainer.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              size: 18,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '[부적절한 내용이 포함된 댓글입니다]',
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

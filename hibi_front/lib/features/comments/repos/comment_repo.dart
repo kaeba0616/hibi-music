@@ -162,6 +162,86 @@ class CommentRepository {
     return response.statusCode >= 200 && response.statusCode < 300;
   }
 
+  /// 댓글 신고 (F16: AC-F6-7)
+  Future<bool> reportComment(
+    int commentId,
+    String reason,
+    String? description,
+  ) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      // Mock에서는 항상 성공
+      return true;
+    }
+
+    // Real API - 기존 Report API 재활용
+    final uri = Uri.http(basehost, "/api/v1/reports");
+    final response = await AuthenticationRepository.requestWithRetry(
+      (accessToken) => http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+        body: jsonEncode({
+          'targetType': 'COMMENT',
+          'targetId': commentId,
+          'reason': reason,
+          'description': description,
+        }),
+      ),
+    );
+
+    log("reportComment: ${response.statusCode}");
+    return response.statusCode >= 200 && response.statusCode < 300;
+  }
+
+  /// 추천 Top3 댓글 조회 (F16: AC-F6-6)
+  Future<List<Comment>> getTopComments(int postId) async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      // Mock에서는 전체 댓글에서 좋아요 순 Top3 추출
+      final comments = getMockCommentsForPost(postId);
+      final flat = <Comment>[];
+      for (final c in comments) {
+        if (!c.isDeleted && !c.isFiltered && c.likeCount > 0) flat.add(c);
+        for (final r in c.replies) {
+          if (!r.isDeleted && !r.isFiltered && r.likeCount > 0) flat.add(r);
+        }
+      }
+      flat.sort((a, b) {
+        final diff = b.likeCount.compareTo(a.likeCount);
+        if (diff != 0) return diff;
+        return b.createdAt.compareTo(a.createdAt);
+      });
+      return flat.take(3).toList();
+    }
+
+    // Real API
+    final uri = Uri.http(basehost, "/api/v1/posts/$postId/comments/top");
+    final response = await AuthenticationRepository.requestWithRetry(
+      (accessToken) => http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+      ),
+    );
+
+    log("getTopComments: ${response.statusCode}");
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final data = jsonDecode(response.body)["data"];
+      if (data == null) return [];
+      return (data as List)
+          .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+
+    return [];
+  }
+
   /// 부모 댓글 작성자 닉네임 찾기 (Mock용)
   String? _findParentAuthorNickname(int postId, int parentId) {
     final comments = getMockCommentsForPost(postId);

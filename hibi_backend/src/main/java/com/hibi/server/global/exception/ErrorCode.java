@@ -47,8 +47,9 @@ public enum ErrorCode {
     DUPLICATE_REPORT("R003", "이미 신고한 콘텐츠입니다.", HttpStatus.CONFLICT),
     REPORT_TARGET_NOT_FOUND("R004", "신고 대상을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
-    // --- 문의 관련 에러 (F10) ---
+    // --- 문의 관련 에러 (F10, F17) ---
     QUESTION_NOT_FOUND("Q001", "문의를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    DAILY_QUESTION_LIMIT_EXCEEDED("Q002", "오늘의 문의 작성 한도(3개)를 초과했습니다.", HttpStatus.TOO_MANY_REQUESTS),
 
     // --- FAQ 관련 에러 (F9) ---
     FAQ_NOT_FOUND("F001", "FAQ를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

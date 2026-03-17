@@ -117,7 +117,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ---
 
-### F16: 댓글 기능 강화 [status: todo]
+### F16: 댓글 기능 강화 [status: completed]
 
 #### 설명
 댓글 추천 Top3 노출, 댓글 신고, 부적절 댓글 필터링 기능을 추가한다.
@@ -128,15 +128,20 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 - AC-F6-8: 부적절 댓글 필터링
 
 #### Step 완료 현황
-- [ ] Step 1: UX Planning
-- [ ] Step 2: Flutter Mock UI
-- [ ] Step 3: JPA Entity Design
-- [ ] Step 4: Spring Boot API
+- [x] Step 1: UX Planning
+- [x] Step 2: Flutter Mock UI
+- [x] Step 3: JPA Entity Design
+- [x] Step 4: Spring Boot API
+
+#### 관련 파일
+- UX 문서: `docs/ux/features/comment-enhancement-flow.md`, `comment-enhancement-screens.md`
+- Frontend: `hibi_front/lib/features/comments/widgets/top_comments_section.dart`, `comment_report_sheet.dart`
+- Backend: `hibi_backend/.../domain/comment/` (entity, repository, service, controller, dto 확장)
 
 #### 구현 범위
 - **추천 Top3**: 좋아요 수 기준 상위 3개 댓글을 최상단에 별도 섹션으로 표시
-- **댓글 신고**: 기존 Report 기능과 연동 (댓글에 신고 버튼 추가)
-- **부적절 댓글 필터링**: 금칙어 기반 필터링 로직 (백엔드 서비스)
+- **댓글 신고**: 기존 Report API 재활용 (댓글에 신고 버튼 추가)
+- **부적절 댓글 필터링**: isFiltered 필드 기반 (백엔드에서 내용 마스킹)
 - **기존 코드 확장**: `hibi_front/lib/features/comments/`, `hibi_backend/.../domain/comment/`
 
 #### 의존성
@@ -144,7 +149,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ---
 
-### F17: 마이페이지 강화 [status: todo]
+### F17: 마이페이지 강화 [status: completed]
 
 #### 설명
 마이페이지에 내가 쓴 댓글 목록과 푸시 알림 설정 기능을 추가하고, 문의 작성 제한을 적용한다.
@@ -155,15 +160,37 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 - AC-F10-8: 문의 작성 제한 (최소 10자, 일일 3개)
 
 #### Step 완료 현황
-- [ ] Step 1: UX Planning
-- [ ] Step 2: Flutter Mock UI
-- [ ] Step 3: JPA Entity Design
-- [ ] Step 4: Spring Boot API
+- [x] Step 1: UX Planning
+- [x] Step 2: Flutter Mock UI
+- [x] Step 3: JPA Entity Design
+- [x] Step 4: Spring Boot API
+
+#### 관련 파일
+- UX 문서: `docs/ux/features/mypage-enhancement-flow.md`, `mypage-enhancement-screens.md`
+- Frontend:
+  - `hibi_front/lib/features/users/mocks/my_comments_mock.dart` - Mock 데이터 (5개 댓글)
+  - `hibi_front/lib/features/users/viewmodels/my_comments_viewmodel.dart` - 내가 쓴 댓글 ViewModel
+  - `hibi_front/lib/features/users/views/my_comments_view.dart` - 내가 쓴 댓글 화면
+  - `hibi_front/lib/features/users/views/user_profile_view.dart` - 마이페이지에 활동 메뉴 추가
+  - `hibi_front/lib/features/settings/widgets/push_notification_tile.dart` - 푸시 알림 토글
+  - `hibi_front/lib/features/settings/views/settings_view.dart` - 설정에 푸시 알림 추가
+  - `hibi_front/lib/features/question/views/question_create_view.dart` - 일일 카운터 추가
+  - `hibi_front/lib/features/question/viewmodels/question_viewmodel.dart` - 일일 카운트 Provider
+  - `hibi_front/lib/features/question/repos/question_repo.dart` - getTodayQuestionCount 추가
+- Backend:
+  - `hibi_backend/.../domain/member/entity/Member.java` - pushEnabled 필드 추가
+  - `hibi_backend/.../domain/member/controller/MemberController.java` - GET /me/comments 엔드포인트
+  - `hibi_backend/.../domain/member/dto/response/MyCommentResponse.java` - 응답 DTO
+  - `hibi_backend/.../domain/member/service/MemberService.java` - getMyComments 구현
+  - `hibi_backend/.../domain/question/controller/QuestionController.java` - GET /today-count 엔드포인트
+  - `hibi_backend/.../domain/question/service/QuestionService.java` - 일일 제한 체크
+  - `hibi_backend/.../domain/question/repository/QuestionRepository.java` - countTodayQuestions 쿼리
+  - `hibi_backend/.../global/exception/ErrorCode.java` - DAILY_QUESTION_LIMIT_EXCEEDED 에러 코드
 
 #### 구현 범위
 - **내가 쓴 댓글 목록**: 마이페이지에서 본인 댓글 조회, 클릭 시 해당 곡 페이지 댓글 위치로 이동
-- **푸시 알림 설정**: FCM 연동, 알림 on/off 토글, Member 엔티티에 pushEnabled 필드 추가
-- **문의 작성 제한**: 내용 최소 10자 validation, 일일 3개 제한 로직 (백엔드)
+- **푸시 알림 설정**: 알림 on/off 토글, Member 엔티티에 pushEnabled 필드 추가
+- **문의 작성 제한**: 내용 최소 10자 validation, 일일 3개 제한 로직 (프론트+백엔드)
 - **기존 코드 확장**: `hibi_front/lib/features/users/`, `hibi_front/lib/features/settings/`, `hibi_backend/.../domain/member/`, `domain/question/`
 
 #### 의존성
@@ -231,8 +258,8 @@ F17 (마이페이지 강화) ──→ 독립
 | F13: 온보딩 & 소셜 로그인 | Done | Done | Done | Done | **completed** |
 | F14: 이메일 인증 & 강화 | Done | Done | Done | Done | **completed** |
 | F15: 연관곡 & 유튜브 | Done | Done | Done | Done | **completed** |
-| F16: 댓글 강화 | - | - | - | - | todo |
-| F17: 마이페이지 강화 | - | - | - | - | todo |
+| F16: 댓글 강화 | Done | Done | Done | Done | **completed** |
+| F17: 마이페이지 강화 | Done | Done | Done | Done | **completed** |
 | F18: 관리자 강화 | - | - | - | - | todo |
 
-**Phase 4 진행률**: 3/6 Features (50%)
+**Phase 4 진행률**: 5/6 Features (83%)

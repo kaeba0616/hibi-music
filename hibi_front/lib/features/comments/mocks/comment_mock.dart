@@ -114,6 +114,23 @@ final mockCommentsForPost1 = [
     createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
     replies: [],
   ),
+  // F16: 필터링된 댓글 (부적절 내용)
+  Comment(
+    id: 8,
+    postId: 1,
+    author: CommentAuthor(
+      id: 99,
+      nickname: '악성유저',
+      username: 'bad_user',
+      profileImage: null,
+    ),
+    content: '',
+    likeCount: 0,
+    isLiked: false,
+    isFiltered: true,
+    createdAt: DateTime.now().subtract(const Duration(hours: 4)),
+    replies: [],
+  ),
 ];
 
 /// Mock 댓글 데이터 - 게시글 2번에 대한 댓글 (삭제된 댓글 포함)

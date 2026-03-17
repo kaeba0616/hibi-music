@@ -8,10 +8,15 @@ import com.hibi.server.domain.question.dto.response.QuestionResponse;
 import com.hibi.server.domain.question.entity.Question;
 import com.hibi.server.domain.question.entity.QuestionType;
 import com.hibi.server.domain.question.repository.QuestionRepository;
+import com.hibi.server.global.exception.CustomException;
+import com.hibi.server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class QuestionService {
+
+    private static final int DAILY_QUESTION_LIMIT = 3;
 
     private final QuestionRepository questionRepository;
     private final MemberRepository memberRepository;
@@ -51,12 +58,26 @@ public class QuestionService {
     }
 
     /**
-     * 문의 생성
+     * 오늘의 문의 작성 수 조회 (F17)
+     */
+    public long getTodayQuestionCount(Long memberId) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        return questionRepository.countTodayQuestionsByMemberId(memberId, startOfDay);
+    }
+
+    /**
+     * 문의 생성 (F17: 일일 3개 제한 적용)
      */
     @Transactional
     public QuestionResponse createQuestion(QuestionCreateRequest request, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        // F17: 일일 문의 작성 제한 체크
+        long todayCount = getTodayQuestionCount(memberId);
+        if (todayCount >= DAILY_QUESTION_LIMIT) {
+            throw new CustomException(ErrorCode.DAILY_QUESTION_LIMIT_EXCEEDED);
+        }
 
         QuestionType type = QuestionType.fromString(request.type());
 

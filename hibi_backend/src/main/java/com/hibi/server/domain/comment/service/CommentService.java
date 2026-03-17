@@ -162,6 +162,24 @@ public class CommentService {
     }
 
     /**
+     * 추천 Top3 댓글 조회 (F16: AC-F6-6)
+     */
+    public List<CommentResponse> getTopComments(Long postId, Long currentMemberId) {
+        List<Comment> topComments = commentRepository.findTopCommentsByFeedPostId(postId);
+
+        // 최대 3개만
+        List<Comment> top3 = topComments.stream().limit(3).toList();
+
+        // 좋아요 여부 조회
+        List<Long> commentIds = top3.stream().map(Comment::getId).toList();
+        Set<Long> likedIds = getLikedCommentIds(commentIds, currentMemberId);
+
+        return top3.stream()
+                .map(c -> CommentResponse.from(c, likedIds.contains(c.getId()), List.of()))
+                .toList();
+    }
+
+    /**
      * 여러 댓글에 대한 좋아요 여부 조회 (N+1 방지)
      */
     private Set<Long> getLikedCommentIds(List<Long> commentIds, Long memberId) {

@@ -62,6 +62,13 @@ public class Comment {
     @Builder.Default
     private Boolean isDeleted = false;
 
+    /**
+     * 부적절 댓글 필터링 여부 (F16: AC-F6-8)
+     */
+    @Column(name = "is_filtered", nullable = false)
+    @Builder.Default
+    private Boolean isFiltered = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -120,6 +127,13 @@ public class Comment {
     public void softDelete() {
         this.isDeleted = true;
         this.content = "";
+    }
+
+    /**
+     * 부적절 댓글로 필터링 (F16: AC-F6-8)
+     */
+    public void markAsFiltered() {
+        this.isFiltered = true;
     }
 
     /**

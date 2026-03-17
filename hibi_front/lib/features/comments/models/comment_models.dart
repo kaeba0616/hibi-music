@@ -59,6 +59,7 @@ class Comment {
   final int likeCount;
   final bool isLiked;
   final bool isDeleted;
+  final bool isFiltered;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<Comment> replies;
@@ -73,6 +74,7 @@ class Comment {
     this.likeCount = 0,
     this.isLiked = false,
     this.isDeleted = false,
+    this.isFiltered = false,
     required this.createdAt,
     this.updatedAt,
     this.replies = const [],
@@ -88,6 +90,7 @@ class Comment {
         likeCount = 0,
         isLiked = false,
         isDeleted = false,
+        isFiltered = false,
         createdAt = DateTime.now(),
         updatedAt = null,
         replies = const [];
@@ -105,6 +108,7 @@ class Comment {
         likeCount = 0,
         isLiked = false,
         isDeleted = true,
+        isFiltered = false,
         updatedAt = null;
 
   factory Comment.fromJson(Map<String, dynamic> json) {
@@ -120,6 +124,7 @@ class Comment {
       likeCount: json['likeCount'] ?? 0,
       isLiked: json['isLiked'] ?? false,
       isDeleted: json['isDeleted'] ?? false,
+      isFiltered: json['isFiltered'] ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
@@ -144,6 +149,7 @@ class Comment {
       'likeCount': likeCount,
       'isLiked': isLiked,
       'isDeleted': isDeleted,
+      'isFiltered': isFiltered,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
       'replies': replies.map((e) => e.toJson()).toList(),
@@ -160,6 +166,7 @@ class Comment {
     int? likeCount,
     bool? isLiked,
     bool? isDeleted,
+    bool? isFiltered,
     DateTime? createdAt,
     DateTime? updatedAt,
     List<Comment>? replies,
@@ -174,6 +181,7 @@ class Comment {
       likeCount: likeCount ?? this.likeCount,
       isLiked: isLiked ?? this.isLiked,
       isDeleted: isDeleted ?? this.isDeleted,
+      isFiltered: isFiltered ?? this.isFiltered,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       replies: replies ?? this.replies,

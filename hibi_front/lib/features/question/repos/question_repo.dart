@@ -97,6 +97,42 @@ class QuestionRepository {
     }
   }
 
+  /// 오늘의 문의 작성 수 조회 (F17)
+  Future<int> getTodayQuestionCount() async {
+    if (useMock) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      // Mock: 오늘 1개 작성한 것으로 가정
+      return 1;
+    }
+
+    // Real API
+    final uri = Uri.http(basehost, "$basepath/today-count");
+
+    try {
+      final response = await AuthenticationRepository.requestWithRetry(
+        (accessToken) => http.get(
+          uri,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $accessToken",
+          },
+        ),
+      );
+
+      log("getTodayQuestionCount: ${response.statusCode}");
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final data = jsonDecode(response.body)["data"];
+        return data as int? ?? 0;
+      }
+
+      return 0;
+    } catch (e) {
+      log("Error: getTodayQuestionCount - $e");
+      return 0;
+    }
+  }
+
   /// 문의 작성
   Future<Question> createQuestion(QuestionCreateRequest request) async {
     if (useMock) {

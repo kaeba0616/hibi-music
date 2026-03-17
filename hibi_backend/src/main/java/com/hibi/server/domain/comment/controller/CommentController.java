@@ -4,6 +4,8 @@ import com.hibi.server.domain.auth.dto.CustomUserDetails;
 import com.hibi.server.domain.comment.dto.request.CommentCreateRequest;
 import com.hibi.server.domain.comment.dto.response.CommentListResponse;
 import com.hibi.server.domain.comment.dto.response.CommentResponse;
+
+import java.util.List;
 import com.hibi.server.domain.comment.service.CommentService;
 import com.hibi.server.global.annotation.AuthMember;
 import com.hibi.server.global.response.SuccessResponse;
@@ -53,6 +55,17 @@ public class CommentController {
     ) {
         commentService.deleteComment(commentId, userDetails.getId());
         return ResponseEntity.ok(SuccessResponse.success("댓글 삭제 성공"));
+    }
+
+    @GetMapping("/top")
+    @Operation(summary = "추천 Top3 댓글 조회", description = "좋아요 수 기준 상위 3개 댓글을 조회합니다. (F16: AC-F6-6)")
+    public ResponseEntity<SuccessResponse<List<CommentResponse>>> getTopComments(
+            @PathVariable Long postId,
+            @AuthMember CustomUserDetails userDetails
+    ) {
+        Long memberId = userDetails != null ? userDetails.getId() : null;
+        List<CommentResponse> response = commentService.getTopComments(postId, memberId);
+        return ResponseEntity.ok(SuccessResponse.success("추천 댓글 조회 성공", response));
     }
 
     @PostMapping("/{commentId}/like")

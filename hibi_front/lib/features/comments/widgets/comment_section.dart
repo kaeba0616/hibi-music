@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/features/comments/models/comment_models.dart';
 import 'package:hidi/features/comments/viewmodels/comment_viewmodel.dart';
 import 'package:hidi/features/comments/widgets/comment_card.dart';
+import 'package:hidi/features/comments/widgets/comment_report_sheet.dart';
+import 'package:hidi/features/comments/widgets/top_comments_section.dart';
 
 /// 댓글 섹션 위젯 - CO-01
 class CommentSection extends ConsumerWidget {
@@ -90,50 +92,76 @@ class CommentSection extends ConsumerWidget {
 
     // 댓글 목록
     return Column(
-      children: state.comments.map((comment) {
-        return Column(
-          children: [
-            // 원 댓글
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: CommentCard(
-                comment: comment,
-                isReply: false,
-                isOwnComment: comment.isAuthor(viewModel.currentUserId),
-                onLikeTap: comment.isDeleted
-                    ? null
-                    : () => viewModel.toggleLike(comment.id),
-                onReplyTap: comment.isDeleted
-                    ? null
-                    : () => viewModel.startReply(comment),
-                onDeleteTap: () => _showDeleteDialog(context, ref, comment.id),
-                onAuthorTap: () {
-                  // TODO: 프로필 화면 이동
-                },
-              ),
-            ),
-            // 대댓글
-            ...comment.replies.map((reply) {
-              return Padding(
+      children: [
+        // F16: Top3 추천 댓글 섹션 (AC-F6-6)
+        TopCommentsSection(
+          allComments: state.comments,
+          currentUserId: viewModel.currentUserId,
+          onLikeTap: (id) => viewModel.toggleLike(id),
+          onReplyTap: (comment) => viewModel.startReply(comment),
+          onDeleteTap: (id) => _showDeleteDialog(context, ref, id),
+          onReportTap: (id) => _showReportSheet(context, ref, id),
+        ),
+        // 전체 댓글 목록
+        ...state.comments.map((comment) {
+          final isOwn = comment.isAuthor(viewModel.currentUserId);
+          return Column(
+            children: [
+              // 원 댓글
+              Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: CommentCard(
-                  comment: reply,
-                  isReply: true,
-                  isOwnComment: reply.isAuthor(viewModel.currentUserId),
-                  onLikeTap: () => viewModel.toggleLike(reply.id),
-                  onDeleteTap: () => _showDeleteDialog(context, ref, reply.id),
+                  comment: comment,
+                  isReply: false,
+                  isOwnComment: isOwn,
+                  onLikeTap: comment.isDeleted || comment.isFiltered
+                      ? null
+                      : () => viewModel.toggleLike(comment.id),
+                  onReplyTap: comment.isDeleted || comment.isFiltered
+                      ? null
+                      : () => viewModel.startReply(comment),
+                  onDeleteTap: isOwn
+                      ? () => _showDeleteDialog(context, ref, comment.id)
+                      : null,
+                  onReportTap: !isOwn && !comment.isDeleted && !comment.isFiltered
+                      ? () => _showReportSheet(context, ref, comment.id)
+                      : null,
                   onAuthorTap: () {
                     // TODO: 프로필 화면 이동
                   },
-                  onMentionTap: () {
-                    // TODO: 원 댓글로 스크롤
-                  },
                 ),
-              );
-            }),
-          ],
-        );
-      }).toList(),
+              ),
+              // 대댓글
+              ...comment.replies.map((reply) {
+                final isReplyOwn = reply.isAuthor(viewModel.currentUserId);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: CommentCard(
+                    comment: reply,
+                    isReply: true,
+                    isOwnComment: isReplyOwn,
+                    onLikeTap: reply.isFiltered
+                        ? null
+                        : () => viewModel.toggleLike(reply.id),
+                    onDeleteTap: isReplyOwn
+                        ? () => _showDeleteDialog(context, ref, reply.id)
+                        : null,
+                    onReportTap: !isReplyOwn && !reply.isDeleted && !reply.isFiltered
+                        ? () => _showReportSheet(context, ref, reply.id)
+                        : null,
+                    onAuthorTap: () {
+                      // TODO: 프로필 화면 이동
+                    },
+                    onMentionTap: () {
+                      // TODO: 원 댓글로 스크롤
+                    },
+                  ),
+                );
+              }),
+            ],
+          );
+        }),
+      ],
     );
   }
 
@@ -204,6 +232,23 @@ class CommentSection extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  /// F16: 댓글 신고 Bottom Sheet 표시 (AC-F6-7)
+  void _showReportSheet(
+    BuildContext context,
+    WidgetRef ref,
+    int commentId,
+  ) {
+    CommentReportSheet.show(
+      context: context,
+      commentId: commentId,
+      onReport: (id, reason, description) async {
+        final viewModel =
+            ref.read(commentSectionViewModelProvider(postId).notifier);
+        return viewModel.reportComment(id, reason, description);
+      },
     );
   }
 

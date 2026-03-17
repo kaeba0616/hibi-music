@@ -18,6 +18,15 @@ class _QuestionCreateViewState extends ConsumerState<QuestionCreateView> {
   bool _showErrors = false;
 
   @override
+  void initState() {
+    super.initState();
+    // 오늘의 문의 작성 수 로드
+    Future.microtask(() {
+      ref.read(questionDailyCountProvider.notifier).loadTodayCount();
+    });
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
@@ -27,6 +36,8 @@ class _QuestionCreateViewState extends ConsumerState<QuestionCreateView> {
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(questionFormProvider);
+    final dailyCount = ref.watch(questionDailyCountProvider);
+    final isLimitReached = dailyCount >= 3;
 
     // 제출 완료 시 완료 화면으로 이동
     ref.listen<QuestionFormState>(questionFormProvider, (previous, next) {
@@ -114,6 +125,44 @@ class _QuestionCreateViewState extends ConsumerState<QuestionCreateView> {
 
             const SizedBox(height: 24),
 
+            // 일일 문의 카운터 (F17)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: isLimitReached
+                    ? Colors.red.shade50
+                    : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.edit_note,
+                    size: 20,
+                    color: isLimitReached
+                        ? Colors.red.shade700
+                        : Colors.grey.shade700,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    isLimitReached
+                        ? '오늘의 문의 작성 한도(3개)를 초과했습니다'
+                        : '오늘 $dailyCount/3개 문의 작성',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isLimitReached
+                          ? Colors.red.shade700
+                          : Colors.grey.shade700,
+                      fontWeight:
+                          isLimitReached ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             // 안내 메시지
             Container(
               padding: const EdgeInsets.all(16),
@@ -180,7 +229,7 @@ class _QuestionCreateViewState extends ConsumerState<QuestionCreateView> {
           child: SizedBox(
             height: 52,
             child: ElevatedButton(
-              onPressed: formState.isSubmitting
+              onPressed: (formState.isSubmitting || isLimitReached)
                   ? null
                   : () async {
                       setState(() => _showErrors = true);

@@ -186,6 +186,20 @@ class CommentSectionViewModel extends FamilyNotifier<CommentSectionState, int> {
     state = state.copyWith(clearReplyTo: true);
   }
 
+  /// 댓글 신고 (F16: AC-F6-7)
+  Future<bool> reportComment(
+    int commentId,
+    String reason,
+    String? description,
+  ) async {
+    try {
+      return await _repo.reportComment(commentId, reason, description);
+    } catch (e) {
+      state = state.copyWith(error: '신고에 실패했습니다');
+      return false;
+    }
+  }
+
   /// 에러 메시지 클리어
   void clearError() {
     state = state.copyWith(clearError: true);

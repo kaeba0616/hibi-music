@@ -52,4 +52,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * 특정 회원이 작성한 댓글 수 조회 (F12)
      */
     long countByMemberId(Long memberId);
+
+    /**
+     * 게시글의 추천 Top3 댓글 조회 (F16: AC-F6-6)
+     * 좋아요 수 내림차순, 동점 시 최신순. 삭제/필터링된 댓글 제외.
+     */
+    @Query("SELECT c FROM Comment c WHERE c.feedPost.id = :feedPostId " +
+           "AND c.isDeleted = false AND c.isFiltered = false AND c.likeCount > 0 " +
+           "ORDER BY c.likeCount DESC, c.createdAt DESC")
+    List<Comment> findTopCommentsByFeedPostId(@Param("feedPostId") Long feedPostId);
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:hidi/features/authentication/viewmodels/login_view_model.dart';
+import 'package:hidi/features/settings/widgets/push_notification_tile.dart';
 import 'package:hidi/features/users/viewmodels/user_profile_view_model.dart';
 
 class SettingsView extends ConsumerWidget {
@@ -74,7 +75,15 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("setting")),
-      body: CustomScrollView(slivers: [_buildSettinglists(context, ref, 10)]),
+      body: CustomScrollView(slivers: [
+        const SliverToBoxAdapter(
+          child: PushNotificationTile(),
+        ),
+        const SliverToBoxAdapter(
+          child: Divider(height: 1),
+        ),
+        _buildSettinglists(context, ref, 10),
+      ]),
     );
   }
 }

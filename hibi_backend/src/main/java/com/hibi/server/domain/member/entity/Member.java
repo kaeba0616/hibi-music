@@ -59,6 +59,10 @@ public class Member {
     @Column(name = "nickname_changed_at")
     private LocalDateTime nicknameChangedAt;
 
+    @Column(name = "push_enabled", nullable = false)
+    @Builder.Default
+    private Boolean pushEnabled = true;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -96,6 +100,10 @@ public class Member {
     public boolean canChangeNickname() {
         if (this.nicknameChangedAt == null) return true;
         return LocalDateTime.now().isAfter(this.nicknameChangedAt.plusDays(30));
+    }
+
+    public void updatePushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
     }
 
     public void updatePasswordHash(@NotBlank String password) {
