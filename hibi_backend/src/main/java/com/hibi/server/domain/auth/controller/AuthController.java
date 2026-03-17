@@ -3,6 +3,8 @@ package com.hibi.server.domain.auth.controller;
 import com.hibi.server.domain.auth.dto.request.SignInRequest;
 import com.hibi.server.domain.auth.dto.request.SignUpRequest;
 import com.hibi.server.domain.auth.dto.request.SocialLoginRequest;
+import com.hibi.server.domain.auth.dto.request.VerificationSendRequest;
+import com.hibi.server.domain.auth.dto.request.VerificationCheckRequest;
 import com.hibi.server.domain.auth.dto.response.ReissueResponse;
 import com.hibi.server.domain.auth.dto.response.SignInResponse;
 import com.hibi.server.domain.auth.dto.response.SocialLoginResponse;
@@ -84,6 +86,33 @@ public class AuthController {
     public ResponseEntity<SuccessResponse<?>> checkNicknameAvailability(@RequestParam String nickname) {
         memberValidator.validateNickname(nickname, null);
         return ResponseEntity.ok(SuccessResponse.success(nickname + "은(는) 사용 가능 합니다."));
+    }
 
+    @Operation(
+            summary = "이메일 인증번호 발송 (F14)",
+            description = "회원가입 시 이메일로 6자리 인증번호를 발송합니다."
+    )
+    @PostMapping("/verification/send")
+    public ResponseEntity<SuccessResponse<?>> sendVerificationCode(
+            @Valid @RequestBody VerificationSendRequest request) {
+        // TODO: 실제 이메일 발송 서비스 연동
+        // 현재는 Mock 구현 (항상 성공)
+        return ResponseEntity.ok(SuccessResponse.success("인증번호가 발송되었습니다."));
+    }
+
+    @Operation(
+            summary = "이메일 인증번호 확인 (F14)",
+            description = "사용자가 입력한 인증번호가 올바른지 확인합니다."
+    )
+    @PostMapping("/verification/check")
+    public ResponseEntity<SuccessResponse<?>> checkVerificationCode(
+            @Valid @RequestBody VerificationCheckRequest request) {
+        // TODO: 실제 인증번호 검증 로직 구현
+        // 현재는 Mock 구현 ("123456" 항상 성공)
+        if ("123456".equals(request.code())) {
+            return ResponseEntity.ok(SuccessResponse.success("인증이 완료되었습니다."));
+        }
+        return ResponseEntity.badRequest()
+                .body(SuccessResponse.success("인증번호가 올바르지 않습니다."));
     }
 }

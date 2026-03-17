@@ -60,7 +60,7 @@ Notion PRD(https://www.notion.so/PRD-31d89d998f5f80628074e06b986e18d5) 동기화
 
 ---
 
-### F14: 이메일 인증 & 회원가입 강화 [status: todo]
+### F14: 이메일 인증 & 회원가입 강화 [status: completed]
 
 #### 설명
 회원가입 시 이메일 인증 2단계 흐름을 추가하고, 비밀번호 규칙/닉네임 변경 제한을 강화한다.
@@ -229,10 +229,10 @@ F17 (마이페이지 강화) ──→ 독립
 | Feature | Step 1 | Step 2 | Step 3 | Step 4 | Status |
 |---------|--------|--------|--------|--------|--------|
 | F13: 온보딩 & 소셜 로그인 | Done | Done | Done | Done | **completed** |
-| F14: 이메일 인증 & 강화 | - | - | - | - | todo |
+| F14: 이메일 인증 & 강화 | Done | Done | Done | Done | **completed** |
 | F15: 연관곡 & 유튜브 | Done | Done | Done | Done | **completed** |
 | F16: 댓글 강화 | - | - | - | - | todo |
 | F17: 마이페이지 강화 | - | - | - | - | todo |
 | F18: 관리자 강화 | - | - | - | - | todo |
 
-**Phase 4 진행률**: 2/6 Features (33%)
+**Phase 4 진행률**: 3/6 Features (50%)

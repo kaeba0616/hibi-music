@@ -56,6 +56,9 @@ public class Member {
     @Column(name = "suspended_reason", length = 300)
     private String suspendedReason;
 
+    @Column(name = "nickname_changed_at")
+    private LocalDateTime nicknameChangedAt;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -84,6 +87,15 @@ public class Member {
 
     public void updateNickname(@NotBlank String nickname) {
         this.nickname = nickname;
+        this.nicknameChangedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 닉네임 변경 가능 여부 (F14: 1달 1회 제한)
+     */
+    public boolean canChangeNickname() {
+        if (this.nicknameChangedAt == null) return true;
+        return LocalDateTime.now().isAfter(this.nicknameChangedAt.plusDays(30));
     }
 
     public void updatePasswordHash(@NotBlank String password) {
