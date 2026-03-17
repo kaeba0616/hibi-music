@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hidi/features/artists/views/artist_view.dart';
+import 'package:hidi/features/artists/views/artist_detail_view.dart';
 
 class DailySongView extends ConsumerStatefulWidget {
   static const String routeName = 'songs';
@@ -16,7 +16,7 @@ class DailySongView extends ConsumerStatefulWidget {
 class _DailySongViewState extends ConsumerState<DailySongView> {
   bool _showLyrics = false;
   void _onArtist() {
-    context.pushNamed(ArtistView.routeName, pathParameters: {'artistId': "1"});
+    context.pushNamed(ArtistDetailView.routeName, pathParameters: {'artistId': "1"});
   }
 
   @override

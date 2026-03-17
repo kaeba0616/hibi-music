@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../mocks/my_comments_mock.dart';
 
 /// 내가 쓴 댓글 목록 상태

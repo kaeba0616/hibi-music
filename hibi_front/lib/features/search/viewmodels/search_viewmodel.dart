@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/features/search/models/search_models.dart';
 import 'package:hidi/features/search/repos/search_repo.dart';
 

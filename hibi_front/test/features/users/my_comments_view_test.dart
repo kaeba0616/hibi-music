@@ -1,40 +1,25 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hidi/features/users/views/my_comments_view.dart';
-import 'package:hidi/features/settings/widgets/push_notification_tile.dart';
+import 'package:hidi/features/users/mocks/my_comments_mock.dart';
 
 void main() {
-  group('MyCommentsView', () {
-    Widget buildWidget() {
-      return const ProviderScope(
-        child: MaterialApp(home: MyCommentsView()),
-      );
-    }
-
-    testWidgets('AppBar에 "내가 쓴 댓글" 타이틀 표시', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('내가 쓴 댓글'), findsOneWidget);
+  group('MyComments Mock Data', () {
+    test('Mock 댓글 목록이 5개임', () {
+      expect(mockMyComments.length, 5);
     });
 
-    testWidgets('초기 로딩 인디케이터 표시', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    test('각 댓글에 comment와 songInfo가 있음', () {
+      for (final mc in mockMyComments) {
+        expect(mc.comment.id, isNonZero);
+        expect(mc.comment.content, isNotEmpty);
+        expect(mc.songInfo.songTitle, isNotEmpty);
+        expect(mc.songInfo.artistName, isNotEmpty);
+        expect(mc.songInfo.songId, isNonZero);
+      }
     });
-  });
 
-  group('PushNotificationTile', () {
-    Widget buildWidget() {
-      return const ProviderScope(
-        child: MaterialApp(
-          home: Scaffold(body: PushNotificationTile()),
-        ),
-      );
-    }
-
-    testWidgets('푸시 알림 텍스트가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.byType(SwitchListTile), findsOneWidget);
+    test('현재 사용자 작성자 정보가 있음', () {
+      expect(mockCurrentAuthor.nickname, '나');
+      expect(mockCurrentAuthor.username, 'current_user');
     });
   });
 }

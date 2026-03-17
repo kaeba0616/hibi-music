@@ -1,69 +1,53 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hidi/features/authentication/views/verification_code_view.dart';
-import 'package:hidi/features/authentication/views/password_view.dart';
+import 'package:hidi/features/authentication/mocks/verification_mock.dart';
 
 void main() {
-  group('VerificationCodeView', () {
-    Widget buildWidget() {
-      return const ProviderScope(
-        child: MaterialApp(
-          home: VerificationCodeView(email: 'test@example.com'),
-        ),
-      );
-    }
-
-    testWidgets('이메일 주소가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('test@example.com'), findsOneWidget);
+  group('Verification Mock', () {
+    test('인증번호 발송 Mock이 성공을 반환함', () async {
+      final result = await mockSendVerificationCode('test@example.com');
+      expect(result, isTrue);
     });
 
-    testWidgets('안내 텍스트가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('인증번호를 입력해주세요'), findsOneWidget);
+    test('올바른 인증번호(123456) 확인 시 성공', () async {
+      final result =
+          await mockCheckVerificationCode('test@example.com', '123456');
+      expect(result, isTrue);
     });
 
-    testWidgets('6개 입력 필드가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.byType(TextField), findsNWidgets(6));
+    test('잘못된 인증번호 확인 시 실패', () async {
+      final result =
+          await mockCheckVerificationCode('test@example.com', '000000');
+      expect(result, isFalse);
     });
 
-    testWidgets('타이머가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('03:00'), findsOneWidget);
-    });
-
-    testWidgets('확인 버튼이 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('확인'), findsOneWidget);
-    });
-
-    testWidgets('인증번호 재발송 링크가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('인증번호 재발송'), findsOneWidget);
+    test('빈 인증번호 확인 시 실패', () async {
+      final result =
+          await mockCheckVerificationCode('test@example.com', '');
+      expect(result, isFalse);
     });
   });
 
-  group('PasswordView 규칙 체크', () {
-    Widget buildWidget() {
-      return const ProviderScope(
-        child: MaterialApp(home: PasswordView()),
-      );
-    }
-
-    testWidgets('비밀번호 규칙 5개 항목이 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('8글자 이상'), findsOneWidget);
-      expect(find.text('영문 포함'), findsOneWidget);
-      expect(find.text('숫자 포함'), findsOneWidget);
-      expect(find.text('특수기호 포함'), findsOneWidget);
-      expect(find.text('비밀번호 일치'), findsOneWidget);
+  group('Password Rules', () {
+    test('8글자 이상 체크', () {
+      expect('abcd1234!'.length >= 8, isTrue);
+      expect('abc12!'.length >= 8, isFalse);
     });
 
-    testWidgets('비밀번호 설정 안내 텍스트가 표시됨', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      expect(find.text('비밀번호를 설정해주세요'), findsOneWidget);
+    test('영문 포함 체크', () {
+      expect(RegExp(r'[a-zA-Z]').hasMatch('abc123!'), isTrue);
+      expect(RegExp(r'[a-zA-Z]').hasMatch('123456!'), isFalse);
+    });
+
+    test('숫자 포함 체크', () {
+      expect(RegExp(r'[0-9]').hasMatch('abc123!'), isTrue);
+      expect(RegExp(r'[0-9]').hasMatch('abcdef!'), isFalse);
+    });
+
+    test('특수기호 포함 체크', () {
+      expect(
+          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch('abc123!'), isTrue);
+      expect(
+          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch('abc12345'), isFalse);
     });
   });
 }

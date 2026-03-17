@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/mocks/related_songs_mock.dart';
 

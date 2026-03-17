@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hidi/features/artists/views/artist_view.dart';
+import 'package:hidi/features/artists/views/artist_detail_view.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/viewmodels/daily_song_viewmodel.dart';
 import 'package:hidi/features/daily-song/views/widgets/like_button.dart';
@@ -30,7 +30,7 @@ class _SongDetailViewState extends ConsumerState<SongDetailView> {
 
   void _onArtistTap(int artistId) {
     context.pushNamed(
-      ArtistView.routeName,
+      ArtistDetailView.routeName,
       pathParameters: {'artistId': artistId.toString()},
     );
   }

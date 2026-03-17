@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/repos/daily_song_repo.dart';
 

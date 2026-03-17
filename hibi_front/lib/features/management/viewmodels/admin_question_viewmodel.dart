@@ -1,6 +1,7 @@
 /// F12 관리자 문의 관리 ViewModel
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../question/models/question_models.dart';
 import '../models/admin_question_models.dart';

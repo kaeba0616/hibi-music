@@ -1,6 +1,7 @@
 /// F12 관리자 신고 관리 ViewModel
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../report/models/report_models.dart';
 import '../models/admin_report_models.dart';

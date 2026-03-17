@@ -1,6 +1,7 @@
 /// F12 관리자 FAQ 관리 ViewModel
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../faq/models/faq_models.dart';
 import '../models/admin_faq_models.dart';
