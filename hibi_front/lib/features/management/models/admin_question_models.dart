@@ -30,9 +30,9 @@ class AdminQuestionItem {
       id: json['id'] as int,
       memberId: json['memberId'] as int,
       memberNickname: json['memberNickname'] as String,
-      type: QuestionType.fromCode(json['type'] as String),
+      type: QuestionType.fromString(json['type'] as String),
       title: json['title'] as String,
-      status: QuestionStatus.fromCode(json['status'] as String),
+      status: QuestionStatus.fromString(json['status'] as String),
       questionNumber: json['questionNumber'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
@@ -75,10 +75,10 @@ class AdminQuestionDetail {
       memberId: json['memberId'] as int,
       memberNickname: json['memberNickname'] as String,
       memberEmail: json['memberEmail'] as String,
-      type: QuestionType.fromCode(json['type'] as String),
+      type: QuestionType.fromString(json['type'] as String),
       title: json['title'] as String,
       content: json['content'] as String,
-      status: QuestionStatus.fromCode(json['status'] as String),
+      status: QuestionStatus.fromString(json['status'] as String),
       answer: json['answer'] as String?,
       answeredAt: json['answeredAt'] != null
           ? DateTime.parse(json['answeredAt'] as String)

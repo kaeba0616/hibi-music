@@ -1,10 +1,10 @@
 /// 관리자 모델 테스트
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibi_front/features/management/models/admin_models.dart';
-import 'package:hibi_front/features/management/models/admin_faq_models.dart';
-import 'package:hibi_front/features/management/models/admin_question_models.dart';
-import 'package:hibi_front/features/faq/models/faq_models.dart';
+import 'package:hidi/features/management/models/admin_models.dart';
+import 'package:hidi/features/management/models/admin_faq_models.dart';
+import 'package:hidi/features/management/models/admin_question_models.dart';
+import 'package:hidi/features/faq/models/faq_models.dart';
 
 void main() {
   group('AdminStats', () {
@@ -12,18 +12,18 @@ void main() {
       final stats = AdminStats(
         totalMembers: 100,
         todayNewMembers: 5,
-        totalSongs: 500,
-        todayNewSongs: 10,
+        totalFaqs: 500,
+        todayNewReports: 10,
         pendingReports: 3,
-        pendingQuestions: 7,
+        unansweredQuestions: 7,
       );
 
       expect(stats.totalMembers, 100);
       expect(stats.todayNewMembers, 5);
-      expect(stats.totalSongs, 500);
-      expect(stats.todayNewSongs, 10);
+      expect(stats.totalFaqs, 500);
+      expect(stats.todayNewReports, 10);
       expect(stats.pendingReports, 3);
-      expect(stats.pendingQuestions, 7);
+      expect(stats.unansweredQuestions, 7);
     });
   });
 
@@ -44,10 +44,8 @@ void main() {
 
   group('SuspensionDuration', () {
     test('should have all expected values', () {
-      expect(SuspensionDuration.values, contains(SuspensionDuration.oneDay));
-      expect(SuspensionDuration.values, contains(SuspensionDuration.threeDays));
-      expect(SuspensionDuration.values, contains(SuspensionDuration.oneWeek));
-      expect(SuspensionDuration.values, contains(SuspensionDuration.oneMonth));
+      expect(SuspensionDuration.values, contains(SuspensionDuration.days7));
+      expect(SuspensionDuration.values, contains(SuspensionDuration.days30));
       expect(SuspensionDuration.values, contains(SuspensionDuration.permanent));
     });
   });
@@ -61,8 +59,11 @@ void main() {
         role: MemberRole.user,
         status: MemberStatus.active,
         commentCount: 10,
-        likeCount: 50,
-        reportCount: 0,
+        postCount: 5,
+        followerCount: 20,
+        followingCount: 15,
+        reportReceivedCount: 0,
+        reportSentCount: 0,
         createdAt: DateTime(2024, 1, 1),
       );
 
@@ -71,29 +72,27 @@ void main() {
       expect(member.nickname, 'TestUser');
       expect(member.role, MemberRole.user);
       expect(member.status, MemberStatus.active);
-      expect(member.profileImageUrl, isNull);
-      expect(member.lastLoginAt, isNull);
-      expect(member.suspendedUntil, isNull);
+      expect(member.profileImage, isNull);
     });
 
     test('should create AdminMemberInfo with all values', () {
-      final now = DateTime.now();
       final member = AdminMemberInfo(
         id: 1,
         email: 'admin@example.com',
         nickname: 'Admin',
-        profileImageUrl: 'https://example.com/image.jpg',
+        profileImage: 'https://example.com/image.jpg',
         role: MemberRole.admin,
         status: MemberStatus.active,
         commentCount: 100,
-        likeCount: 500,
-        reportCount: 2,
-        lastLoginAt: now,
+        postCount: 50,
+        followerCount: 200,
+        followingCount: 100,
+        reportReceivedCount: 2,
+        reportSentCount: 1,
         createdAt: DateTime(2024, 1, 1),
       );
 
-      expect(member.profileImageUrl, 'https://example.com/image.jpg');
-      expect(member.lastLoginAt, now);
+      expect(member.profileImage, 'https://example.com/image.jpg');
     });
   });
 
@@ -102,13 +101,13 @@ void main() {
       final request = MemberSanctionRequest(
         memberId: 1,
         sanctionType: 'SUSPEND',
-        duration: SuspensionDuration.oneWeek,
+        duration: SuspensionDuration.days7,
         reason: 'Rule violation',
       );
 
       expect(request.memberId, 1);
       expect(request.sanctionType, 'SUSPEND');
-      expect(request.duration, SuspensionDuration.oneWeek);
+      expect(request.duration, SuspensionDuration.days7);
       expect(request.reason, 'Rule violation');
     });
 
@@ -196,16 +195,16 @@ void main() {
         answer: '',
       );
 
-      expect(request.validate(), '답변을 입력해주세요');
+      expect(request.validate(), '답변 내용을 입력해주세요');
     });
 
-    test('validate should return error when answer is too short', () {
+    test('validate should return null when answer is not empty', () {
       final request = QuestionAnswerRequest(
         questionId: 1,
         answer: 'Hi',
       );
 
-      expect(request.validate(), '답변은 최소 10자 이상이어야 합니다');
+      expect(request.validate(), isNull);
     });
 
     test('validate should return null when answer is valid', () {

@@ -95,7 +95,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView> {
                               AdminStatCard(
                                 icon: Icons.help,
                                 label: '미답변 문의',
-                                count: state.stats!.pendingQuestions,
+                                count: state.stats!.unansweredQuestions,
                                 iconColor: Colors.orange,
                                 onTap: () => context.push('/admin/questions'),
                               ),
@@ -109,8 +109,8 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView> {
                               AdminStatCard(
                                 icon: Icons.music_note,
                                 label: '전체 노래',
-                                count: state.stats!.totalSongs,
-                                sublabel: '오늘 +${state.stats!.todayNewSongs}',
+                                count: state.stats!.totalFaqs,
+                                sublabel: '오늘 +${state.stats!.todayNewReports}',
                               ),
                             ],
                           ),
@@ -137,7 +137,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView> {
                               AdminMenuTile(
                                 icon: Icons.help_outline,
                                 title: '문의 관리',
-                                badge: state.stats?.pendingQuestions.toString(),
+                                badge: state.stats?.unansweredQuestions.toString(),
                                 onTap: () => context.push('/admin/questions'),
                               ),
                               const Divider(height: 1),

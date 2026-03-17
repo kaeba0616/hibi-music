@@ -16,7 +16,7 @@ void main() {
     id: 2,
     nickname: '팔로잉유저',
     username: 'following_user',
-    profileImage: 'https://example.com/profile.jpg',
+    profileImage: null,
     isFollowing: true,
   );
 

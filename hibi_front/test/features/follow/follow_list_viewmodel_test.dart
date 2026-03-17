@@ -20,11 +20,14 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      // Wait for any microtask-triggered operations to complete before disposing
+      // Mock getFollowers (500ms) + getFollowing (400ms) = ~1000ms
+      await Future.delayed(const Duration(milliseconds: 1500));
       container.dispose();
     });
 
-    test('initial state should be loading with followers tab', () {
+    test('initial state should be loading with followers tab', () async {
       final state = container.read(followListViewModelProvider(testArg));
 
       expect(state.isLoading, true);
@@ -33,7 +36,7 @@ void main() {
       expect(state.following, isEmpty);
     });
 
-    test('initial state with following tab should start on following tab', () {
+    test('initial state with following tab should start on following tab', () async {
       final followingArg = FollowListArg(
         userId: 1,
         initialTab: FollowListTab.following,
@@ -45,6 +48,8 @@ void main() {
 
     test('loadList should update state with followers and following', () async {
       final notifier = container.read(followListViewModelProvider(testArg).notifier);
+      // Wait for microtask-triggered loadList to complete first
+      await Future.delayed(const Duration(milliseconds: 1200));
 
       await notifier.loadList();
 

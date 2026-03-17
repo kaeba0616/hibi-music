@@ -19,20 +19,26 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      // Wait for any microtask-triggered operations to complete before disposing
+      await Future.delayed(const Duration(milliseconds: 500));
       container.dispose();
     });
 
-    test('initial state should be loading', () {
+    test('initial state should be loading', () async {
       final state = container.read(commentSectionViewModelProvider(testPostId));
 
       expect(state.isLoading, true);
       expect(state.comments, isEmpty);
       expect(state.error, isNull);
+      // Wait for microtask-triggered loadComments to complete
+      await Future.delayed(const Duration(milliseconds: 200));
     });
 
     test('loadComments should update state with comments', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      // Wait for microtask-triggered loadComments to complete
+      await Future.delayed(const Duration(milliseconds: 200));
 
       await notifier.loadComments();
 
@@ -43,6 +49,8 @@ void main() {
 
     test('submitComment should add comment to list', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      // Wait for microtask-triggered loadComments to complete
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadComments();
       final initialCount = container.read(commentSectionViewModelProvider(testPostId)).totalCount;
 
@@ -56,6 +64,7 @@ void main() {
 
     test('submitComment with empty content should return false', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
 
       final success = await notifier.submitComment('');
 
@@ -64,6 +73,7 @@ void main() {
 
     test('submitComment with whitespace only should return false', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
 
       final success = await notifier.submitComment('   ');
 
@@ -72,14 +82,13 @@ void main() {
 
     test('startReply should set replyTo', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadComments();
 
       final comment = Comment(
         id: 1,
         postId: testPostId,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: CommentAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test',
         likeCount: 0,
         isLiked: false,
@@ -96,14 +105,13 @@ void main() {
 
     test('cancelReply should clear replyTo', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadComments();
 
       final comment = Comment(
         id: 1,
         postId: testPostId,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: CommentAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test',
         likeCount: 0,
         isLiked: false,
@@ -121,6 +129,7 @@ void main() {
 
     test('clearError should set error to null', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
 
       notifier.clearError();
 
@@ -130,6 +139,7 @@ void main() {
 
     test('deleteComment should remove comment from list', () async {
       final notifier = container.read(commentSectionViewModelProvider(testPostId).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadComments();
 
       final state = container.read(commentSectionViewModelProvider(testPostId));
@@ -157,9 +167,7 @@ void main() {
       final comment = Comment(
         id: 1,
         postId: 1,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: CommentAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test',
         likeCount: 0,
         isLiked: false,
@@ -175,9 +183,7 @@ void main() {
       final comment = Comment(
         id: 1,
         postId: 1,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: CommentAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test',
         likeCount: 0,
         isLiked: false,
@@ -217,9 +223,7 @@ void main() {
       final comment = Comment(
         id: 1,
         postId: 1,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: CommentAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test',
         likeCount: 0,
         isLiked: false,

@@ -2,9 +2,9 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibi_front/features/management/models/admin_models.dart';
-import 'package:hibi_front/features/management/repos/admin_repo.dart';
-import 'package:hibi_front/features/management/viewmodels/admin_dashboard_viewmodel.dart';
+import 'package:hidi/features/management/models/admin_models.dart';
+import 'package:hidi/features/management/repos/admin_repo.dart';
+import 'package:hidi/features/management/viewmodels/admin_dashboard_viewmodel.dart';
 
 void main() {
   group('DashboardViewModel', () {
@@ -62,10 +62,10 @@ void main() {
       final newStats = AdminStats(
         totalMembers: 100,
         todayNewMembers: 5,
-        totalSongs: 500,
-        todayNewSongs: 10,
+        totalFaqs: 500,
+        todayNewReports: 10,
         pendingReports: 3,
-        pendingQuestions: 7,
+        unansweredQuestions: 7,
       );
 
       final updated = state.copyWith(stats: newStats, isLoading: true);

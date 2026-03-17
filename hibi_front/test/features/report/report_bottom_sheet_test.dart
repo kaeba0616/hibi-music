@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hibi_front/features/report/models/report_models.dart';
-import 'package:hibi_front/features/report/views/report_bottom_sheet.dart';
+import 'package:hidi/features/report/models/report_models.dart';
+import 'package:hidi/features/report/views/report_bottom_sheet.dart';
 
 void main() {
   Widget createTestWidget({
@@ -28,7 +28,8 @@ void main() {
         targetId: 42,
       ));
 
-      expect(find.text('신고하기'), findsOneWidget);
+      // '신고하기' appears both as title and submit button
+      expect(find.text('신고하기'), findsNWidgets(2));
       expect(
         find.text('이 게시글을 신고하는 이유를 선택해주세요'),
         findsOneWidget,

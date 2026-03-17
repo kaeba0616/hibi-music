@@ -18,20 +18,24 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      await Future.delayed(const Duration(milliseconds: 500));
       container.dispose();
     });
 
-    test('initial state should be loading', () {
+    test('initial state should be loading', () async {
       final state = container.read(postDetailViewModelProvider(1));
 
       expect(state.isLoading, true);
       expect(state.post, isNull);
       expect(state.error, isNull);
+      // Wait for microtask-triggered loadPost to complete
+      await Future.delayed(const Duration(milliseconds: 200));
     });
 
     test('loadPost should update state with post data', () async {
       final notifier = container.read(postDetailViewModelProvider(1).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
 
       await notifier.loadPost(1);
 
@@ -43,6 +47,7 @@ void main() {
 
     test('loadPost with invalid id should set error', () async {
       final notifier = container.read(postDetailViewModelProvider(9999).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
 
       await notifier.loadPost(9999);
 
@@ -53,6 +58,7 @@ void main() {
 
     test('toggleLike should update like status', () async {
       final notifier = container.read(postDetailViewModelProvider(1).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadPost(1);
 
       final initialState = container.read(postDetailViewModelProvider(1));
@@ -72,6 +78,7 @@ void main() {
 
     test('deletePost should return true on success', () async {
       final notifier = container.read(postDetailViewModelProvider(1).notifier);
+      await Future.delayed(const Duration(milliseconds: 200));
       await notifier.loadPost(1);
 
       final result = await notifier.deletePost();
@@ -85,9 +92,7 @@ void main() {
       final state = PostDetailState();
       final post = Post(
         id: 1,
-        authorId: 1,
-        authorName: 'Test',
-        authorProfileUrl: '',
+        author: PostAuthor(id: 1, nickname: 'Test', username: 'test'),
         content: 'Test content',
         images: [],
         likeCount: 0,
@@ -124,7 +129,8 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      await Future.delayed(const Duration(milliseconds: 500));
       container.dispose();
     });
 
@@ -177,9 +183,10 @@ void main() {
       final notifier = container.read(postCreateViewModelProvider.notifier);
       final song = TaggedSong(
         id: 1,
-        title: 'Test Song',
-        artist: 'Test Artist',
-        albumArt: '',
+        titleKor: 'Test Song',
+        titleJp: 'テストソング',
+        artistName: 'Test Artist',
+        albumImageUrl: '',
       );
 
       notifier.setTaggedSong(song);
@@ -192,9 +199,10 @@ void main() {
       final notifier = container.read(postCreateViewModelProvider.notifier);
       final song = TaggedSong(
         id: 1,
-        title: 'Test Song',
-        artist: 'Test Artist',
-        albumArt: '',
+        titleKor: 'Test Song',
+        titleJp: 'テストソング',
+        artistName: 'Test Artist',
+        albumImageUrl: '',
       );
       notifier.setTaggedSong(song);
 
@@ -257,9 +265,10 @@ void main() {
     test('copyWith with clearTaggedSong should set taggedSong to null', () {
       final song = TaggedSong(
         id: 1,
-        title: 'Test',
-        artist: 'Artist',
-        albumArt: '',
+        titleKor: 'Test',
+        titleJp: 'テスト',
+        artistName: 'Artist',
+        albumImageUrl: '',
       );
       final state = PostEditorState(taggedSong: song);
 
@@ -280,7 +289,8 @@ void main() {
       );
     });
 
-    tearDown(() {
+    tearDown(() async {
+      await Future.delayed(const Duration(milliseconds: 500));
       container.dispose();
     });
 

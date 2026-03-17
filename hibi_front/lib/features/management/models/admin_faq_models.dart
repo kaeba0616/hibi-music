@@ -28,7 +28,7 @@ class AdminFAQItem {
   factory AdminFAQItem.fromJson(Map<String, dynamic> json) {
     return AdminFAQItem(
       id: json['id'] as int,
-      category: FAQCategory.fromCode(json['category'] as String),
+      category: FAQCategoryExtension.fromString(json['category'] as String),
       question: json['question'] as String,
       answer: json['answer'] as String,
       displayOrder: json['displayOrder'] as int,
@@ -43,7 +43,7 @@ class AdminFAQItem {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'category': category.code,
+      'category': category.apiValue,
       'question': question,
       'answer': answer,
       'displayOrder': displayOrder,
@@ -122,7 +122,7 @@ class FAQSaveRequest {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'category': category.code,
+      'category': category.apiValue,
       'question': question,
       'answer': answer,
       'displayOrder': displayOrder,

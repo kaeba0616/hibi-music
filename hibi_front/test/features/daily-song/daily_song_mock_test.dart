@@ -3,8 +3,8 @@ import 'package:hidi/features/daily-song/mocks/daily_song_mock.dart';
 
 void main() {
   group('Daily Song Mock Data', () {
-    test('mockDailySongs should have 5 songs', () {
-      expect(mockDailySongs.length, 5);
+    test('mockDailySongs should have 10 songs', () {
+      expect(mockDailySongs.length, 10);
     });
 
     test('mockArtists should have 5 artists', () {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibi_front/features/report/models/report_models.dart';
-import 'package:hibi_front/features/report/viewmodels/report_viewmodel.dart';
+import 'package:hidi/features/report/models/report_models.dart';
+import 'package:hidi/features/report/viewmodels/report_viewmodel.dart';
 
 void main() {
   group('ReportFormState', () {

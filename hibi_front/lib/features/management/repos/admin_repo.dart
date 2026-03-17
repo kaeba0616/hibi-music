@@ -187,7 +187,7 @@ class AdminRepository {
       'size': pageSize.toString(),
     };
     if (status != null) {
-      queryParams['status'] = status.code;
+      queryParams['status'] = status.apiValue;
     }
 
     final response = await AuthenticationRepository.requestWithRetry(
@@ -281,7 +281,7 @@ class AdminRepository {
 
     final queryParams = <String, String>{};
     if (category != null) {
-      queryParams['category'] = category.code;
+      queryParams['category'] = category.apiValue;
     }
 
     final response = await AuthenticationRepository.requestWithRetry(
