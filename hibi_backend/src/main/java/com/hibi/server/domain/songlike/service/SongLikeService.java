@@ -64,6 +64,15 @@ public class SongLikeService {
     }
 
     /**
+     * 특정 회원이 좋아요한 전체 노래 ID 목록 (F15)
+     */
+    public List<Long> getLikedSongIds(Long memberId) {
+        return songLikeRepository.findByMemberId(memberId).stream()
+                .map(sl -> sl.getSong().getId())
+                .toList();
+    }
+
+    /**
      * 특정 회원이 좋아요한 노래 ID 목록 (주어진 노래 목록에 대해)
      */
     public List<Long> getLikedSongIds(Long memberId, List<Long> songIds) {

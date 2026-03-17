@@ -387,7 +387,7 @@ public class AdminService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (!song.isComplete()) {
-            throw new CustomException(ErrorCode.INVALID_INPUT);
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         song.updateScheduledPublishAt(request.scheduledAt());

@@ -67,10 +67,6 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "닉네임 사용 가능 여부 확인",
-            description = "주어진 닉네임이 현재 사용 가능한지 확인합니다."
-    )
-    @Operation(
             summary = "소셜 로그인",
             description = "카카오/구글/네이버 소셜 로그인을 처리합니다. 신규 회원은 자동 가입됩니다."
     )
@@ -82,6 +78,10 @@ public class AuthController {
         );
     }
 
+    @Operation(
+            summary = "닉네임 사용 가능 여부 확인",
+            description = "주어진 닉네임이 현재 사용 가능한지 확인합니다."
+    )
     @GetMapping("/check-nickname")
     public ResponseEntity<SuccessResponse<?>> checkNicknameAvailability(@RequestParam String nickname) {
         memberValidator.validateNickname(nickname, null);
