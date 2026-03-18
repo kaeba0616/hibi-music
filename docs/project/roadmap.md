@@ -84,3 +84,37 @@ Notion PRD 신규 요구사항 구현 및 기존 기능 강화
 | Phase 4: Enhancement | **completed** | 6/6 (100%) |
 
 **전체 진행률**: 18/18 Features (100%)
+
+---
+
+## Phase 5: Production Readiness [status: in-progress]
+
+### 목표
+프로덕션 배포를 위한 인프라, 보안, CI/CD, Mock 제거 완료
+
+### Stages
+
+| Stage | 작업 | 설명 | Status |
+|-------|------|------|--------|
+| Stage 1 | Mock 제거 & 실제 구현 | JWT 필터 수정, 이메일 인증, 소셜 로그인 실제 연동 | todo |
+| Stage 2 | CI/CD 파이프라인 | GitHub Actions 설정 (backend-ci, frontend-ci) | **completed** |
+| Stage 3 | Docker & 로컬 개발환경 | Dockerfile, docker-compose, 환경변수 관리 | **completed** |
+| Stage 4 | 인프라 & 배포 | AWS 인프라 설계, 배포 가이드, 모니터링 | todo |
+| Stage 5 | 보안 & 법무 | RBAC 문서화, 이용약관, 개인정보 처리방침 | todo |
+| Stage 6 | 에뮬레이터 UI 검증 & QA | 전체 플로우 수동 테스트, 스크린샷 캡처 | todo |
+| Stage 7 | Phase 6 기획 | 즐겨찾기, 알림 센터, 추천 알고리즘 등 | todo |
+
+### 상세 계획
+`docs/ops/production-readiness.md` 참조
+
+---
+
+## 진행 상황 총 요약
+
+| Phase | Status | Progress |
+|-------|--------|----------|
+| Phase 1: MVP Core | **completed** | 4/4 (100%) |
+| Phase 2: Social | **completed** | 4/4 (100%) |
+| Phase 3: Advanced | **completed** | 4/4 (100%) |
+| Phase 4: Enhancement | **completed** | 6/6 (100%) |
+| Phase 5: Production Readiness | **in-progress** | 2/7 Stages |

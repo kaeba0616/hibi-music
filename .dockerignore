@@ -1,0 +1,7 @@
+.git
+.github
+docs
+hibi_front
+*.md
+.env
+.claude

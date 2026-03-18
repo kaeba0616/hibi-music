@@ -1,0 +1,52 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hibi_backend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'hibi_backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('hibi_backend/**/*.gradle*', 'hibi_backend/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for Gradlew
+        run: chmod +x hibi_backend/gradlew
+
+      - name: Run tests
+        working-directory: hibi_backend
+        run: ./gradlew test
+
+      - name: Build
+        working-directory: hibi_backend
+        run: ./gradlew build -x test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: hibi_backend/build/reports/tests/
