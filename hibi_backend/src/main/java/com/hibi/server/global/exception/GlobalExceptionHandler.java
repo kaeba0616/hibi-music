@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,6 +65,24 @@ public class GlobalExceptionHandler {
         log.error("[AuthenticationException] : {}", ex.getMessage());
         ProblemDetail problemDetail = createProblemDetail(status, ErrorCode.AUTHENTICATION_FAILED);
         return ResponseEntity.status(status).body(problemDetail);
+    }
+
+    // 탈퇴(비활성) 계정 로그인 시도
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ProblemDetail> handleDisabledException(DisabledException ex) {
+        ErrorCode errorCode = ErrorCode.ACCOUNT_DISABLED;
+        log.warn("[DisabledException] : {}", ex.getMessage());
+        ProblemDetail problemDetail = createProblemDetail(errorCode.getHttpStatus(), errorCode);
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(problemDetail);
+    }
+
+    // 정지/영구정지 계정 로그인 시도
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ProblemDetail> handleLockedException(LockedException ex) {
+        ErrorCode errorCode = ErrorCode.ACCOUNT_LOCKED;
+        log.warn("[LockedException] : {}", ex.getMessage());
+        ProblemDetail problemDetail = createProblemDetail(errorCode.getHttpStatus(), errorCode);
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(problemDetail);
     }
 
     // Spring Security 권한 관련 예외 처리 (403 Forbidden)

@@ -40,5 +40,27 @@ public class CustomUserDetails implements UserDetails {
     public String getPassword() {
         return password;
     }
+
+    /**
+     * 탈퇴(soft-delete)한 계정은 비활성 처리한다.
+     */
+    @Override
+    public boolean isEnabled() {
+        return !member.isDeleted();
+    }
+
+    /**
+     * 영구 정지(BANNED) 또는 정지 기간이 남은(SUSPENDED) 계정은 잠금 처리한다.
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        if (member.isBanned()) {
+            return false;
+        }
+        if (member.isSuspended()) {
+            return member.isSuspensionExpired();
+        }
+        return true;
+    }
 }
 

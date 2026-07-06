@@ -8,7 +8,10 @@ import com.hibi.server.domain.member.entity.MemberStatus;
 import com.hibi.server.domain.member.entity.ProviderType;
 import com.hibi.server.domain.member.entity.UserRoleType;
 import com.hibi.server.domain.member.repository.MemberRepository;
+import com.hibi.server.global.exception.CustomException;
+import com.hibi.server.global.exception.ErrorCode;
 import com.hibi.server.support.ServiceTestSupport;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,10 +19,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,6 +51,12 @@ class SocialAuthServiceTest extends ServiceTestSupport {
     @InjectMocks
     private SocialAuthService socialAuthService;
 
+    @BeforeEach
+    void enableMockSocialLogin() {
+        // 실제 소셜 API 연동 전까지 테스트에서만 Mock 경로를 허용한다
+        ReflectionTestUtils.setField(socialAuthService, "socialMockEnabled", true);
+    }
+
     private Member createTestMember(Long id, ProviderType provider) {
         return Member.builder()
                 .id(id)
@@ -62,6 +73,22 @@ class SocialAuthServiceTest extends ServiceTestSupport {
     @Nested
     @DisplayName("socialLogin 메서드")
     class SocialLoginTest {
+
+        @Test
+        @DisplayName("Mock 소셜 로그인이 비활성화되어 있으면 예외가 발생한다")
+        void socialLogin_mock비활성화_예외() {
+            // given
+            ReflectionTestUtils.setField(socialAuthService, "socialMockEnabled", false);
+            SocialLoginRequest request = new SocialLoginRequest(ProviderType.KAKAO, "any-token", null);
+
+            // when & then
+            assertThatThrownBy(() -> socialAuthService.socialLogin(request))
+                    .isInstanceOf(CustomException.class)
+                    .satisfies(ex -> assertThat(((CustomException) ex).getErrorCode())
+                            .isEqualTo(ErrorCode.SOCIAL_LOGIN_NOT_AVAILABLE));
+
+            then(memberRepository).should(never()).save(any(Member.class));
+        }
 
         @Test
         @DisplayName("기존 소셜 회원이면 로그인에 성공한다")

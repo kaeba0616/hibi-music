@@ -8,8 +8,11 @@ import com.hibi.server.domain.member.entity.Member;
 import com.hibi.server.domain.member.entity.ProviderType;
 import com.hibi.server.domain.member.entity.UserRoleType;
 import com.hibi.server.domain.member.repository.MemberRepository;
+import com.hibi.server.global.exception.CustomException;
+import com.hibi.server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,6 +34,13 @@ public class SocialAuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
+
+    /**
+     * 실제 소셜 API 연동 전까지 Mock 인증 경로를 명시적으로 켠 환경에서만 허용한다.
+     * 기본값 false: 운영에서 임의 문자열로 계정이 발급되는 것을 차단.
+     */
+    @Value("${auth.social.mock-enabled:false}")
+    private boolean socialMockEnabled;
 
     /**
      * 소셜 로그인 처리
@@ -115,6 +125,9 @@ public class SocialAuthService {
     private SocialUserInfo fetchSocialUserInfo(ProviderType provider, String accessToken) {
         // TODO: 실제 소셜 API 호출로 대체
         // 현재는 accessToken을 providerId로 사용하는 Mock 구현
+        if (!socialMockEnabled) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_NOT_AVAILABLE);
+        }
         log.warn("소셜 사용자 정보 조회 - Mock 모드 (provider: {})", provider);
 
         return new SocialUserInfo(

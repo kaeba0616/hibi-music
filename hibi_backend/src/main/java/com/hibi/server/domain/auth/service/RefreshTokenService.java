@@ -76,7 +76,13 @@ public class RefreshTokenService {
             String newAccessToken = jwtUtils.generateAccessToken(authentication);
             String newRefreshToken = jwtUtils.generateRefreshToken(authentication);
 
-            currentTokenRecord.revoke();
+            // 토큰 회전: 새 토큰을 저장하고 이전 토큰 값을 보존해야 재발급 연쇄와 재사용 공격 탐지가 동작한다
+            currentTokenRecord.updateToken(
+                    newRefreshToken,
+                    submittedRefreshToken,
+                    jwtUtils.getRefreshTokenExpiryDate(),
+                    LocalDateTime.now()
+            );
 
             return ReissueResponse.of(newAccessToken, newRefreshToken);
 

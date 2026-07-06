@@ -23,6 +23,9 @@ public enum ErrorCode {
     AUTHENTICATION_FAILED("A010", "인증에 실패했습니다.", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED_ACCESS("A011", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN), // 권한 부족
     BAD_CREDENTIALS("A012", "아이디 또는 비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+    ACCOUNT_DISABLED("A013", "탈퇴했거나 비활성화된 계정입니다.", HttpStatus.UNAUTHORIZED),
+    ACCOUNT_LOCKED("A014", "정지된 계정입니다.", HttpStatus.FORBIDDEN),
+    SOCIAL_LOGIN_NOT_AVAILABLE("A015", "소셜 로그인은 아직 지원되지 않습니다.", HttpStatus.SERVICE_UNAVAILABLE),
 
     // 회원 가입 관련
     EMAIL_ALREADY_EXISTS("A020", "이미 등록된 이메일입니다.", HttpStatus.CONFLICT), // 409 Conflict

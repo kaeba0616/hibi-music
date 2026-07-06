@@ -76,17 +76,16 @@ class AuthenticationRepository {
     );
 
     log("${response.statusCode}");
-    print("${response.statusCode}");
-    final resBody = jsonDecode(response.body);
-    log("body : ${resBody}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      final resBody = jsonDecode(response.body);
       final data = resBody["data"];
       await tokenSaves(data["accessToken"], data["refreshToken"]);
       _user = await userRepo.getCurrentUser();
       log("${isLoggedIn}");
     } else {
-      log("Error: postSignin");
+      log("Error: postSignin (${response.statusCode})");
+      throw Exception("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     }
   }
 
@@ -99,11 +98,12 @@ class AuthenticationRepository {
       uri,
       headers: {"Content-Type": "application/json"},
     );
-    if (response.statusCode <= 200 && response.statusCode > 300) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       await tokensClear();
       _user = null;
     } else {
-      log("Error: postSignOut");
+      log("Error: postSignOut (${response.statusCode})");
+      throw Exception("로그아웃에 실패했습니다.");
     }
 
     // CommonRepos.reponsePrint(response);
@@ -186,7 +186,7 @@ class AuthenticationRepository {
     log("body : ${resBody}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final data = jsonDecode(resBody)["data"];
+      final data = resBody["data"];
       final accessToken = data["accessToken"];
       final refreshToken = data["refreshToken"];
       await _secureStorage.write(key: "refreshToken", value: refreshToken);

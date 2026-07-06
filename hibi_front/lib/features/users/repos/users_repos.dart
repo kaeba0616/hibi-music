@@ -16,7 +16,7 @@ class UserRepository {
     final uri = Uri.http(basehost, basepath);
 
     final response = await AuthenticationRepository.requestWithRetry(
-      (accessToken) => http.delete(
+      (accessToken) => http.get(
         uri,
         headers: {
           "Content-Type": "application/json",
@@ -25,11 +25,9 @@ class UserRepository {
       ),
     );
     log("${response.statusCode}");
-    final data = jsonDecode(response.body)["data"];
-    log("data : ${data}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      // final user = User.fromJson(data);
-      return User.empty();
+      final data = jsonDecode(response.body)["data"];
+      return User.fromJson(data);
     } else {
       return null;
     }
@@ -70,9 +68,8 @@ class UserRepository {
       ),
     );
 
-    final data = jsonDecode(response.body)["data"];
-    if (response.statusCode <= 200 && response.statusCode > 300) {
-      return data["success"];
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(response.body)["success"] == true;
     } else {
       return false;
     }

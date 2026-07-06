@@ -24,8 +24,10 @@ class LoginViewmodel extends AsyncNotifier<void> {
       await _authRepo.postSignin(form["email"], form["password"]);
     });
 
+    if (!context.mounted) return;
     if (state.hasError) {
       log("${state.error}");
+      _showError(context, "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     } else {
       context.go("/${MainNavigationView.initialTab}");
     }
@@ -37,11 +39,19 @@ class LoginViewmodel extends AsyncNotifier<void> {
       await _authRepo.postSignOut(uid);
     });
 
+    if (!context.mounted) return;
     if (state.hasError) {
       log("${state.error}");
+      _showError(context, "로그아웃에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } else {
       context.go(OnboardingView.routeURL);
     }
+  }
+
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

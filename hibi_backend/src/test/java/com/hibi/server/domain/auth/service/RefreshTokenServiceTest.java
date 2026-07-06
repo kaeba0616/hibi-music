@@ -149,6 +149,7 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("new-access-token");
             given(jwtUtils.generateRefreshToken(any(Authentication.class))).willReturn("new-refresh-token");
+            given(jwtUtils.getRefreshTokenExpiryDate()).willReturn(LocalDateTime.now().plusDays(7));
 
             // when
             var response = refreshTokenService.reissueTokens(submittedToken);
@@ -156,7 +157,41 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
             // then
             assertThat(response.accessToken()).isEqualTo("new-access-token");
             assertThat(response.refreshToken()).isEqualTo("new-refresh-token");
-            assertThat(currentToken.isRevoked()).isTrue();
+
+            // 토큰 회전: 기존 레코드가 새 토큰 값으로 갱신되고, 이전 토큰 값이 보존되어야 한다
+            assertThat(currentToken.getTokenValue()).isEqualTo("new-refresh-token");
+            assertThat(currentToken.getPreviousTokenValue()).isEqualTo(submittedToken);
+            assertThat(currentToken.isRevoked()).isFalse();
+        }
+
+        @Test
+        @DisplayName("재발급 직후 새 Refresh Token으로 다시 재발급할 수 있다")
+        void reissueTokens_연속재발급_성공() {
+            // given: 첫 재발급이 끝난 상태의 토큰 레코드
+            String firstToken = "first-refresh-token";
+            String secondToken = "second-refresh-token";
+            Long memberId = 1L;
+            Member member = createTestMember(memberId);
+            RefreshToken record = createActiveToken(member, firstToken);
+            record.updateToken(secondToken, firstToken, LocalDateTime.now().plusDays(7), LocalDateTime.now());
+
+            willDoNothing().given(jwtUtils).validateJwtToken(secondToken);
+            given(jwtUtils.getMemberIdFromJwtToken(secondToken)).willReturn(memberId);
+            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(memberId, secondToken))
+                    .willReturn(Optional.of(record));
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+            given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("new-access-token");
+            given(jwtUtils.generateRefreshToken(any(Authentication.class))).willReturn("third-refresh-token");
+            given(jwtUtils.getRefreshTokenExpiryDate()).willReturn(LocalDateTime.now().plusDays(7));
+
+            // when
+            var response = refreshTokenService.reissueTokens(secondToken);
+
+            // then
+            assertThat(response.refreshToken()).isEqualTo("third-refresh-token");
+            assertThat(record.getTokenValue()).isEqualTo("third-refresh-token");
+            assertThat(record.getPreviousTokenValue()).isEqualTo(secondToken);
+            assertThat(record.isRevoked()).isFalse();
         }
 
         @Test

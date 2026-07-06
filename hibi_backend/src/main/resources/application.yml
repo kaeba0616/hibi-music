@@ -27,9 +27,13 @@ spring:
       hibernate:
         format_sql: true  # SQL 포매팅
 jwt:
-  secret: yourVerySecretKeyForAccessTokenGenerationWhichIsLongEnoughForHS256AlgorithmThankYouVeryMuch
-  expiration: 3600000
-  refresh-expiration: 6048000
+  secret: ${JWT_SECRET} # 환경변수 필수 - 절대 커밋하지 말 것 (BASE64 인코딩된 256bit 이상 키)
+  expiration: 3600000 # Access Token: 1시간
+  refresh-expiration: 604800000 # Refresh Token: 7일
+
+auth:
+  social:
+    mock-enabled: false # 실제 소셜 API 연동 전까지 소셜 로그인 차단 (로컬 개발 시에만 true)
 
 api:
   version: v1
