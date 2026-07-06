@@ -9,12 +9,14 @@ import 'package:hidi/features/daily-song/views/liked_songs_view.dart';
 import 'package:hidi/features/daily-song/views/song_detail_view.dart';
 import 'package:hidi/features/main-screen/views/main_navigation_view.dart';
 import 'package:hidi/features/onboarding/views/onboarding_view.dart';
-import 'package:hidi/features/posts/views/post_view.dart';
+import 'package:hidi/features/posts/views/post_detail_view.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     debugLogDiagnostics: true,
     initialLocation: '/${MainNavigationView.initialTab}',
+    // 로그인/로그아웃/세션만료 시 redirect가 즉시 재평가되도록 인증 상태를 구독한다
+    refreshListenable: AuthenticationRepository.authStateChanges,
 
     redirect: (context, state) {
       final isLoggedIn = ref.read(authRepo).isLoggedIn;
@@ -97,11 +99,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: PostView.routeURL,
-        name: PostView.routeName,
+        path: PostDetailView.routeURL,
+        name: PostDetailView.routeName,
         builder: (context, state) {
           final String postId = state.pathParameters["postId"]!;
-          return PostView(postId: int.parse(postId));
+          return PostDetailView(postId: int.parse(postId));
         },
       ),
     ],

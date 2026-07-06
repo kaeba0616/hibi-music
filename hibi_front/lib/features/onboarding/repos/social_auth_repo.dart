@@ -25,7 +25,7 @@ class SocialAuthRepository {
       return mockSocialLogin();
     }
 
-    final uri = Uri.http(basehost, '$basepath/social-login');
+    final uri = Env.apiUri('$basepath/social-login');
 
     final String providerName = provider.name.toUpperCase();
     final Map<String, dynamic> body = {

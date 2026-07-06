@@ -40,7 +40,7 @@ class ArtistRepository {
       queryParams['search'] = searchQuery;
     }
 
-    final uri = Uri.http(basehost, basepath, queryParams);
+    final uri = Env.apiUri(basepath, queryParams);
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -71,7 +71,7 @@ class ArtistRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$artistId");
+    final uri = Env.apiUri("$basepath/$artistId");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -103,7 +103,7 @@ class ArtistRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$artistId/follow");
+    final uri = Env.apiUri("$basepath/$artistId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -127,7 +127,7 @@ class ArtistRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$artistId/follow");
+    final uri = Env.apiUri("$basepath/$artistId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.delete(
         uri,

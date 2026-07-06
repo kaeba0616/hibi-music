@@ -1,5 +1,5 @@
 # MCP (Model Context Protocol) 프로필 설정
-# 통합 테스트 지원을 위한 AI 도구 서버 설정
+# 통합 테스트 지원을 위한 AI 도구 서버 설정 - 로컬 개발 전용
 
 spring:
   ai:
@@ -8,9 +8,27 @@ spring:
         name: hibi-test-server
         version: 1.0.0
 
-  # MCP 모드에서는 test 프로필의 H2 DB 사용
-  profiles:
-    include: test
+  # 실제 DB를 건드리지 않도록 자체 H2 In-Memory DB 사용
+  datasource:
+    url: jdbc:h2:mem:mcpdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # H2 인메모리 전용이므로 안전
+    show-sql: true
+
+# 로컬 MCP 전용 JWT 시크릿 (운영 키와 무관)
+jwt:
+  secret: bWNwLWxvY2FsLW9ubHktand0LXNlY3JldC1rZXktbXVzdC1ub3QtYmUtdXNlZC1pbi1wcm9kdWN0aW9u
+  expiration: 3600000
+  refresh-expiration: 604800000
+
+api:
+  version: v1
+  base-url: http://localhost:8090
 
 # MCP 서버 포트 (메인 앱과 분리)
 server:

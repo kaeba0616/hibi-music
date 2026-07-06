@@ -63,6 +63,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.h2database:h2'
+    developmentOnly 'com.h2database:h2' // mcp 프로파일(bootRun) H2 인메모리용 - 배포 jar에는 미포함
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

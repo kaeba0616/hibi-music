@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,9 @@ public class SongController {
     private final SongService songService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "노래 생성",
+            summary = "노래 생성 (관리자 전용)",
             description = "새로운 노래를 등록합니다. 요청 본문에 제목, 아티스트, 게시일 등 노래 정보를 포함해야 합니다."
     )
     public ResponseEntity<SuccessResponse<?>> createSong(@RequestBody @Valid SongCreateRequest request) {
@@ -33,8 +35,9 @@ public class SongController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "노래 정보 수정",
+            summary = "노래 정보 수정 (관리자 전용)",
             description = "노래 ID를 기반으로 해당 노래의 정보를 수정합니다. 요청 본문에 변경할 내용을 포함해야 합니다."
     )
     public ResponseEntity<SuccessResponse<SongResponse>> updateSong(
@@ -45,11 +48,13 @@ public class SongController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
-            summary = "노래 삭제",
+            summary = "노래 삭제 (관리자 전용)",
             description = "노래 ID를 기반으로 해당 노래를 삭제합니다."
     )
     public ResponseEntity<SuccessResponse<?>> deleteSong(@PathVariable Long id) {
+        songService.delete(id);
         return ResponseEntity.ok(SuccessResponse.success("노래 삭제 성공"));
     }
 

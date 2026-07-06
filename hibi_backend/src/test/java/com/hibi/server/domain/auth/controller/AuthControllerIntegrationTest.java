@@ -2,12 +2,16 @@ package com.hibi.server.domain.auth.controller;
 
 import com.hibi.server.domain.auth.dto.request.SignInRequest;
 import com.hibi.server.domain.auth.dto.request.SignUpRequest;
+import com.hibi.server.domain.auth.repository.RefreshTokenRepository;
 import com.hibi.server.support.IntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,6 +20,79 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("AuthController 통합 테스트")
 class AuthControllerIntegrationTest extends IntegrationTestSupport {
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
+    private String signUpAndSignIn(String email, String password, String nickname) throws Exception {
+        SignUpRequest signUp = new SignUpRequest(email, password, nickname);
+        mockMvc.perform(post("/api/v1/auth/sign-up")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signUp)));
+
+        SignInRequest signIn = new SignInRequest(email, password);
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/sign-in")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signIn)))
+                .andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString())
+                .path("data").path("accessToken").asText();
+    }
+
+    @Nested
+    @DisplayName("POST /api/v1/auth/sign-out")
+    class SignOutTest {
+
+        @Test
+        @DisplayName("미인증 사용자는 로그아웃할 수 없다 (401)")
+        void signOut_미인증_실패() throws Exception {
+            mockMvc.perform(post("/api/v1/auth/sign-out"))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        @DisplayName("인증된 사용자는 본인 세션만 로그아웃되고 리프레시 토큰이 revoke된다")
+        void signOut_본인_성공() throws Exception {
+            // given
+            String accessToken = signUpAndSignIn("signout-test@example.com", "password1", "로그아웃유저");
+
+            // when
+            mockMvc.perform(post("/api/v1/auth/sign-out")
+                            .header("Authorization", "Bearer " + accessToken))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            // then: 활성 리프레시 토큰이 남아있지 않아야 한다
+            boolean hasActiveToken = refreshTokenRepository.findAll().stream()
+                    .filter(token -> token.getMember().getEmail().equals("signout-test@example.com"))
+                    .anyMatch(token -> !token.isRevoked());
+            assertThat(hasActiveToken).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("JWT 필터 예외 처리")
+    class JwtFilterErrorHandlingTest {
+
+        @Test
+        @DisplayName("잘못된 토큰으로 공개 엔드포인트에 접근해도 500이 아닌 정상 응답을 받는다")
+        void 잘못된토큰_공개엔드포인트_정상응답() throws Exception {
+            mockMvc.perform(get("/api/v1/artists")
+                            .header("Authorization", "Bearer this-is-not-a-valid-jwt"))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("잘못된 토큰으로 보호된 엔드포인트에 접근하면 500이 아닌 401을 받는다")
+        void 잘못된토큰_보호엔드포인트_401() throws Exception {
+            mockMvc.perform(get("/api/v1/members/me")
+                            .header("Authorization", "Bearer this-is-not-a-valid-jwt"))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+        }
+    }
 
     @Nested
     @DisplayName("POST /api/v1/auth/sign-up")

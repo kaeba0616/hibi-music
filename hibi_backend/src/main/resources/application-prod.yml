@@ -1,0 +1,10 @@
+# 운영 환경 설정
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영 DB 스키마는 자동 변경 금지 (마이그레이션 도구 사용)
+    show-sql: false
+
+logging:
+  level:
+    org.hibernate.SQL: WARN

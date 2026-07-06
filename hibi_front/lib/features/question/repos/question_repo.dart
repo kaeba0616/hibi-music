@@ -30,7 +30,7 @@ class QuestionRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
 
     try {
       final response = await AuthenticationRepository.requestWithRetry(
@@ -68,7 +68,7 @@ class QuestionRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
 
     try {
       final response = await AuthenticationRepository.requestWithRetry(
@@ -106,7 +106,7 @@ class QuestionRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/today-count");
+    final uri = Env.apiUri("$basepath/today-count");
 
     try {
       final response = await AuthenticationRepository.requestWithRetry(
@@ -146,7 +146,7 @@ class QuestionRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
 
     try {
       final response = await AuthenticationRepository.requestWithRetry(

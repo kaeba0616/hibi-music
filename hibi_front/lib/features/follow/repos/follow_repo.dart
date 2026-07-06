@@ -26,7 +26,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$userId");
+    final uri = Env.apiUri("$basepath/$userId");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -57,7 +57,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$userId/followers", {
+    final uri = Env.apiUri("$basepath/$userId/followers", {
       'page': page.toString(),
       'size': size.toString(),
     });
@@ -91,7 +91,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$userId/followings", {
+    final uri = Env.apiUri("$basepath/$userId/followings", {
       'page': page.toString(),
       'size': size.toString(),
     });
@@ -126,7 +126,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$userId/follow");
+    final uri = Env.apiUri("$basepath/$userId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -150,7 +150,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$userId/follow");
+    final uri = Env.apiUri("$basepath/$userId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.delete(
         uri,
@@ -174,7 +174,7 @@ class FollowRepository {
 
     // Real API - FeedPostController에 사용자 게시글 엔드포인트 필요
     // 현재는 전체 게시글에서 필터링하는 방식 사용
-    final uri = Uri.http(basehost, "$basepath/$userId/posts", {
+    final uri = Env.apiUri("$basepath/$userId/posts", {
       'page': page.toString(),
       'size': size.toString(),
     });
@@ -212,7 +212,7 @@ class FollowRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$postBasepath/following", {
+    final uri = Env.apiUri("$postBasepath/following", {
       'page': page.toString(),
       'size': size.toString(),
     });

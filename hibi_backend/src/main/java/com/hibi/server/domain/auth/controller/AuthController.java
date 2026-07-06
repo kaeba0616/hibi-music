@@ -1,5 +1,6 @@
 package com.hibi.server.domain.auth.controller;
 
+import com.hibi.server.domain.auth.dto.CustomUserDetails;
 import com.hibi.server.domain.auth.dto.request.SignInRequest;
 import com.hibi.server.domain.auth.dto.request.SignUpRequest;
 import com.hibi.server.domain.auth.dto.request.SocialLoginRequest;
@@ -13,6 +14,7 @@ import com.hibi.server.domain.auth.service.RefreshTokenService;
 import com.hibi.server.domain.auth.service.SocialAuthService;
 import com.hibi.server.domain.member.dto.response.AvailabilityResponse;
 import com.hibi.server.domain.member.validator.MemberValidator;
+import com.hibi.server.global.annotation.AuthMember;
 import com.hibi.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,8 +48,8 @@ public class AuthController {
     }
 
     @PostMapping("/sign-out")
-    public ResponseEntity<SuccessResponse<?>> signOut(@RequestParam Long memberId) {
-        authService.signOut(memberId);
+    public ResponseEntity<SuccessResponse<?>> signOut(@AuthMember CustomUserDetails userDetails) {
+        authService.signOut(userDetails.getId());
         return ResponseEntity.ok(SuccessResponse.success("로그아웃하였습니다."));
     }
 

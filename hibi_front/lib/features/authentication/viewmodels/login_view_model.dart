@@ -33,10 +33,10 @@ class LoginViewmodel extends AsyncNotifier<void> {
     }
   }
 
-  Future<void> signOut(BuildContext context, int uid) async {
+  Future<void> signOut(BuildContext context) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _authRepo.postSignOut(uid);
+      await _authRepo.postSignOut();
     });
 
     if (!context.mounted) return;

@@ -23,7 +23,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, basepath, {
+    final uri = Env.apiUri(basepath, {
       'page': page.toString(),
       'size': size.toString(),
     });
@@ -57,7 +57,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -99,7 +99,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -145,7 +145,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.put(
         uri,
@@ -177,7 +177,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.delete(
         uri,
@@ -200,7 +200,7 @@ class PostRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$postId/like");
+    final uri = Env.apiUri("$basepath/$postId/like");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -223,7 +223,7 @@ class PostRepository {
     }
 
     // Real API - 기존 daily-songs API 사용
-    final uri = Uri.http(basehost, "/api/v1/songs/search", {'q': query});
+    final uri = Env.apiUri("/api/v1/songs/search", {'q': query});
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,

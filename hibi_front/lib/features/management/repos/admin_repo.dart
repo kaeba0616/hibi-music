@@ -39,7 +39,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/stats'),
+        Env.apiUri('$basePath/stats'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -89,7 +89,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/reports', queryParams),
+        Env.apiUri('$basePath/reports', queryParams),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -116,7 +116,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/reports/$id'),
+        Env.apiUri('$basePath/reports/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -143,7 +143,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/reports/process'),
+        Env.apiUri('$basePath/reports/process'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -192,7 +192,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/questions', queryParams),
+        Env.apiUri('$basePath/questions', queryParams),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -219,7 +219,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/questions/$id'),
+        Env.apiUri('$basePath/questions/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -246,7 +246,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/questions/answer'),
+        Env.apiUri('$basePath/questions/answer'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -286,7 +286,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/faqs', queryParams),
+        Env.apiUri('$basePath/faqs', queryParams),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -322,7 +322,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/faqs'),
+        Env.apiUri('$basePath/faqs'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -350,7 +350,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.delete(
-        Uri.http(baseHost, '$basePath/faqs/$id'),
+        Env.apiUri('$basePath/faqs/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -409,7 +409,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/members', queryParams),
+        Env.apiUri('$basePath/members', queryParams),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -436,7 +436,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/members/$id'),
+        Env.apiUri('$basePath/members/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -463,7 +463,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/members/sanction'),
+        Env.apiUri('$basePath/members/sanction'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -491,7 +491,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/songs'),
+        Env.apiUri('$basePath/songs'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -517,7 +517,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/songs/${request.songId}/schedule'),
+        Env.apiUri('$basePath/songs/${request.songId}/schedule'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -543,7 +543,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.delete(
-        Uri.http(baseHost, '$basePath/songs/schedule/$scheduleId'),
+        Env.apiUri('$basePath/songs/schedule/$scheduleId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -589,7 +589,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.get(
-        Uri.http(baseHost, '$basePath/comments', queryParams),
+        Env.apiUri('$basePath/comments', queryParams),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -616,7 +616,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.delete(
-        Uri.http(baseHost, '$basePath/comments/$commentId'),
+        Env.apiUri('$basePath/comments/$commentId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -641,7 +641,7 @@ class AdminRepository {
 
     final response = await AuthenticationRepository.requestWithRetry(
       (token) => http.post(
-        Uri.http(baseHost, '$basePath/members/$memberId/unban'),
+        Env.apiUri('$basePath/members/$memberId/unban'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

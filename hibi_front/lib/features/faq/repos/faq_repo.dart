@@ -35,7 +35,7 @@ class FAQRepository {
       queryParams['keyword'] = keyword;
     }
 
-    final uri = Uri.http(basehost, basepath, queryParams.isNotEmpty ? queryParams : null);
+    final uri = Env.apiUri(basepath, queryParams.isNotEmpty ? queryParams : null);
 
     try {
       final response = await http.get(
@@ -97,7 +97,7 @@ class FAQRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
 
     try {
       final response = await http.get(

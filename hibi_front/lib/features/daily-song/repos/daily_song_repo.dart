@@ -25,7 +25,7 @@ class DailySongRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/today");
+    final uri = Env.apiUri("$basepath/today");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -58,7 +58,7 @@ class DailySongRepository {
     // Real API
     final dateStr =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-    final uri = Uri.http(basehost, "$basepath/by-date", {"date": dateStr});
+    final uri = Env.apiUri("$basepath/by-date", {"date": dateStr});
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -89,7 +89,7 @@ class DailySongRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$id");
+    final uri = Env.apiUri("$basepath/$id");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -120,7 +120,7 @@ class DailySongRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/by-month", {
+    final uri = Env.apiUri("$basepath/by-month", {
       "year": year.toString(),
       "month": month.toString(),
     });
@@ -154,7 +154,7 @@ class DailySongRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/$songId/like");
+    final uri = Env.apiUri("$basepath/$songId/like");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,

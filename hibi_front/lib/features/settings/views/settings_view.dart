@@ -9,8 +9,8 @@ import 'package:hidi/features/users/viewmodels/user_profile_view_model.dart';
 class SettingsView extends ConsumerWidget {
   const SettingsView({super.key});
 
-  void signOut(BuildContext context, WidgetRef ref, int id) async {
-    await ref.read(loginProvider.notifier).signOut(context, id);
+  void signOut(BuildContext context, WidgetRef ref) async {
+    await ref.read(loginProvider.notifier).signOut(context);
   }
 
   void reIssue(WidgetRef ref) async {
@@ -28,7 +28,7 @@ class SettingsView extends ConsumerWidget {
         'subtitle': "로그아웃",
         'icon': FontAwesomeIcons.rightFromBracket,
         "onTap": () {
-          signOut(context, ref, id);
+          signOut(context, ref);
         },
       },
       {

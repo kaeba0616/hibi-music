@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hidi/env.dart';
@@ -10,15 +11,25 @@ import 'package:http/http.dart' as http;
 
 typedef TokenFunction = Future<http.Response> Function(String token);
 
+/// 로그인/로그아웃/세션만료 시점을 라우터 등에 알리는 Listenable.
+class AuthStateNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
 class AuthenticationRepository {
-  final basehost = Env.basehost;
   final basepath = '/api/v1/auth';
 
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   final UserRepository userRepo = UserRepository();
-  User? _user;
+
+  /// 세션은 앱 전역에 하나이므로 static으로 관리한다.
+  /// (requestWithRetry 등 static 경로에서도 세션 만료를 반영하기 위함)
+  static User? _user;
   User? get user => _user;
   bool get isLoggedIn => user != null;
+
+  /// GoRouter refreshListenable 연결용 인증 상태 변경 알림.
+  static final AuthStateNotifier authStateChanges = AuthStateNotifier();
 
   Future<void> init() async {
     final accessToken = await _secureStorage.read(key: "accessToken");
@@ -31,6 +42,7 @@ class AuthenticationRepository {
         await tokensClear(); // Clear tokens if user fetch fails
         _user = null;
       }
+      authStateChanges.notify();
     }
   }
 
@@ -39,7 +51,7 @@ class AuthenticationRepository {
     String password,
     String nickname,
   ) async {
-    final uri = Uri.http(basehost, "$basepath/sign-up");
+    final uri = Env.apiUri("$basepath/sign-up");
 
     final Map<String, dynamic> body = {
       "email": email,
@@ -54,11 +66,9 @@ class AuthenticationRepository {
     );
 
     log("${response.statusCode}");
-    final resBody = jsonDecode(response.body);
-    log("body : ${resBody}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return resBody["success"];
+      return jsonDecode(response.body)["success"] == true;
     } else {
       log("Error: postLocalSignup");
       return false;
@@ -66,7 +76,7 @@ class AuthenticationRepository {
   }
 
   Future<void> postSignin(String email, String password) async {
-    final uri = Uri.http(basehost, "$basepath/sign-in");
+    final uri = Env.apiUri("$basepath/sign-in");
 
     final Map<String, dynamic> body = {"email": email, "password": password};
     final response = await http.post(
@@ -82,48 +92,49 @@ class AuthenticationRepository {
       final data = resBody["data"];
       await tokenSaves(data["accessToken"], data["refreshToken"]);
       _user = await userRepo.getCurrentUser();
-      log("${isLoggedIn}");
+      authStateChanges.notify();
     } else {
       log("Error: postSignin (${response.statusCode})");
       throw Exception("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     }
   }
 
-  Future<void> postSignOut(int uid) async {
-    final Map<String, dynamic> queryParams = {"memberId": uid.toString()};
+  /// 서버는 인증된 본인 세션만 로그아웃시킨다 (Bearer 토큰 필수).
+  Future<void> postSignOut() async {
+    final uri = Env.apiUri("$basepath/sign-out");
 
-    final uri = Uri.http(basehost, "$basepath/sign-out", queryParams);
-
-    final response = await http.post(
-      uri,
-      headers: {"Content-Type": "application/json"},
-    );
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      await tokensClear();
-      _user = null;
-    } else {
-      log("Error: postSignOut (${response.statusCode})");
-      throw Exception("로그아웃에 실패했습니다.");
+    try {
+      final response = await requestWithRetry(
+        (accessToken) => http.post(
+          uri,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $accessToken",
+          },
+        ),
+      );
+      if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+        log("Error: postSignOut (${response.statusCode})");
+      }
+    } finally {
+      // 서버 응답과 무관하게 로컬 세션은 항상 정리한다
+      await _clearSession();
     }
-
-    // CommonRepos.reponsePrint(response);
   }
 
   Future<bool> checkEmail(String email) async {
     log("checkEmail");
     final Map<String, dynamic> queryParams = {"email": email};
-    final uri = Uri.http(basehost, "$basepath/check-email", queryParams);
+    final uri = Env.apiUri("$basepath/check-email", queryParams);
 
     final response = await http.get(
       uri,
       headers: {"Content-Type": "application/json"},
     );
     log("${response.statusCode}");
-    final resBody = jsonDecode(response.body);
-    log("body : ${resBody}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return resBody["success"];
+      return jsonDecode(response.body)["success"] == true;
     } else {
       log("Error: checkEmail");
       return false;
@@ -132,7 +143,7 @@ class AuthenticationRepository {
 
   Future<bool> checkNickname(String nickname) async {
     final Map<String, dynamic> queryParams = {"nickname": nickname};
-    final uri = Uri.http(basehost, "$basepath/check-nickname", queryParams);
+    final uri = Env.apiUri("$basepath/check-nickname", queryParams);
 
     final response = await http.get(
       uri,
@@ -140,11 +151,9 @@ class AuthenticationRepository {
     );
 
     log("${response.statusCode}");
-    final resBody = jsonDecode(response.body);
-    log("body : ${resBody}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return resBody["success"];
+      return jsonDecode(response.body)["success"] == true;
     } else {
       log("Error: checkNickname");
       return false;
@@ -162,40 +171,62 @@ class AuthenticationRepository {
   }
 
   static Future<void> tokensClear() async {
-    await _secureStorage.deleteAll();
+    // deleteAll은 다른 secure storage 키까지 지우므로 토큰만 명시적으로 삭제한다
+    await Future.wait([
+      _secureStorage.delete(key: "accessToken"),
+      _secureStorage.delete(key: "refreshToken"),
+    ]);
+  }
+
+  static Future<void> _clearSession() async {
+    await tokensClear();
+    _user = null;
+    authStateChanges.notify();
   }
 
   static Future<bool> postReissue() async {
-    final _refreshToken = await _secureStorage.read(key: "refreshToken");
-    log("${_refreshToken}");
-
-    final Map<String, dynamic> queryParams = {"refreshToken": _refreshToken};
-    final uri = Uri.http(
-      "${Env.basehost}",
-      "/api/v1/auth/reissue",
-      queryParams,
-    );
-
-    final response = await http.post(
-      uri,
-      headers: {"Content-Type": "application/json"},
-    );
-
-    log("${response.statusCode}");
-    final resBody = jsonDecode(response.body);
-    log("body : ${resBody}");
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      final data = resBody["data"];
-      final accessToken = data["accessToken"];
-      final refreshToken = data["refreshToken"];
-      await _secureStorage.write(key: "refreshToken", value: refreshToken);
-      await _secureStorage.write(key: "accessToken", value: accessToken);
-      return resBody["success"];
-    } else {
-      log("Error: postReissue");
+    final refreshToken = await _secureStorage.read(key: "refreshToken");
+    if (refreshToken == null) {
       return false;
     }
+
+    final Map<String, dynamic> queryParams = {"refreshToken": refreshToken};
+    final uri = Env.apiUri("/api/v1/auth/reissue", queryParams);
+
+    try {
+      final response = await http.post(
+        uri,
+        headers: {"Content-Type": "application/json"},
+      );
+
+      log("postReissue: ${response.statusCode}");
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final resBody = jsonDecode(response.body);
+        final data = resBody["data"];
+        await tokenSaves(data["accessToken"], data["refreshToken"]);
+        return resBody["success"] == true;
+      } else {
+        log("Error: postReissue (${response.statusCode})");
+        return false;
+      }
+    } catch (e) {
+      log("Error: postReissue ($e)");
+      return false;
+    }
+  }
+
+  /// 동시 401 발생 시 재발급을 한 번만 수행하도록 in-flight Future를 공유한다.
+  /// (리프레시 토큰 회전 방식에서는 중복 재발급이 세션 무효화로 이어진다)
+  static Future<bool>? _reissueInFlight;
+
+  static Future<bool> _reissueOnce() {
+    final inFlight = _reissueInFlight;
+    if (inFlight != null) return inFlight;
+
+    final future = postReissue().whenComplete(() => _reissueInFlight = null);
+    _reissueInFlight = future;
+    return future;
   }
 
   static Future<http.Response> requestWithRetry(TokenFunction request) async {
@@ -206,15 +237,16 @@ class AuthenticationRepository {
     final response = await request(accessToken);
     if (response.statusCode != 401) {
       return response;
-    } else {
-      await postReissue();
-      final newaccessToken = await _secureStorage.read(key: "accessToken");
-      if (newaccessToken == null) {
-        throw Exception("No new accessToken.");
-      } else {
-        return await request(newaccessToken);
-      }
     }
+
+    final reissued = await _reissueOnce();
+    final newAccessToken = await _secureStorage.read(key: "accessToken");
+    if (!reissued || newAccessToken == null) {
+      // 재발급 실패 = 세션 만료. 토큰을 정리하고 로그아웃 상태를 알린다.
+      await _clearSession();
+      throw Exception("세션이 만료되었습니다. 다시 로그인해주세요.");
+    }
+    return await request(newAccessToken);
   }
 }
 

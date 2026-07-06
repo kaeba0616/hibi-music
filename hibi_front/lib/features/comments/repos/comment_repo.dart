@@ -31,7 +31,7 @@ class CommentRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, _basepath(postId));
+    final uri = Env.apiUri(_basepath(postId));
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -87,7 +87,7 @@ class CommentRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, _basepath(request.postId));
+    final uri = Env.apiUri(_basepath(request.postId));
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -123,7 +123,7 @@ class CommentRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "${_basepath(postId)}/$commentId");
+    final uri = Env.apiUri("${_basepath(postId)}/$commentId");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.delete(
         uri,
@@ -147,7 +147,7 @@ class CommentRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "${_basepath(postId)}/$commentId/like");
+    final uri = Env.apiUri("${_basepath(postId)}/$commentId/like");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -175,7 +175,7 @@ class CommentRepository {
     }
 
     // Real API - 기존 Report API 재활용
-    final uri = Uri.http(basehost, "/api/v1/reports");
+    final uri = Env.apiUri("/api/v1/reports");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -218,7 +218,7 @@ class CommentRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "/api/v1/posts/$postId/comments/top");
+    final uri = Env.apiUri("/api/v1/posts/$postId/comments/top");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,

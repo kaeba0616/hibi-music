@@ -62,7 +62,7 @@ class ReportRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
 
     try {
       final response = await AuthenticationRepository.requestWithRetry(
@@ -135,7 +135,7 @@ class ReportRepository {
     }
 
     // Real API
-    final uri = Uri.http(basehost, "$basepath/check", {
+    final uri = Env.apiUri("$basepath/check", {
       "targetType": targetType.code,
       "targetId": targetId.toString(),
     });

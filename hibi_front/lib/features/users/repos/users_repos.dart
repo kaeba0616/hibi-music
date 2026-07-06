@@ -13,7 +13,7 @@ class UserRepository {
   final basepath = "/api/v1/members/me";
 
   Future<User?> getCurrentUser() async {
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
 
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
@@ -34,7 +34,7 @@ class UserRepository {
   }
 
   Future<void> deleteCurrentUser(Ref ref) async {
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.delete(
         uri,
@@ -53,7 +53,7 @@ class UserRepository {
   }
 
   Future<bool> patchCurrentUser(String nickname, String password) async {
-    final uri = Uri.http(basehost, basepath);
+    final uri = Env.apiUri(basepath);
 
     Map<String, dynamic> body = {"nickname": nickname, "password": password};
 

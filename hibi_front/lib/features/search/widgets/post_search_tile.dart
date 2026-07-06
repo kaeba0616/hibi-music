@@ -53,7 +53,7 @@ class PostSearchTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  relativeTime(post.createdAt),
+                  formatRelativeTime(post.createdAt),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.outline,
                       ),

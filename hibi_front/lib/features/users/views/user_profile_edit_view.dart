@@ -23,6 +23,13 @@ class _UserProfileEditViewState extends ConsumerState<UserProfileEditView> {
       TextEditingController();
   Map<String, dynamic> formData = {};
 
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   bool _isObscure = true;
   void _toggleObscrueText() {
     setState(() {

@@ -1,0 +1,6 @@
+# 개발 환경 설정
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update # 개발 편의를 위한 자동 스키마 반영
+    show-sql: true

@@ -29,7 +29,7 @@ class SearchRepository {
 
     // Real API
     final categoryParam = _getCategoryParam(category);
-    final uri = Uri.http(basehost, basepath, {
+    final uri = Env.apiUri(basepath, {
       'q': query,
       'category': categoryParam,
       'limit': '20',
@@ -266,7 +266,7 @@ class SearchRepository {
     }
 
     // Real API - 기존 Artist Follow API 사용
-    final uri = Uri.http(basehost, "/api/v1/artists/$artistId/follow");
+    final uri = Env.apiUri("/api/v1/artists/$artistId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
@@ -290,7 +290,7 @@ class SearchRepository {
     }
 
     // Real API - 기존 User Follow API 사용
-    final uri = Uri.http(basehost, "/api/v1/users/$userId/follow");
+    final uri = Env.apiUri("/api/v1/users/$userId/follow");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.post(
         uri,
