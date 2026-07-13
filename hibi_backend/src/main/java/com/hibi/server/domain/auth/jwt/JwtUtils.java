@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -43,6 +44,8 @@ public class JwtUtils {
 
         return Jwts.builder()
                 .setClaims(claims) // Subject 대신 claims 맵 사용
+                // 같은 초에 발급된 토큰끼리 문자열이 동일해지는 것을 방지 (refresh_tokens 유니크 제약 충돌)
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

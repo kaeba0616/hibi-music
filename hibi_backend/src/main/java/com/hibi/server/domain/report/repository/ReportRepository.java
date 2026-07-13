@@ -57,6 +57,16 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     long countByTargetTypeAndTargetId(ReportTargetType targetType, Long targetId);
 
     /**
+     * 여러 대상의 신고 수 일괄 조회 (N+1 방지, [targetId, count] 행 반환)
+     */
+    @Query("SELECT r.targetId, COUNT(r) FROM Report r " +
+           "WHERE r.targetType = :targetType AND r.targetId IN :targetIds " +
+           "GROUP BY r.targetId")
+    List<Object[]> countGroupedByTargetTypeAndTargetIdIn(
+            @Param("targetType") ReportTargetType targetType,
+            @Param("targetIds") List<Long> targetIds);
+
+    /**
      * 상태별 신고 목록 조회 (페이징)
      */
     Page<Report> findByStatusOrderByCreatedAtDesc(ReportStatus status, Pageable pageable);

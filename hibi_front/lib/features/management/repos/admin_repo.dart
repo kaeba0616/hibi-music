@@ -660,6 +660,6 @@ class AdminRepository {
 
 /// Admin Repository Provider
 final adminRepoProvider = Provider<AdminRepository>((ref) {
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return AdminRepository(useMock: useMock);
 });

@@ -222,8 +222,6 @@ public class FeedPostService {
             return Set.of();
         }
 
-        return postIds.stream()
-                .filter(postId -> feedPostLikeRepository.existsByMemberIdAndFeedPostId(memberId, postId))
-                .collect(Collectors.toSet());
+        return Set.copyOf(feedPostLikeRepository.findLikedFeedPostIds(memberId, postIds));
     }
 }

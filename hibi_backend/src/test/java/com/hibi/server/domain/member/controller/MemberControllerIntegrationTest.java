@@ -154,6 +154,46 @@ class MemberControllerIntegrationTest extends IntegrationTestSupport {
         }
 
         @Test
+        @DisplayName("닉네임만 보내면 닉네임만 변경된다 (부분 수정)")
+        void updateMyInfo_닉네임만_성공() throws Exception {
+            // when & then
+            mockMvc.perform(patch("/api/v1/members/me")
+                            .header("Authorization", "Bearer " + userAccessToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"nickname\": \"닉네임만수정\"}"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.nickname").value("닉네임만수정"));
+
+            // 기존 비밀번호로 여전히 로그인 가능해야 한다
+            SignInRequest signIn = new SignInRequest("member-test@example.com", "password1");
+            mockMvc.perform(post("/api/v1/auth/sign-in")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(signIn)))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("비밀번호만 보내면 닉네임은 유지된다 (부분 수정)")
+        void updateMyInfo_비밀번호만_성공() throws Exception {
+            // when & then
+            mockMvc.perform(patch("/api/v1/members/me")
+                            .header("Authorization", "Bearer " + userAccessToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"password\": \"changedPw1\"}"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.nickname").value("멤버테스터"));
+
+            // 새 비밀번호로 로그인 가능해야 한다
+            SignInRequest signIn = new SignInRequest("member-test@example.com", "changedPw1");
+            mockMvc.perform(post("/api/v1/auth/sign-in")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(signIn)))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
         @DisplayName("비인증 유저는 정보를 수정할 수 없다")
         void updateMyInfo_비인증_실패() throws Exception {
             // given

@@ -38,7 +38,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.deletedAt IS NULL AND (" +
            "LOWER(m.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(m.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    List<Member> searchByKeyword(@Param("keyword") String keyword);
+    List<Member> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     // ========== F12 관리자 기능용 쿼리 메서드 ==========
 

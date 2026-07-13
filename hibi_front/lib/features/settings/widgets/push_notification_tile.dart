@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:hidi/env.dart';
 
 /// 푸시 알림 설정 상태
 class PushNotificationState {
@@ -76,8 +77,7 @@ class PushNotificationViewModel extends StateNotifier<PushNotificationState> {
 final pushNotificationProvider =
     StateNotifierProvider<PushNotificationViewModel, PushNotificationState>(
         (ref) {
-  const useMock =
-      String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return PushNotificationViewModel(useMock: useMock);
 });
 

@@ -53,6 +53,6 @@ class SocialAuthRepository {
 
 final socialAuthRepoProvider = Provider<SocialAuthRepository>((ref) {
   // 실제 소셜 SDK 연동 전까지 기본값은 mock (다른 repo들과 동일한 기본값)
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return SocialAuthRepository(useMock: useMock);
 });

@@ -170,6 +170,6 @@ class ReportRepository {
 
 /// Report Repository Provider
 final reportRepoProvider = Provider<ReportRepository>((ref) {
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return ReportRepository(useMock: useMock);
 });

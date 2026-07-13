@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 typedef TokenFunction = Future<http.Response> Function(String token);
 
 class CommonRepos {
-  static void reponsePrint(Response response) {
+  static void responsePrint(Response response) {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final responseData = jsonDecode(response.body);
       log('Response: $responseData');

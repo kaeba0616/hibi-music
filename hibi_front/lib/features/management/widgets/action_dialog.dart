@@ -8,15 +8,13 @@ import '../models/admin_models.dart';
 class ReportActionDialog extends StatefulWidget {
   final VoidCallback onDismiss;
   final VoidCallback onWarn;
-  final VoidCallback onSuspend;
-  final VoidCallback onBan;
+  final VoidCallback onDeleteContent;
 
   const ReportActionDialog({
     super.key,
     required this.onDismiss,
     required this.onWarn,
-    required this.onSuspend,
-    required this.onBan,
+    required this.onDeleteContent,
   });
 
   @override
@@ -55,24 +53,13 @@ class _ReportActionDialogState extends State<ReportActionDialog> {
           ),
           const Divider(),
           _ActionTile(
-            icon: Icons.block,
-            label: '정지',
-            description: '사용자를 일시 정지합니다',
+            icon: Icons.delete_outline,
+            label: '콘텐츠 삭제',
+            description: '신고된 콘텐츠를 삭제합니다',
             color: theme.colorScheme.error,
             onTap: () {
               Navigator.pop(context);
-              widget.onSuspend();
-            },
-          ),
-          const Divider(),
-          _ActionTile(
-            icon: Icons.person_off,
-            label: '강제 탈퇴',
-            description: '사용자를 영구 퇴출합니다',
-            color: theme.colorScheme.error,
-            onTap: () {
-              Navigator.pop(context);
-              widget.onBan();
+              widget.onDeleteContent();
             },
           ),
         ],
@@ -111,7 +98,7 @@ class _SuspendDurationDialogState extends State<SuspendDurationDialog> {
         mainAxisSize: MainAxisSize.min,
         children: SuspensionDuration.values.map((duration) {
           return RadioListTile<SuspensionDuration>(
-            title: Text(_getDurationLabel(duration)),
+            title: Text(duration.displayName),
             value: duration,
             groupValue: _selected,
             onChanged: (value) {
@@ -138,21 +125,6 @@ class _SuspendDurationDialogState extends State<SuspendDurationDialog> {
         ),
       ],
     );
-  }
-
-  String _getDurationLabel(SuspensionDuration duration) {
-    switch (duration) {
-      case SuspensionDuration.oneDay:
-        return '1일';
-      case SuspensionDuration.threeDays:
-        return '3일';
-      case SuspensionDuration.oneWeek:
-        return '1주일';
-      case SuspensionDuration.oneMonth:
-        return '1개월';
-      case SuspensionDuration.permanent:
-        return '영구';
-    }
   }
 }
 

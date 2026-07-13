@@ -43,7 +43,7 @@ class _AdminReportListViewState extends ConsumerState<AdminReportListView> {
             child: FilterChipBar<ReportStatus>(
               items: const [
                 FilterChipItem(value: ReportStatus.pending, label: '대기중'),
-                FilterChipItem(value: ReportStatus.inReview, label: '검토중'),
+                FilterChipItem(value: ReportStatus.reviewed, label: '검토됨'),
                 FilterChipItem(value: ReportStatus.resolved, label: '처리완료'),
                 FilterChipItem(value: ReportStatus.dismissed, label: '기각'),
               ],

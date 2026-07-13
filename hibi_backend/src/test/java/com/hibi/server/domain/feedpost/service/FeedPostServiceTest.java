@@ -125,6 +125,55 @@ class FeedPostServiceTest extends ServiceTestSupport {
     }
 
     @Nested
+    @DisplayName("getPosts 메서드")
+    class GetPostsTest {
+
+        @Test
+        @DisplayName("목록 조회 시 좋아요 여부는 IN 쿼리 한 번으로 조회한다")
+        void getPosts_좋아요여부_IN쿼리_한번() {
+            // given
+            Long memberId = 1L;
+            Member member = createTestMember(memberId);
+            List<FeedPost> posts = List.of(
+                    createTestPost(1L, member),
+                    createTestPost(2L, member),
+                    createTestPost(3L, member)
+            );
+            given(feedPostRepository.findAllOrderByCreatedAtDesc(any(org.springframework.data.domain.Pageable.class)))
+                    .willReturn(new org.springframework.data.domain.PageImpl<>(posts));
+            given(feedPostLikeRepository.findLikedFeedPostIds(memberId, List.of(1L, 2L, 3L)))
+                    .willReturn(List.of(2L));
+
+            // when
+            var response = feedPostService.getPosts(0, 10, memberId);
+
+            // then
+            assertThat(response.content()).extracting(FeedPostResponse::isLiked)
+                    .containsExactly(false, true, false);
+            then(feedPostLikeRepository).should(never())
+                    .existsByMemberIdAndFeedPostId(anyLong(), anyLong());
+        }
+
+        @Test
+        @DisplayName("비로그인 사용자는 좋아요 조회 쿼리를 실행하지 않는다")
+        void getPosts_비로그인_좋아요쿼리없음() {
+            // given
+            Member member = createTestMember(1L);
+            List<FeedPost> posts = List.of(createTestPost(1L, member));
+            given(feedPostRepository.findAllOrderByCreatedAtDesc(any(org.springframework.data.domain.Pageable.class)))
+                    .willReturn(new org.springframework.data.domain.PageImpl<>(posts));
+
+            // when
+            var response = feedPostService.getPosts(0, 10, null);
+
+            // then
+            assertThat(response.content()).extracting(FeedPostResponse::isLiked)
+                    .containsExactly(false);
+            then(feedPostLikeRepository).should(never()).findLikedFeedPostIds(anyLong(), any());
+        }
+    }
+
+    @Nested
     @DisplayName("getPost 메서드")
     class GetPostTest {
 

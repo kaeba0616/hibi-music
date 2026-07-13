@@ -101,9 +101,9 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
                           _buildSectionTitle(theme, '신고 정보'),
                           const SizedBox(height: 12),
                           _buildInfoRow(
-                              theme, '신고 유형', _getTargetTypeLabel(state.report!.targetType)),
+                              theme, '신고 유형', state.report!.targetType.displayName),
                           _buildInfoRow(
-                              theme, '신고 사유', _getReasonLabel(state.report!.reason)),
+                              theme, '신고 사유', state.report!.reason.displayName),
                           if (state.report!.description != null)
                             _buildInfoRow(
                                 theme, '상세 내용', state.report!.description!),
@@ -112,25 +112,21 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
                           _buildSectionTitle(theme, '신고자'),
                           const SizedBox(height: 12),
                           _buildInfoRow(theme, '닉네임', state.report!.reporterNickname),
-                          _buildInfoRow(theme, '이메일', state.report!.reporterEmail),
-                          const SizedBox(height: 24),
-                          // 피신고자 정보
-                          _buildSectionTitle(theme, '피신고자'),
-                          const SizedBox(height: 12),
-                          _buildInfoRow(
-                              theme, '닉네임', state.report!.targetMemberNickname),
-                          _buildInfoRow(
-                              theme, '이메일', state.report!.targetMemberEmail),
                           const SizedBox(height: 24),
                           // 신고 대상 콘텐츠
                           if (state.report!.targetContent != null) ...[
                             _buildSectionTitle(theme, '신고 대상 콘텐츠'),
                             const SizedBox(height: 12),
+                            if (state.report!.targetContent!.authorNickname !=
+                                null)
+                              _buildInfoRow(theme, '작성자',
+                                  state.report!.targetContent!.authorNickname!),
                             Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  state.report!.targetContent!.content,
+                                  state.report!.targetContent!.content ??
+                                      '(내용 없음)',
                                   style: theme.textTheme.bodyMedium,
                                 ),
                               ),
@@ -197,32 +193,6 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
     );
   }
 
-  String _getTargetTypeLabel(ReportTargetType type) {
-    switch (type) {
-      case ReportTargetType.comment:
-        return '댓글';
-      case ReportTargetType.song:
-        return '노래';
-      case ReportTargetType.member:
-        return '사용자';
-    }
-  }
-
-  String _getReasonLabel(ReportReason reason) {
-    switch (reason) {
-      case ReportReason.spam:
-        return '스팸/광고';
-      case ReportReason.abuse:
-        return '욕설/비방';
-      case ReportReason.inappropriate:
-        return '부적절한 내용';
-      case ReportReason.copyright:
-        return '저작권 침해';
-      case ReportReason.other:
-        return '기타';
-    }
-  }
-
   String _formatDate(DateTime date) {
     return '${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
@@ -241,41 +211,25 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
               .read(reportDetailViewModelProvider(widget.reportId).notifier)
               .processReport(ReportAction.warn);
         },
-        onSuspend: () {
-          _showSuspendDialog(context);
-        },
-        onBan: () {
-          _showBanConfirmDialog(context);
+        onDeleteContent: () {
+          _showDeleteContentConfirmDialog(context);
         },
       ),
     );
   }
 
-  void _showSuspendDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => SuspendDurationDialog(
-        onSelect: (duration) {
-          ref
-              .read(reportDetailViewModelProvider(widget.reportId).notifier)
-              .processReport(ReportAction.suspend, suspensionDuration: duration);
-        },
-      ),
-    );
-  }
-
-  void _showBanConfirmDialog(BuildContext context) {
+  void _showDeleteContentConfirmDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => ConfirmActionDialog(
-        title: '강제 탈퇴',
-        message: '정말로 이 사용자를 영구 퇴출하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
-        confirmLabel: '강제 탈퇴',
+        title: '콘텐츠 삭제',
+        message: '신고된 콘텐츠를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+        confirmLabel: '삭제',
         isDestructive: true,
         onConfirm: () {
           ref
               .read(reportDetailViewModelProvider(widget.reportId).notifier)
-              .processReport(ReportAction.ban);
+              .processReport(ReportAction.deleteContent);
         },
       ),
     );

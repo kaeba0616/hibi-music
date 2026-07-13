@@ -46,15 +46,6 @@ class AdminQuestionTile extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                question.content,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
               Row(
                 children: [
                   Text(

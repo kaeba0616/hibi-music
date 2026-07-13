@@ -102,10 +102,12 @@ class _AdminFAQEditViewState extends ConsumerState<AdminFAQEditView> {
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
-                    items: FAQCategory.values.map((category) {
+                    items: FAQCategory.values
+                        .where((category) => category != FAQCategory.all)
+                        .map((category) {
                       return DropdownMenuItem(
                         value: category,
-                        child: Text(_getCategoryLabel(category)),
+                        child: Text(category.label),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -247,20 +249,5 @@ class _AdminFAQEditViewState extends ConsumerState<AdminFAQEditView> {
               ),
             ),
     );
-  }
-
-  String _getCategoryLabel(FAQCategory category) {
-    switch (category) {
-      case FAQCategory.account:
-        return '계정';
-      case FAQCategory.service:
-        return '서비스';
-      case FAQCategory.music:
-        return '음악';
-      case FAQCategory.community:
-        return '커뮤니티';
-      case FAQCategory.other:
-        return '기타';
-    }
   }
 }

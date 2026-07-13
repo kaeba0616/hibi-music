@@ -76,6 +76,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByStatusOrderByCreatedAtDesc(QuestionStatus status);
 
     /**
+     * 상태별 문의 페이지 조회 (관리자용)
+     */
+    org.springframework.data.domain.Page<Question> findByStatus(
+            QuestionStatus status, org.springframework.data.domain.Pageable pageable);
+
+    /**
      * 특정 회원의 오늘 작성한 문의 수 조회 (F17 일일 3개 제한)
      */
     @Query("SELECT COUNT(q) FROM Question q WHERE q.member.id = :memberId AND q.createdAt >= :startOfDay")

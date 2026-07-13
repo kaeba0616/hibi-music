@@ -61,5 +61,5 @@ public interface FeedPostRepository extends JpaRepository<FeedPost, Long> {
      */
     @EntityGraph(attributePaths = {"member"})
     @Query("SELECT fp FROM FeedPost fp WHERE LOWER(fp.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY fp.createdAt DESC")
-    List<FeedPost> searchByKeyword(@Param("keyword") String keyword);
+    List<FeedPost> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

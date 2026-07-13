@@ -183,7 +183,6 @@ class QuestionRepository {
 
 /// Mock Provider 패턴 적용
 final questionRepoProvider = Provider<QuestionRepository>((ref) {
-  const useMock =
-      String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return QuestionRepository(useMock: useMock);
 });

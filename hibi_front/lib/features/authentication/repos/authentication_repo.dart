@@ -190,13 +190,13 @@ class AuthenticationRepository {
       return false;
     }
 
-    final Map<String, dynamic> queryParams = {"refreshToken": refreshToken};
-    final uri = Env.apiUri("/api/v1/auth/reissue", queryParams);
+    final uri = Env.apiUri("/api/v1/auth/reissue");
 
     try {
       final response = await http.post(
         uri,
         headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"refreshToken": refreshToken}),
       );
 
       log("postReissue: ${response.statusCode}");
@@ -247,6 +247,24 @@ class AuthenticationRepository {
       throw Exception("세션이 만료되었습니다. 다시 로그인해주세요.");
     }
     return await request(newAccessToken);
+  }
+
+  /// 로그인 상태면 Bearer 토큰을 붙이고, 아니면 익명으로 요청한다 (공개 API용)
+  static Future<http.Response> requestWithOptionalAuth(
+    TokenFunction request,
+    Future<http.Response> Function() anonymousRequest,
+  ) async {
+    final accessToken = await _secureStorage.read(key: "accessToken");
+    if (accessToken == null) {
+      return anonymousRequest();
+    }
+    try {
+      return await requestWithRetry(request);
+    } catch (e) {
+      // 세션 만료 등으로 인증 요청이 불가하면 익명으로 폴백한다
+      log("requestWithOptionalAuth: 인증 요청 실패, 익명으로 폴백 ($e)");
+      return anonymousRequest();
+    }
   }
 }
 

@@ -48,7 +48,6 @@ class _AdminFAQListViewState extends ConsumerState<AdminFAQListView> {
               items: const [
                 FilterChipItem(value: FAQCategory.account, label: '계정'),
                 FilterChipItem(value: FAQCategory.service, label: '서비스'),
-                FilterChipItem(value: FAQCategory.music, label: '음악'),
                 FilterChipItem(value: FAQCategory.community, label: '커뮤니티'),
                 FilterChipItem(value: FAQCategory.other, label: '기타'),
               ],

@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -233,24 +234,17 @@ public class AdminService {
      * 문의 목록 조회
      */
     public AdminQuestionListResponse getQuestions(QuestionStatus status, int page, int size) {
-        List<Question> questions;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        if (status != null) {
-            questions = questionRepository.findByStatusOrderByCreatedAtDesc(status);
-        } else {
-            questions = questionRepository.findAllOrderByCreatedAtDesc();
-        }
+        Page<Question> questionPage = (status != null)
+                ? questionRepository.findByStatus(status, pageable)
+                : questionRepository.findAll(pageable);
 
-        // 간단한 페이징 처리
-        int start = page * size;
-        int end = Math.min(start + size, questions.size());
-        List<Question> pagedQuestions = questions.subList(start, end);
-
-        List<AdminQuestionResponse> responses = pagedQuestions.stream()
+        List<AdminQuestionResponse> responses = questionPage.getContent().stream()
                 .map(AdminQuestionResponse::from)
                 .collect(Collectors.toList());
 
-        return AdminQuestionListResponse.of(responses, questions.size(), page, size);
+        return AdminQuestionListResponse.of(responses, questionPage.getTotalElements(), page, size);
     }
 
     /**
@@ -413,29 +407,24 @@ public class AdminService {
      */
     public AdminCommentListResponse getAdminComments(boolean onlyReported, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Comment> commentPage;
+        Page<Comment> commentPage = onlyReported
+                ? commentRepository.findReportedComments(ReportTargetType.COMMENT, pageable)
+                : commentRepository.findAll(pageable);
 
-        if (onlyReported) {
-            // 신고된 댓글만 조회 - 간단히 필터링된 댓글 조회
-            commentPage = commentRepository.findAll(pageable);
-            // 신고 수가 있는 댓글만 필터 (실제 구현에서는 별도 쿼리 사용)
-        } else {
-            commentPage = commentRepository.findAll(pageable);
-        }
+        List<Long> commentIds = commentPage.getContent().stream()
+                .map(Comment::getId)
+                .toList();
+
+        Map<Long, Long> reportCounts = commentIds.isEmpty()
+                ? Map.of()
+                : reportRepository.countGroupedByTargetTypeAndTargetIdIn(ReportTargetType.COMMENT, commentIds)
+                        .stream()
+                        .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
 
         List<AdminCommentResponse> comments = commentPage.getContent().stream()
-                .map(comment -> {
-                    int reportCount = (int) reportRepository.countByTargetTypeAndTargetId(
-                            ReportTargetType.COMMENT, comment.getId());
-                    return AdminCommentResponse.from(comment, reportCount);
-                })
+                .map(comment -> AdminCommentResponse.from(
+                        comment, reportCounts.getOrDefault(comment.getId(), 0L).intValue()))
                 .collect(Collectors.toList());
-
-        if (onlyReported) {
-            comments = comments.stream()
-                    .filter(c -> c.reportCount() > 0)
-                    .collect(Collectors.toList());
-        }
 
         return AdminCommentListResponse.of(comments, commentPage.getTotalElements(), page, size);
     }

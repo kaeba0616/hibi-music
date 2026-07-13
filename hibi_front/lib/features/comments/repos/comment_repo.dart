@@ -256,7 +256,6 @@ class CommentRepository {
 
 /// CommentRepository Provider
 final commentRepoProvider = Provider<CommentRepository>((ref) {
-  final useMock =
-      const String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return CommentRepository(useMock: useMock);
 });

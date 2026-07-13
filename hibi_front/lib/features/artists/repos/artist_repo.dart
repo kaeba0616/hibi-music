@@ -145,6 +145,6 @@ class ArtistRepository {
 
 /// Mock Provider 패턴 적용
 final artistRepoProvider = Provider<ArtistRepository>((ref) {
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return ArtistRepository(useMock: useMock);
 });

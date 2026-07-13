@@ -126,6 +126,6 @@ class FAQRepository {
 
 /// Mock Provider 패턴 적용
 final faqRepoProvider = Provider<FAQRepository>((ref) {
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return FAQRepository(useMock: useMock);
 });

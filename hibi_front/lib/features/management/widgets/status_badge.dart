@@ -58,10 +58,10 @@ class ReportStatusBadge extends StatelessWidget {
         backgroundColor = theme.colorScheme.error.withOpacity(0.1);
         textColor = theme.colorScheme.error;
         label = '대기중';
-      case ReportStatus.inReview:
+      case ReportStatus.reviewed:
         backgroundColor = Colors.orange.withOpacity(0.1);
         textColor = Colors.orange.shade700;
-        label = '검토중';
+        label = '검토됨';
       case ReportStatus.resolved:
         backgroundColor = Colors.green.withOpacity(0.1);
         textColor = Colors.green.shade700;
@@ -95,10 +95,14 @@ class QuestionStatusBadge extends StatelessWidget {
     String label;
 
     switch (status) {
-      case QuestionStatus.pending:
+      case QuestionStatus.received:
         backgroundColor = theme.colorScheme.error.withOpacity(0.1);
         textColor = theme.colorScheme.error;
-        label = '답변대기';
+        label = '접수됨';
+      case QuestionStatus.processing:
+        backgroundColor = Colors.orange.withOpacity(0.1);
+        textColor = Colors.orange.shade700;
+        label = '처리중';
       case QuestionStatus.answered:
         backgroundColor = Colors.green.withOpacity(0.1);
         textColor = Colors.green.shade700;

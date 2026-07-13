@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -99,6 +100,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         log.error("[HttpMessageNotReadableException] : {}", e.getMessage());
+        ProblemDetail problemDetail = createProblemDetail(status, ErrorCode.INVALID_INPUT_VALUE);
+        return ResponseEntity.status(status).body(problemDetail);
+    }
+
+    // 잘못된 파라미터 타입/enum 값 등 클라이언트 입력 오류 (500이 아닌 400으로 응답)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
+    public ResponseEntity<ProblemDetail> handleBadRequestParams(Exception e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        log.warn("[InvalidRequestParameter] : {}", e.getMessage());
         ProblemDetail problemDetail = createProblemDetail(status, ErrorCode.INVALID_INPUT_VALUE);
         return ResponseEntity.status(status).body(problemDetail);
     }

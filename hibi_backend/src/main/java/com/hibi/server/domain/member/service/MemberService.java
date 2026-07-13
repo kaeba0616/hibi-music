@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.hibi.server.global.exception.ErrorCode.ENTITY_NOT_FOUND;
+import static com.hibi.server.global.exception.ErrorCode.INVALID_INPUT_VALUE;
 
 @Service
 @RequiredArgsConstructor
@@ -52,15 +53,22 @@ public class MemberService {
         String nickname = request.nickname();
         String password = request.password();
 
-        memberValidator.validateNickname(nickname, member.getNickname());
-        memberValidator.validatePassword(password);
-
-        if (!member.getNickname().equals(nickname)) {
-            member.updateNickname(nickname);
+        if (nickname == null && password == null) {
+            throw new CustomException(INVALID_INPUT_VALUE);
         }
 
-        String encodedNewPassword = passwordEncoder.encode(password);
-        member.updatePasswordHash(encodedNewPassword);
+        // 부분 수정: 포함된 필드만 검증하고 변경한다
+        if (nickname != null) {
+            memberValidator.validateNickname(nickname, member.getNickname());
+            if (!member.getNickname().equals(nickname)) {
+                member.updateNickname(nickname);
+            }
+        }
+
+        if (password != null) {
+            memberValidator.validatePassword(password);
+            member.updatePasswordHash(passwordEncoder.encode(password));
+        }
 
         return MemberProfileResponse.from(member);
     }

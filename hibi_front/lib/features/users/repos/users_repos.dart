@@ -49,7 +49,7 @@ class UserRepository {
       await AuthenticationRepository.tokensClear();
     }
 
-    CommonRepos.reponsePrint(response);
+    CommonRepos.responsePrint(response);
   }
 
   Future<bool> patchCurrentUser(String nickname, String password) async {

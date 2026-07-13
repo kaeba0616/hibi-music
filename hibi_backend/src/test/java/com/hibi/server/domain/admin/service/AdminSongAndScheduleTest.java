@@ -180,8 +180,9 @@ class AdminSongAndScheduleTest extends ServiceTestSupport {
 
             Page<Comment> commentPage = new PageImpl<>(List.of(comment));
             given(commentRepository.findAll(any(Pageable.class))).willReturn(commentPage);
-            given(reportRepository.countByTargetTypeAndTargetId(eq(ReportTargetType.COMMENT), eq(1L)))
-                    .willReturn(0L);
+            given(reportRepository.countGroupedByTargetTypeAndTargetIdIn(
+                    eq(ReportTargetType.COMMENT), eq(List.of(1L))))
+                    .willReturn(List.of());
 
             // when
             AdminCommentListResponse result = adminService.getAdminComments(false, 0, 20);
@@ -190,6 +191,38 @@ class AdminSongAndScheduleTest extends ServiceTestSupport {
             assertThat(result).isNotNull();
             assertThat(result.comments()).hasSize(1);
             assertThat(result.comments().get(0).content()).isEqualTo("댓글 내용");
+            assertThat(result.comments().get(0).reportCount()).isZero();
+        }
+
+        @Test
+        @DisplayName("신고된 댓글만 조회 시 DB에서 필터링/페이징하고 신고 수를 일괄 조회한다")
+        void getAdminComments_신고필터_DB페이징() {
+            // given
+            Member member = createTestMember(1L);
+            FeedPost feedPost = FeedPost.builder()
+                    .id(1L).member(member).content("게시글")
+                    .likeCount(0).commentCount(1).build();
+            Comment reported = Comment.builder()
+                    .id(1L).feedPost(feedPost).member(member)
+                    .content("신고된 댓글").likeCount(0).isDeleted(false).isFiltered(false).build();
+
+            given(commentRepository.findReportedComments(
+                    eq(ReportTargetType.COMMENT), any(Pageable.class)))
+                    .willReturn(new PageImpl<>(List.of(reported)));
+            given(reportRepository.countGroupedByTargetTypeAndTargetIdIn(
+                    eq(ReportTargetType.COMMENT), eq(List.of(1L))))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 3L}));
+
+            // when
+            AdminCommentListResponse result = adminService.getAdminComments(true, 0, 20);
+
+            // then
+            assertThat(result.comments()).hasSize(1);
+            assertThat(result.comments().get(0).reportCount()).isEqualTo(3);
+            assertThat(result.totalCount()).isEqualTo(1);
+            then(commentRepository).should(org.mockito.Mockito.never()).findAll(any(Pageable.class));
+            then(reportRepository).should(org.mockito.Mockito.never())
+                    .countByTargetTypeAndTargetId(any(ReportTargetType.class), any());
         }
     }
 

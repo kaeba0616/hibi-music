@@ -12,6 +12,8 @@ import com.hibi.server.domain.search.dto.response.*;
 import com.hibi.server.domain.song.entity.Song;
 import com.hibi.server.domain.song.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,17 +92,15 @@ public class SearchService {
     }
 
     private List<SearchSongResponse> searchSongs(String keyword, int limit) {
-        List<Song> songs = songRepository.searchByKeyword(keyword);
+        List<Song> songs = songRepository.searchByKeyword(keyword, limitPageable(limit));
         return songs.stream()
-                .limit(limit)
                 .map(SearchSongResponse::from)
                 .collect(Collectors.toList());
     }
 
     private List<SearchArtistResponse> searchArtists(String keyword, int limit) {
-        List<Artist> artists = artistRepository.searchByKeyword(keyword);
+        List<Artist> artists = artistRepository.searchByKeyword(keyword, limitPageable(limit));
         return artists.stream()
-                .limit(limit)
                 .map(artist -> {
                     long followerCount = artistFollowRepository.countByArtistId(artist.getId());
                     return SearchArtistResponse.from(artist, followerCount);
@@ -109,21 +109,23 @@ public class SearchService {
     }
 
     private List<SearchPostResponse> searchPosts(String keyword, int limit) {
-        List<FeedPost> posts = feedPostRepository.searchByKeyword(keyword);
+        List<FeedPost> posts = feedPostRepository.searchByKeyword(keyword, limitPageable(limit));
         return posts.stream()
-                .limit(limit)
                 .map(SearchPostResponse::from)
                 .collect(Collectors.toList());
     }
 
     private List<SearchUserResponse> searchUsers(String keyword, int limit) {
-        List<Member> members = memberRepository.searchByKeyword(keyword);
+        List<Member> members = memberRepository.searchByKeyword(keyword, limitPageable(limit));
         return members.stream()
-                .limit(limit)
                 .map(member -> {
                     long followerCount = memberFollowRepository.countFollowersByUserId(member.getId());
                     return SearchUserResponse.from(member, followerCount);
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Pageable limitPageable(int limit) {
+        return PageRequest.of(0, limit);
     }
 }

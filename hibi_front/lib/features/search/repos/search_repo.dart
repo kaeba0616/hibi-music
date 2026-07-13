@@ -35,14 +35,16 @@ class SearchRepository {
       'limit': '20',
     });
 
-    final response = await AuthenticationRepository.requestWithRetry(
+    // 검색은 공개 API이므로 비로그인 상태에서도 익명으로 요청 가능하다
+    final response = await AuthenticationRepository.requestWithOptionalAuth(
       (accessToken) => http.get(
         uri,
         headers: {
           "Content-Type": "application/json",
-          if (accessToken.isNotEmpty) "Authorization": "Bearer $accessToken",
+          "Authorization": "Bearer $accessToken",
         },
       ),
+      () => http.get(uri, headers: {"Content-Type": "application/json"}),
     );
 
     log("search: ${response.statusCode}");
@@ -308,6 +310,6 @@ class SearchRepository {
 
 /// Mock Provider 패턴 적용
 final searchRepoProvider = Provider<SearchRepository>((ref) {
-  const useMock = String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return SearchRepository(useMock: useMock);
 });

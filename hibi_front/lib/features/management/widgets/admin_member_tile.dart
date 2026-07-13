@@ -31,10 +31,10 @@ class AdminMemberTile extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                backgroundImage: member.profileImageUrl != null
-                    ? NetworkImage(member.profileImageUrl!)
+                backgroundImage: member.profileImage != null
+                    ? NetworkImage(member.profileImage!)
                     : null,
-                child: member.profileImageUrl == null
+                child: member.profileImage == null
                     ? Icon(
                         Icons.person,
                         color: theme.colorScheme.primary,
@@ -99,9 +99,9 @@ class AdminMemberTile extends StatelessWidget {
                   MemberStatusBadge(status: member.status),
                   const SizedBox(height: 8),
                   Text(
-                    '신고 ${member.reportCount}건',
+                    '신고 ${member.reportReceivedCount}건',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: member.reportCount > 0
+                      color: member.reportReceivedCount > 0
                           ? theme.colorScheme.error
                           : theme.colorScheme.onSurface.withOpacity(0.5),
                     ),

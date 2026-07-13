@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:hidi/env.dart';
 import '../mocks/my_comments_mock.dart';
 
 /// 내가 쓴 댓글 목록 상태
@@ -61,7 +62,6 @@ class MyCommentsViewModel extends StateNotifier<MyCommentsState> {
 /// 내가 쓴 댓글 Provider
 final myCommentsProvider =
     StateNotifierProvider<MyCommentsViewModel, MyCommentsState>((ref) {
-  const useMock =
-      String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+  const useMock = Env.useMock;
   return MyCommentsViewModel(useMock: useMock);
 });

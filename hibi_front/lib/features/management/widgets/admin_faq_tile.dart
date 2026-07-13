@@ -44,7 +44,7 @@ class AdminFAQTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      _getCategoryLabel(faq.category),
+                      faq.category.label,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w500,
@@ -98,20 +98,5 @@ class AdminFAQTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getCategoryLabel(FAQCategory category) {
-    switch (category) {
-      case FAQCategory.account:
-        return '계정';
-      case FAQCategory.service:
-        return '서비스';
-      case FAQCategory.music:
-        return '음악';
-      case FAQCategory.community:
-        return '커뮤니티';
-      case FAQCategory.other:
-        return '기타';
-    }
   }
 }

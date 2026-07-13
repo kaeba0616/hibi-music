@@ -129,11 +129,11 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                                   backgroundColor:
                                       theme.colorScheme.primary.withOpacity(0.1),
                                   backgroundImage:
-                                      state.member!.profileImageUrl != null
+                                      state.member!.profileImage != null
                                           ? NetworkImage(
-                                              state.member!.profileImageUrl!)
+                                              state.member!.profileImage!)
                                           : null,
-                                  child: state.member!.profileImageUrl == null
+                                  child: state.member!.profileImage == null
                                       ? Icon(
                                           Icons.person,
                                           size: 48,
@@ -192,10 +192,6 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                               _InfoItem(
                                   label: '가입일',
                                   value: _formatDate(state.member!.createdAt)),
-                              if (state.member!.lastLoginAt != null)
-                                _InfoItem(
-                                    label: '마지막 로그인',
-                                    value: _formatDate(state.member!.lastLoginAt!)),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -216,39 +212,23 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                               Expanded(
                                 child: _buildStatCard(
                                   theme,
-                                  '좋아요',
-                                  state.member!.likeCount.toString(),
-                                  Icons.favorite,
+                                  '게시글',
+                                  state.member!.postCount.toString(),
+                                  Icons.article,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildStatCard(
                                   theme,
-                                  '신고 횟수',
-                                  state.member!.reportCount.toString(),
+                                  '받은 신고',
+                                  state.member!.reportReceivedCount.toString(),
                                   Icons.flag,
-                                  isWarning: state.member!.reportCount > 0,
+                                  isWarning: state.member!.reportReceivedCount > 0,
                                 ),
                               ),
                             ],
                           ),
-                          if (state.member!.status == MemberStatus.suspended) ...[
-                            const SizedBox(height: 24),
-                            // 정지 정보
-                            _buildSectionTitle(theme, '정지 정보'),
-                            const SizedBox(height: 12),
-                            _buildInfoCard(
-                              theme,
-                              [
-                                if (state.member!.suspendedUntil != null)
-                                  _InfoItem(
-                                      label: '정지 해제일',
-                                      value: _formatDate(
-                                          state.member!.suspendedUntil!)),
-                              ],
-                            ),
-                          ],
                         ],
                       ),
                     ),

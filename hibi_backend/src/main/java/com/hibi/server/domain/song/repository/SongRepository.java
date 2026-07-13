@@ -1,6 +1,7 @@
 package com.hibi.server.domain.song.repository;
 
 import com.hibi.server.domain.song.entity.Song;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -56,5 +57,5 @@ public interface SongRepository extends JpaRepository<Song, Long> {
            "OR LOWER(a.nameKor) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(a.nameEng) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(a.nameJp) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Song> searchByKeyword(@Param("keyword") String keyword);
+    List<Song> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

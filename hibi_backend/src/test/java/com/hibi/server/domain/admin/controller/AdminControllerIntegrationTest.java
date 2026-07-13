@@ -221,6 +221,39 @@ class AdminControllerIntegrationTest extends IntegrationTestSupport {
                     .andExpect(jsonPath("$.success").value(true))
                     .andExpect(jsonPath("$.data.questions").isArray());
         }
+
+        @Test
+        @DisplayName("범위를 벗어난 페이지를 요청하면 500이 아닌 빈 목록을 반환한다")
+        @WithMockUser(roles = "ADMIN")
+        void getQuestions_범위밖페이지_빈목록() throws Exception {
+            // given - 문의 1건만 존재
+            Question question = Question.builder()
+                    .member(user)
+                    .type(QuestionType.SERVICE)
+                    .title("테스트 문의")
+                    .content("문의 내용입니다")
+                    .status(QuestionStatus.RECEIVED)
+                    .build();
+            questionRepository.save(question);
+
+            // when & then
+            mockMvc.perform(get("/api/v1/admin/questions")
+                            .param("page", "5")
+                            .param("size", "20"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.questions").isEmpty());
+        }
+
+        @Test
+        @DisplayName("잘못된 status 값을 보내면 500이 아닌 400을 반환한다")
+        @WithMockUser(roles = "ADMIN")
+        void getQuestions_잘못된status_400() throws Exception {
+            mockMvc.perform(get("/api/v1/admin/questions")
+                            .param("status", "NOT_A_STATUS"))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested

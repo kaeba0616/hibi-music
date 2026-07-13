@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("VerificationController 통합 테스트")
+@TestPropertySource(properties = "auth.email-verification.mock-enabled=true")
 class VerificationControllerTest extends IntegrationTestSupport {
 
     @Nested
@@ -69,7 +71,8 @@ class VerificationControllerTest extends IntegrationTestSupport {
                             .content(objectMapper.writeValueAsString(request)))
                     .andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.message").value("인증번호가 올바르지 않습니다."));
+                    .andExpect(jsonPath("$.detail").value("인증번호가 올바르지 않습니다."))
+                    .andExpect(jsonPath("$.errorCode").value("A017"));
         }
     }
 }

@@ -19,6 +19,10 @@ class Env {
     return Uri.parse(normalized);
   }
 
+  /// 실제 API 연동 전까지 기본값은 mock 모드
+  static const bool useMock =
+      String.fromEnvironment('USE_MOCK', defaultValue: 'true') == 'true';
+
   /// API 요청 URI 생성. API_BASE_URL의 스킴(https 포함)을 그대로 따른다.
   static Uri apiUri(String path, [Map<String, dynamic>? queryParameters]) {
     return baseUri.replace(path: path, queryParameters: queryParameters);

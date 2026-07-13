@@ -1,6 +1,7 @@
 package com.hibi.server.domain.auth.controller;
 
 import com.hibi.server.domain.auth.dto.CustomUserDetails;
+import com.hibi.server.domain.auth.dto.request.ReissueRequest;
 import com.hibi.server.domain.auth.dto.request.SignInRequest;
 import com.hibi.server.domain.auth.dto.request.SignUpRequest;
 import com.hibi.server.domain.auth.dto.request.SocialLoginRequest;
@@ -15,11 +16,14 @@ import com.hibi.server.domain.auth.service.SocialAuthService;
 import com.hibi.server.domain.member.dto.response.AvailabilityResponse;
 import com.hibi.server.domain.member.validator.MemberValidator;
 import com.hibi.server.global.annotation.AuthMember;
+import com.hibi.server.global.exception.CustomException;
+import com.hibi.server.global.exception.ErrorCode;
 import com.hibi.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +39,9 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final SocialAuthService socialAuthService;
     private final MemberValidator memberValidator;
+
+    @Value("${auth.email-verification.mock-enabled:false}")
+    private boolean verificationMockEnabled;
 
     @PostMapping("/sign-up")
     public ResponseEntity<SuccessResponse<?>> signup(@Valid @RequestBody SignUpRequest request) {
@@ -54,8 +61,9 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<SuccessResponse<ReissueResponse>> reissueTokens(@RequestParam String refreshToken) {
-        return ResponseEntity.ok(SuccessResponse.success("토큰 재발급에 성공하였습니다.", refreshTokenService.reissueTokens(refreshToken)));
+    public ResponseEntity<SuccessResponse<ReissueResponse>> reissueTokens(@Valid @RequestBody ReissueRequest request) {
+        // 토큰을 쿼리 파라미터로 받으면 액세스 로그/프록시에 노출되므로 JSON 본문으로 받는다
+        return ResponseEntity.ok(SuccessResponse.success("토큰 재발급에 성공하였습니다.", refreshTokenService.reissueTokens(request.refreshToken())));
     }
 
     @Operation(
@@ -98,7 +106,7 @@ public class AuthController {
     public ResponseEntity<SuccessResponse<?>> sendVerificationCode(
             @Valid @RequestBody VerificationSendRequest request) {
         // TODO: 실제 이메일 발송 서비스 연동
-        // 현재는 Mock 구현 (항상 성공)
+        requireVerificationMockEnabled();
         return ResponseEntity.ok(SuccessResponse.success("인증번호가 발송되었습니다."));
     }
 
@@ -110,11 +118,20 @@ public class AuthController {
     public ResponseEntity<SuccessResponse<?>> checkVerificationCode(
             @Valid @RequestBody VerificationCheckRequest request) {
         // TODO: 실제 인증번호 검증 로직 구현
-        // 현재는 Mock 구현 ("123456" 항상 성공)
+        requireVerificationMockEnabled();
         if ("123456".equals(request.code())) {
             return ResponseEntity.ok(SuccessResponse.success("인증이 완료되었습니다."));
         }
-        return ResponseEntity.badRequest()
-                .body(SuccessResponse.success("인증번호가 올바르지 않습니다."));
+        throw new CustomException(ErrorCode.VERIFICATION_CODE_MISMATCH);
+    }
+
+    /**
+     * 실제 이메일 발송 연동 전까지 Mock 인증은 명시적으로 켠 환경에서만 허용한다.
+     * (기본값 false: 운영에서 "123456"으로 인증이 통과되는 것을 차단)
+     */
+    private void requireVerificationMockEnabled() {
+        if (!verificationMockEnabled) {
+            throw new CustomException(ErrorCode.VERIFICATION_NOT_AVAILABLE);
+        }
     }
 }

@@ -78,8 +78,8 @@ class AdminReportTile extends StatelessWidget {
     switch (report.targetType) {
       case ReportTargetType.comment:
         icon = Icons.comment;
-      case ReportTargetType.song:
-        icon = Icons.music_note;
+      case ReportTargetType.post:
+        icon = Icons.article;
       case ReportTargetType.member:
         icon = Icons.person;
     }
@@ -94,8 +94,8 @@ class AdminReportTile extends StatelessWidget {
     switch (report.targetType) {
       case ReportTargetType.comment:
         return '댓글 신고';
-      case ReportTargetType.song:
-        return '노래 신고';
+      case ReportTargetType.post:
+        return '게시글 신고';
       case ReportTargetType.member:
         return '사용자 신고';
     }

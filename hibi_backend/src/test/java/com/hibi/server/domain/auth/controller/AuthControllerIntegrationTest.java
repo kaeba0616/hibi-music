@@ -72,6 +72,73 @@ class AuthControllerIntegrationTest extends IntegrationTestSupport {
     }
 
     @Nested
+    @DisplayName("POST /api/v1/auth/reissue")
+    class ReissueTest {
+
+        @Test
+        @DisplayName("JSON 본문의 리프레시 토큰으로 재발급에 성공한다")
+        void reissue_JSON본문_성공() throws Exception {
+            // given
+            SignUpRequest signUp = new SignUpRequest("reissue-test@example.com", "password1", "재발급유저");
+            mockMvc.perform(post("/api/v1/auth/sign-up")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(signUp)));
+
+            SignInRequest signIn = new SignInRequest("reissue-test@example.com", "password1");
+            MvcResult signInResult = mockMvc.perform(post("/api/v1/auth/sign-in")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(signIn)))
+                    .andReturn();
+            String refreshToken = objectMapper.readTree(signInResult.getResponse().getContentAsString())
+                    .path("data").path("refreshToken").asText();
+
+            // when & then
+            mockMvc.perform(post("/api/v1/auth/reissue")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"refreshToken\": \"" + refreshToken + "\"}"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.accessToken").exists())
+                    .andExpect(jsonPath("$.data.refreshToken").exists());
+        }
+
+        @Test
+        @DisplayName("리프레시 토큰 없이 요청하면 400 에러가 반환된다")
+        void reissue_토큰누락_실패() throws Exception {
+            mockMvc.perform(post("/api/v1/auth/reissue")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("이메일 인증 Mock 게이트")
+    class VerificationGatingTest {
+
+        @Test
+        @DisplayName("Mock 인증이 비활성화(기본값)면 인증번호 발송이 503을 반환한다")
+        void verificationSend_기본비활성화_503() throws Exception {
+            mockMvc.perform(post("/api/v1/auth/verification/send")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"email\": \"gate-test@example.com\"}"))
+                    .andDo(print())
+                    .andExpect(status().isServiceUnavailable());
+        }
+
+        @Test
+        @DisplayName("Mock 인증이 비활성화(기본값)면 인증번호 확인이 503을 반환한다")
+        void verificationCheck_기본비활성화_503() throws Exception {
+            mockMvc.perform(post("/api/v1/auth/verification/check")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"email\": \"gate-test@example.com\", \"code\": \"123456\"}"))
+                    .andDo(print())
+                    .andExpect(status().isServiceUnavailable());
+        }
+    }
+
+    @Nested
     @DisplayName("JWT 필터 예외 처리")
     class JwtFilterErrorHandlingTest {
 

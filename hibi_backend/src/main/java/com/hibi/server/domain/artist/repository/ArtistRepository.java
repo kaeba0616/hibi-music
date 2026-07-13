@@ -44,5 +44,5 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
            "LOWER(a.nameKor) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(a.nameEng) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(a.nameJp) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Artist> searchByKeyword(@Param("keyword") String keyword);
+    List<Artist> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

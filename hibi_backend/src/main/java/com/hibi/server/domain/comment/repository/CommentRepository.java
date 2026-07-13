@@ -1,6 +1,9 @@
 package com.hibi.server.domain.comment.repository;
 
 import com.hibi.server.domain.comment.entity.Comment;
+import com.hibi.server.domain.report.entity.ReportTargetType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,8 +19,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     /**
      * 게시글의 최상위 댓글 목록 조회 (대댓글 제외, 작성일 오름차순)
+     * 작성자/대댓글/대댓글 작성자를 fetch join으로 함께 로딩해 N+1을 방지한다.
      */
-    @Query("SELECT c FROM Comment c WHERE c.feedPost.id = :feedPostId AND c.parent IS NULL ORDER BY c.createdAt ASC")
+    @Query("SELECT c FROM Comment c " +
+           "JOIN FETCH c.member " +
+           "LEFT JOIN FETCH c.replies r " +
+           "LEFT JOIN FETCH r.member " +
+           "WHERE c.feedPost.id = :feedPostId AND c.parent IS NULL " +
+           "ORDER BY c.createdAt ASC, r.createdAt ASC")
     List<Comment> findTopLevelCommentsByFeedPostId(@Param("feedPostId") Long feedPostId);
 
     /**
@@ -61,4 +70,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
            "AND c.isDeleted = false AND c.isFiltered = false AND c.likeCount > 0 " +
            "ORDER BY c.likeCount DESC, c.createdAt DESC")
     List<Comment> findTopCommentsByFeedPostId(@Param("feedPostId") Long feedPostId);
+
+    /**
+     * 신고된 댓글 페이지 조회 (관리자용 - DB 레벨 필터링)
+     */
+    @Query("SELECT c FROM Comment c WHERE c.id IN " +
+           "(SELECT r.targetId FROM Report r WHERE r.targetType = :targetType)")
+    Page<Comment> findReportedComments(@Param("targetType") ReportTargetType targetType, Pageable pageable);
 }

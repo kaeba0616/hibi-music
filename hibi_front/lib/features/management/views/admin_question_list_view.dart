@@ -42,7 +42,9 @@ class _AdminQuestionListViewState extends ConsumerState<AdminQuestionListView> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: FilterChipBar<QuestionStatus>(
               items: const [
-                FilterChipItem(value: QuestionStatus.pending, label: '답변대기'),
+                FilterChipItem(value: QuestionStatus.received, label: '접수됨'),
+                FilterChipItem(
+                    value: QuestionStatus.processing, label: '처리중'),
                 FilterChipItem(value: QuestionStatus.answered, label: '답변완료'),
               ],
               selectedValue: state.selectedStatus,
