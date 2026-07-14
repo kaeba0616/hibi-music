@@ -3,8 +3,6 @@ package com.hibi.server.domain.auth.service;
 import com.hibi.server.domain.auth.dto.CustomUserDetails;
 import com.hibi.server.domain.member.entity.Member;
 import com.hibi.server.domain.member.repository.MemberRepository;
-import com.hibi.server.global.exception.CustomException;
-import com.hibi.server.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,8 +17,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // UsernameNotFoundException이어야 Spring Security가 BadCredentials(401)로 처리한다.
+        // 다른 예외는 InternalAuthenticationServiceException으로 감싸져 500이 된다.
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.BAD_CREDENTIALS));
+                .orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 이메일: " + email));
         return new CustomUserDetails(member);
     }
 }

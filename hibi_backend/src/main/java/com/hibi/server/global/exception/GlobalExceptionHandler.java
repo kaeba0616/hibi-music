@@ -31,17 +31,29 @@ public class GlobalExceptionHandler {
     private ProblemDetail createProblemDetail(HttpStatus status, ErrorCode errorCode) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, errorCode.getMessage());
         problemDetail.setTitle(status.getReasonPhrase());
-        problemDetail.setType(URI.create("http://" + apiBaseUrl + getProblemTypePath(errorCode)));
+        problemDetail.setType(URI.create(normalizedBaseUrl() + getProblemTypePath(errorCode)));
 
         try {
             problemDetail.setInstance(URI.create(ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString()));
         } catch (IllegalStateException e) {
             log.warn("요청 경로 요청 중 오류가 발생했습니다. {}", e.getMessage());
-            problemDetail.setInstance(URI.create("http://" + apiBaseUrl + "/errors/unknown-instance"));
+            problemDetail.setInstance(URI.create(normalizedBaseUrl() + "/errors/unknown-instance"));
         }
 
         problemDetail.setProperty("errorCode", errorCode.getCode());
         return problemDetail;
+    }
+
+    /**
+     * base-url 설정값을 그대로 origin으로 사용한다.
+     * scheme이 빠진 값(호스트만)에는 http://를 붙이고, 끝의 슬래시는 제거한다.
+     */
+    private String normalizedBaseUrl() {
+        String base = apiBaseUrl == null ? "" : apiBaseUrl.trim();
+        if (!base.startsWith("http://") && !base.startsWith("https://")) {
+            base = "http://" + base;
+        }
+        return base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
     }
 
     @ExceptionHandler(CustomException.class)
@@ -132,7 +144,7 @@ public class GlobalExceptionHandler {
 //            };
 //        }
         //TODO: swagger 문서 작성 완료 시 index가 아닌 특정 항목으로 이동할 수 있게 변경
-//        return ":8080/swagger-ui/index.html#/problems/" + errorCode.getCode();
-        return ":8080/swagger-ui/index.html#/";
+//        return "/swagger-ui/index.html#/problems/" + errorCode.getCode();
+        return "/swagger-ui/index.html#/";
     }
 }

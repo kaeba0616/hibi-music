@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hidi/utils/token_storage.dart';
 import 'package:hidi/env.dart';
 import 'package:hidi/features/users/models/user.dart';
 import 'package:hidi/features/users/repos/users_repos.dart';
@@ -19,7 +19,7 @@ class AuthStateNotifier extends ChangeNotifier {
 class AuthenticationRepository {
   final basepath = '/api/v1/auth';
 
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  static final TokenStorage _secureStorage = TokenStorage();
   final UserRepository userRepo = UserRepository();
 
   /// 세션은 앱 전역에 하나이므로 static으로 관리한다.

@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hidi/utils/token_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hidi/features/main-screen/views/main_navigation_view.dart';
 import 'package:hidi/features/onboarding/models/social_provider.dart';
@@ -42,7 +42,7 @@ class SocialLoginState {
 
 class OnboardingViewModel extends StateNotifier<SocialLoginState> {
   final SocialAuthRepository _repo;
-  static const _storage = FlutterSecureStorage();
+  static final _storage = TokenStorage();
 
   OnboardingViewModel(this._repo) : super(const SocialLoginState());
 

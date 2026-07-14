@@ -274,6 +274,18 @@ class AuthControllerIntegrationTest extends IntegrationTestSupport {
                     .andDo(print())
                     .andExpect(status().isUnauthorized());
         }
+
+        @Test
+        @DisplayName("존재하지 않는 이메일로 로그인하면 500이 아닌 401 에러가 반환된다")
+        void signIn_존재하지않는이메일_401() throws Exception {
+            // when & then
+            SignInRequest signInRequest = new SignInRequest("ghost@example.com", "password1");
+            mockMvc.perform(post("/api/v1/auth/sign-in")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(signInRequest)))
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+        }
     }
 
     @Nested
