@@ -56,10 +56,7 @@ class OnboardingViewModel extends StateNotifier<SocialLoginState> {
     );
 
     try {
-      final result = await _repo.postSocialLogin(
-        provider: provider,
-        socialAccessToken: 'mock_social_token_${provider.name}',
-      );
+      final result = await _repo.signInWithProvider(provider);
 
       final data = result['data'] as Map<String, dynamic>;
       final isNewUser = data['isNewUser'] as bool;

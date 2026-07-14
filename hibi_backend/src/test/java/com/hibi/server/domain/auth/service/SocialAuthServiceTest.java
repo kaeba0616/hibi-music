@@ -1,5 +1,7 @@
 package com.hibi.server.domain.auth.service;
 
+import com.hibi.server.domain.auth.client.GoogleUserInfoClient;
+import com.hibi.server.domain.auth.client.SocialUserInfo;
 import com.hibi.server.domain.auth.dto.request.SocialLoginRequest;
 import com.hibi.server.domain.auth.dto.response.SocialLoginResponse;
 import com.hibi.server.domain.auth.jwt.JwtUtils;
@@ -48,6 +50,9 @@ class SocialAuthServiceTest extends ServiceTestSupport {
     @Mock
     private RefreshTokenService refreshTokenService;
 
+    @Mock
+    private GoogleUserInfoClient googleUserInfoClient;
+
     @InjectMocks
     private SocialAuthService socialAuthService;
 
@@ -75,7 +80,7 @@ class SocialAuthServiceTest extends ServiceTestSupport {
     class SocialLoginTest {
 
         @Test
-        @DisplayName("Mock 소셜 로그인이 비활성화되어 있으면 예외가 발생한다")
+        @DisplayName("Mock 비활성화 상태에서 미지원 제공자(KAKAO)는 예외가 발생한다")
         void socialLogin_mock비활성화_예외() {
             // given
             ReflectionTestUtils.setField(socialAuthService, "socialMockEnabled", false);
@@ -88,6 +93,53 @@ class SocialAuthServiceTest extends ServiceTestSupport {
                             .isEqualTo(ErrorCode.SOCIAL_LOGIN_NOT_AVAILABLE));
 
             then(memberRepository).should(never()).save(any(Member.class));
+        }
+
+        @Test
+        @DisplayName("Mock 비활성화 상태에서 GOOGLE은 구글 API로 사용자 정보를 조회해 로그인한다")
+        void socialLogin_구글_실제연동_성공() {
+            // given
+            ReflectionTestUtils.setField(socialAuthService, "socialMockEnabled", false);
+            SocialLoginRequest request = new SocialLoginRequest(ProviderType.GOOGLE, "google-access-token", null);
+
+            given(googleUserInfoClient.fetch("google-access-token"))
+                    .willReturn(new SocialUserInfo("hibi.user@gmail.com", "gsub-123", "https://pic"));
+            Member googleMember = createTestMember(5L, ProviderType.GOOGLE);
+            given(memberRepository.findByProviderAndProviderId(ProviderType.GOOGLE, "gsub-123"))
+                    .willReturn(Optional.of(googleMember));
+            given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("access-token");
+            given(refreshTokenService.createAndSaveRefreshToken(eq(5L), any(Authentication.class)))
+                    .willReturn("refresh-token");
+
+            // when
+            SocialLoginResponse response = socialAuthService.socialLogin(request);
+
+            // then
+            assertThat(response.memberId()).isEqualTo(5L);
+            assertThat(response.isNewUser()).isFalse();
+            then(googleUserInfoClient).should(times(1)).fetch("google-access-token");
+        }
+
+        @Test
+        @DisplayName("Mock 활성화 상태에서는 GOOGLE도 구글 API를 호출하지 않는다")
+        void socialLogin_mock활성화_구글API호출안함() {
+            // given (mockEnabled=true는 @BeforeEach에서 설정됨)
+            SocialLoginRequest request = new SocialLoginRequest(ProviderType.GOOGLE, "any-token", "새유저");
+            given(memberRepository.findByProviderAndProviderId(eq(ProviderType.GOOGLE), anyString()))
+                    .willReturn(Optional.empty());
+            given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
+            given(passwordEncoder.encode(anyString())).willReturn("encodedRandomPassword");
+            given(memberRepository.save(any(Member.class)))
+                    .willReturn(createTestMember(6L, ProviderType.GOOGLE));
+            given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("access-token");
+            given(refreshTokenService.createAndSaveRefreshToken(any(), any(Authentication.class)))
+                    .willReturn("refresh-token");
+
+            // when
+            socialAuthService.socialLogin(request);
+
+            // then
+            then(googleUserInfoClient).should(never()).fetch(anyString());
         }
 
         @Test

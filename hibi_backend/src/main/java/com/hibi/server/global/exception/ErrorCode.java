@@ -28,6 +28,7 @@ public enum ErrorCode {
     SOCIAL_LOGIN_NOT_AVAILABLE("A015", "소셜 로그인은 아직 지원되지 않습니다.", HttpStatus.SERVICE_UNAVAILABLE),
     VERIFICATION_NOT_AVAILABLE("A016", "이메일 인증은 아직 지원되지 않습니다.", HttpStatus.SERVICE_UNAVAILABLE),
     VERIFICATION_CODE_MISMATCH("A017", "인증번호가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
+    SOCIAL_TOKEN_INVALID("A018", "소셜 인증 토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
 
     // 회원 가입 관련
     EMAIL_ALREADY_EXISTS("A020", "이미 등록된 이메일입니다.", HttpStatus.CONFLICT), // 409 Conflict

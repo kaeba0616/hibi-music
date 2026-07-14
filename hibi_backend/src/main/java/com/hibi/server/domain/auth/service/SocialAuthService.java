@@ -1,5 +1,7 @@
 package com.hibi.server.domain.auth.service;
 
+import com.hibi.server.domain.auth.client.GoogleUserInfoClient;
+import com.hibi.server.domain.auth.client.SocialUserInfo;
 import com.hibi.server.domain.auth.dto.CustomUserDetails;
 import com.hibi.server.domain.auth.dto.request.SocialLoginRequest;
 import com.hibi.server.domain.auth.dto.response.SocialLoginResponse;
@@ -34,9 +36,10 @@ public class SocialAuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
+    private final GoogleUserInfoClient googleUserInfoClient;
 
     /**
-     * 실제 소셜 API 연동 전까지 Mock 인증 경로를 명시적으로 켠 환경에서만 허용한다.
+     * Mock 인증 경로는 명시적으로 켠 환경(로컬/테스트)에서만 허용한다.
      * 기본값 false: 운영에서 임의 문자열로 계정이 발급되는 것을 차단.
      */
     @Value("${auth.social.mock-enabled:false}")
@@ -117,36 +120,27 @@ public class SocialAuthService {
     /**
      * 소셜 제공자에서 사용자 정보 조회
      *
-     * TODO: 실제 소셜 API 연동 시 구현
-     * - 카카오: https://kapi.kakao.com/v2/user/me
-     * - 구글: https://www.googleapis.com/oauth2/v3/userinfo
-     * - 네이버: https://openapi.naver.com/v1/nid/me
+     * - GOOGLE: userinfo API로 액세스 토큰을 검증하고 사용자 정보 조회 (실연동)
+     * - KAKAO/NAVER: TODO 실제 연동 (kapi.kakao.com/v2/user/me, openapi.naver.com/v1/nid/me)
+     * - Mock 모드가 켜져 있으면 모든 제공자에 대해 Mock 경로 사용 (로컬/테스트 전용)
      */
     private SocialUserInfo fetchSocialUserInfo(ProviderType provider, String accessToken) {
-        // TODO: 실제 소셜 API 호출로 대체
-        // 현재는 accessToken을 providerId로 사용하는 Mock 구현
-        if (!socialMockEnabled) {
-            throw new CustomException(ErrorCode.SOCIAL_LOGIN_NOT_AVAILABLE);
+        if (socialMockEnabled) {
+            log.warn("소셜 사용자 정보 조회 - Mock 모드 (provider: {})", provider);
+            return new SocialUserInfo(
+                    "social_" + accessToken.hashCode() + "@" + provider.name().toLowerCase() + ".mock",
+                    String.valueOf(accessToken.hashCode()),
+                    null
+            );
         }
-        log.warn("소셜 사용자 정보 조회 - Mock 모드 (provider: {})", provider);
 
-        return new SocialUserInfo(
-                "social_" + accessToken.hashCode() + "@" + provider.name().toLowerCase() + ".mock",
-                String.valueOf(accessToken.hashCode()),
-                null
-        );
+        return switch (provider) {
+            case GOOGLE -> googleUserInfoClient.fetch(accessToken);
+            default -> throw new CustomException(ErrorCode.SOCIAL_LOGIN_NOT_AVAILABLE);
+        };
     }
 
     private String generateDefaultNickname() {
         return "user_" + UUID.randomUUID().toString().substring(0, 8);
     }
-
-    /**
-     * 소셜 제공자로부터 받아오는 사용자 정보
-     */
-    private record SocialUserInfo(
-            String email,
-            String providerId,
-            String profileUrl
-    ) {}
 }
