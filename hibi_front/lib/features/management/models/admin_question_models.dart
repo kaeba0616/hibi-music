@@ -1,5 +1,6 @@
 /// F12 Management - 관리자용 문의 모델
 /// 문의 관리에 사용되는 데이터 모델
+library;
 
 import '../../question/models/question_models.dart';
 

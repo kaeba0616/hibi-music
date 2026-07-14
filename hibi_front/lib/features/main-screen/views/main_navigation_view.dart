@@ -22,7 +22,7 @@ class MainNavigationView extends StatefulWidget {
 class _MainNavigationViewState extends State<MainNavigationView> {
   @override
   Widget build(BuildContext context) {
-    final List<String> _tabs = [
+    final List<String> tabs = [
       'daily-song',
       'calendar',
       'artists',
@@ -30,12 +30,12 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       'mypage',
     ];
 
-    late int _selectIndex = _tabs.indexOf(widget.tab);
+    late int selectIndex = tabs.indexOf(widget.tab);
 
-    void _onDestinationSelected(int index) {
-      context.go("/${_tabs[index]}");
+    void onDestinationSelected(int index) {
+      context.go("/${tabs[index]}");
       setState(() {
-        _selectIndex = index;
+        selectIndex = index;
       });
     }
 
@@ -43,13 +43,13 @@ class _MainNavigationViewState extends State<MainNavigationView> {
       body: Stack(
         children: [
           Offstage(
-            offstage: _selectIndex != 0,
+            offstage: selectIndex != 0,
             child: const HomeView(),
           ),
-          Offstage(offstage: _selectIndex != 1, child: CalendarView()),
-          Offstage(offstage: _selectIndex != 2, child: const ArtistListView()),
-          Offstage(offstage: _selectIndex != 3, child: SearchView()),
-          Offstage(offstage: _selectIndex != 4, child: MyPageView()),
+          Offstage(offstage: selectIndex != 1, child: CalendarView()),
+          Offstage(offstage: selectIndex != 2, child: const ArtistListView()),
+          Offstage(offstage: selectIndex != 3, child: SearchView()),
+          Offstage(offstage: selectIndex != 4, child: MyPageView()),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -75,8 +75,8 @@ class _MainNavigationViewState extends State<MainNavigationView> {
             label: "마이페이지",
           ),
         ],
-        selectedIndex: _selectIndex,
-        onDestinationSelected: _onDestinationSelected,
+        selectedIndex: selectIndex,
+        onDestinationSelected: onDestinationSelected,
       ),
     );
   }

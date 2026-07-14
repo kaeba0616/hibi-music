@@ -1,4 +1,5 @@
 /// 관리자 통계 카드 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -29,7 +30,7 @@ class AdminStatCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.dividerColor.withOpacity(0.3),
+          color: theme.dividerColor.withValues(alpha: 0.3),
         ),
       ),
       child: InkWell(
@@ -56,7 +57,7 @@ class AdminStatCard extends StatelessWidget {
               Text(
                 label,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               if (sublabel != null) ...[
@@ -64,7 +65,7 @@ class AdminStatCard extends StatelessWidget {
                 Text(
                   sublabel!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ],

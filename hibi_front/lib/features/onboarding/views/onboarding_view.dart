@@ -7,7 +7,6 @@ import 'package:hidi/features/authentication/views/login_view.dart';
 import 'package:hidi/features/authentication/views/sign_up_view.dart';
 import 'package:hidi/features/main-screen/views/main_navigation_view.dart';
 import 'package:hidi/features/onboarding/models/social_provider.dart';
-import 'package:hidi/features/onboarding/viewmodels/onboarding_viewmodel.dart';
 import 'package:hidi/features/onboarding/views/social_auth_waiting_view.dart';
 import 'package:hidi/features/onboarding/widgets/social_login_button.dart';
 

@@ -1,4 +1,5 @@
 /// 관리자 액션 다이얼로그 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -94,20 +95,22 @@ class _SuspendDurationDialogState extends State<SuspendDurationDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('정지 기간 선택'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: SuspensionDuration.values.map((duration) {
-          return RadioListTile<SuspensionDuration>(
-            title: Text(duration.displayName),
-            value: duration,
-            groupValue: _selected,
-            onChanged: (value) {
-              setState(() {
-                _selected = value;
-              });
-            },
-          );
-        }).toList(),
+      content: RadioGroup<SuspensionDuration>(
+        groupValue: _selected,
+        onChanged: (value) {
+          setState(() {
+            _selected = value;
+          });
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: SuspensionDuration.values.map((duration) {
+            return RadioListTile<SuspensionDuration>(
+              title: Text(duration.displayName),
+              value: duration,
+            );
+          }).toList(),
+        ),
       ),
       actions: [
         TextButton(

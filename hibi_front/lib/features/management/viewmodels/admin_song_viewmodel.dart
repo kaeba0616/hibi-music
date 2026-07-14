@@ -1,6 +1,6 @@
 /// F18 관리자 곡 등록 ViewModel
+library;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 import '../models/admin_song_models.dart';

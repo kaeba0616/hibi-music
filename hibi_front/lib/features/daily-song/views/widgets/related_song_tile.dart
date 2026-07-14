@@ -45,7 +45,7 @@ class RelatedSongTile extends StatelessWidget {
           Text(
             song.reason,
             style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.primary.withOpacity(0.7),
+              color: colorScheme.primary.withValues(alpha: 0.7),
               fontStyle: FontStyle.italic,
               fontSize: 11,
             ),

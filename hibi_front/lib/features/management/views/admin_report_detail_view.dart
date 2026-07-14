@@ -1,11 +1,11 @@
 /// MG-03: 신고 상세 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../report/models/report_models.dart';
-import '../models/admin_models.dart';
 import '../models/admin_report_models.dart';
 import '../viewmodels/admin_report_viewmodel.dart';
 import '../widgets/action_dialog.dart';
@@ -91,7 +91,7 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
                                 _formatDate(state.report!.createdAt),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color:
-                                      theme.colorScheme.onSurface.withOpacity(0.6),
+                                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -178,7 +178,7 @@ class _AdminReportDetailViewState extends ConsumerState<AdminReportDetailView> {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 /// 관리자 문의 목록 타일 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -51,21 +52,21 @@ class AdminQuestionTile extends StatelessWidget {
                   Text(
                     question.memberNickname,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '·',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.4),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     _formatDate(question.createdAt),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

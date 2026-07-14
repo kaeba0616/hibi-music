@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/env.dart';
-import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:http/http.dart' as http;
 import '../mocks/faq_mock.dart' as mock;
 import '../models/faq_models.dart';

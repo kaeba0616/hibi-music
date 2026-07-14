@@ -1,5 +1,6 @@
 /// 신고 제출 버튼 위젯
 /// 상태에 따른 활성화/비활성화/로딩 상태 표시
+library;
 
 import 'package:flutter/material.dart';
 
@@ -28,9 +29,9 @@ class ReportSubmitButton extends StatelessWidget {
           backgroundColor: theme.colorScheme.error,
           foregroundColor: theme.colorScheme.onError,
           disabledBackgroundColor:
-              theme.colorScheme.onSurface.withOpacity(0.12),
+              theme.colorScheme.onSurface.withValues(alpha: 0.12),
           disabledForegroundColor:
-              theme.colorScheme.onSurface.withOpacity(0.38),
+              theme.colorScheme.onSurface.withValues(alpha: 0.38),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

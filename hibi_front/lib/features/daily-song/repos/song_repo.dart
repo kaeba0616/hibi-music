@@ -14,7 +14,7 @@ class SongRepository {
 
   // user
   Future<Song> getSongById(int id) async {
-    final uri = Env.apiUri("${basepath}/$id");
+    final uri = Env.apiUri("$basepath/$id");
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -27,7 +27,7 @@ class SongRepository {
     log("${response.statusCode}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final data = jsonDecode(response.body)["data"];
-      log("data : ${data}");
+      log("data : $data");
       return Song.fromJson(data);
     }
 
@@ -49,7 +49,7 @@ class SongRepository {
     log("${response.statusCode}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body)["data"];
-      log("data : ${data}");
+      log("data : $data");
       final songs = data.map((json) => Song.fromJson(json)).toList();
       return songs;
     }
@@ -74,7 +74,7 @@ class SongRepository {
     log("${response.statusCode}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final data = jsonDecode(response.body)["data"];
-      log("data : ${data}");
+      log("data : $data");
       return Song.fromJson(data);
     }
 
@@ -101,7 +101,7 @@ class SongRepository {
     log("${response.statusCode}");
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final List<dynamic> data = jsonDecode(response.body)["data"];
-      log("data : ${data}");
+      log("data : $data");
       final songs = data.map((json) => Song.fromJson(json)).toList();
       return songs;
     }

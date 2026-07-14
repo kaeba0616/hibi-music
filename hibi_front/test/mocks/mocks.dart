@@ -8,12 +8,12 @@
 /// 예시:
 /// import 'package:hidi/test/mocks/mocks.mocks.dart';
 /// final mockRepo = MockAdminRepository();
+library;
 
 import 'package:mockito/annotations.dart';
 
 // Repositories
 import 'package:hidi/features/management/repos/admin_repo.dart';
-import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 
 // 필요한 Repository를 여기에 추가하세요
 @GenerateMocks([

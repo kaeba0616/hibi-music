@@ -1,4 +1,5 @@
 /// 관리자 메뉴 타일 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class AdminMenuTile extends StatelessWidget {
           const SizedBox(width: 8),
           Icon(
             Icons.chevron_right,
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 /// AE-02: 예약 게시 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -104,7 +105,7 @@ class _AdminScheduledPublishViewState
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<SongSearchResult>(
-            value: state.selectedSong,
+            initialValue: state.selectedSong,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: '게시할 곡을 선택하세요',

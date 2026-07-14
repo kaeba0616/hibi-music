@@ -1,5 +1,6 @@
 /// F11 Report Feature
 /// 신고 기능 모듈 Export
+library;
 
 // Models
 export 'models/report_models.dart';

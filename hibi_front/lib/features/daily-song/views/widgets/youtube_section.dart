@@ -73,7 +73,7 @@ class YoutubeSection extends StatelessWidget {
                   _buildThumbnail(),
                   // 재생 버튼 오버레이
                   Container(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     child: const Center(
                       child: Icon(
                         Icons.play_circle_outline,

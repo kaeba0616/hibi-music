@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hidi/features/follow/viewmodels/follow_list_viewmodel.dart';
 import 'package:hidi/features/follow/viewmodels/user_profile_viewmodel.dart';
 import 'package:hidi/features/follow/widgets/follow_empty_view.dart';
 import 'package:hidi/features/follow/widgets/unfollow_dialog.dart';

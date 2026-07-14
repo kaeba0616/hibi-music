@@ -1,4 +1,5 @@
 /// F18 Admin Enhancement - Song Registration & Scheduling Models
+library;
 
 /// 관리자 곡 등록 요청
 class AdminSongCreateRequest {

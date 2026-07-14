@@ -1,5 +1,6 @@
 /// 중복 신고 안내 다이얼로그 위젯
 /// AC-F11-7: 이미 신고한 항목일 때 표시
+library;
 
 import 'package:flutter/material.dart';
 
@@ -64,7 +65,7 @@ class ReportDuplicateDialog extends StatelessWidget {
           Text(
             '동일한 콘텐츠는 한 번만\n신고하실 수 있습니다.',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

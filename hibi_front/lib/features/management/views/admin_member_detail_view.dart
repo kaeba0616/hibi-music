@@ -1,4 +1,5 @@
 /// MG-09: 회원 상세 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -127,7 +128,7 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                                 CircleAvatar(
                                   radius: 48,
                                   backgroundColor:
-                                      theme.colorScheme.primary.withOpacity(0.1),
+                                      theme.colorScheme.primary.withValues(alpha: 0.1),
                                   backgroundImage:
                                       state.member!.profileImage != null
                                           ? NetworkImage(
@@ -161,7 +162,7 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: theme.colorScheme.primary
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
@@ -259,7 +260,7 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
                           child: Text(
                             item.label,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ),
@@ -308,7 +309,7 @@ class _AdminMemberDetailViewState extends ConsumerState<AdminMemberDetailView> {
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],

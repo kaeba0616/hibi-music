@@ -1,4 +1,5 @@
 /// MG-02: 신고 목록 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,14 +88,14 @@ class _AdminReportListViewState extends ConsumerState<AdminReportListView> {
                                   Icons.flag_outlined,
                                   size: 64,
                                   color: theme.colorScheme.onSurface
-                                      .withOpacity(0.3),
+                                      .withValues(alpha: 0.3),
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
                                   '신고 내역이 없습니다',
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],

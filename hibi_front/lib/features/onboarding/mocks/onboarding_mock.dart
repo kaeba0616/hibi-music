@@ -1,4 +1,5 @@
 /// F13: 온보딩 & 소셜 로그인 Mock 데이터
+library;
 
 /// Mock 소셜 로그인 응답 (성공 - 기존 회원)
 final Map<String, dynamic> mockSocialLoginExistingUser = {

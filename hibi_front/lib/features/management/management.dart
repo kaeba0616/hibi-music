@@ -1,4 +1,5 @@
 /// F12 관리자 기능 모듈 + F18 Admin Enhancement
+library;
 
 // Models
 export 'models/admin_models.dart';

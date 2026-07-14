@@ -55,7 +55,7 @@ class CalendarEmptyView extends StatelessWidget {
             Text(
               subMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),

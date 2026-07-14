@@ -30,7 +30,7 @@ class UserProfileViewModel extends AsyncNotifier<User> {
     await _userRepo.deleteCurrentUser(ref);
     if (state.hasError) {
       log("${state.error}");
-    } else {
+    } else if (context.mounted) {
       context.go(LoginView.routeURL);
     }
   }
@@ -43,7 +43,7 @@ class UserProfileViewModel extends AsyncNotifier<User> {
     state = AsyncLoading();
     final success = await _userRepo.patchCurrentUser(nickname, password);
     state = AsyncValue.data(state.value!.copywith(nickname: nickname));
-    if (success) {
+    if (success && context.mounted) {
       context.pop();
     }
   }

@@ -1,5 +1,6 @@
 /// 신고 완료 다이얼로그 위젯
 /// RP-02 화면: 신고 접수 완료 안내
+library;
 
 import 'package:flutter/material.dart';
 
@@ -64,7 +65,7 @@ class ReportSuccessDialog extends StatelessWidget {
           Text(
             '신고 내용은 운영팀에서 검토 후\n적절한 조치를 취하겠습니다.',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

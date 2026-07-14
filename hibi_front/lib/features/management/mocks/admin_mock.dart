@@ -1,5 +1,6 @@
 /// F12 Management Mock 데이터
 /// 관리자 기능 테스트용 Mock 데이터
+library;
 
 import '../../faq/models/faq_models.dart';
 import '../../question/models/question_models.dart';

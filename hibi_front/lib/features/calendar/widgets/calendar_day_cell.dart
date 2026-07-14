@@ -31,7 +31,7 @@ class CalendarDayCell extends StatelessWidget {
     // 텍스트 색상 결정
     Color textColor;
     if (isDisabled || isOtherMonth) {
-      textColor = colorScheme.onSurface.withOpacity(0.3);
+      textColor = colorScheme.onSurface.withValues(alpha: 0.3);
     } else if (isSelected) {
       textColor = colorScheme.onPrimary;
     } else {
@@ -84,7 +84,7 @@ class CalendarDayCell extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isLiked
                       ? Colors.red.shade400
-                      : colorScheme.primary.withOpacity(0.7),
+                      : colorScheme.primary.withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                 ),
               )

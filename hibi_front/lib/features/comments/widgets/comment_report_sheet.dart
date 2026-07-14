@@ -159,21 +159,29 @@ class _CommentReportSheetState extends State<CommentReportSheet> {
             ),
             const SizedBox(height: 8),
             // 사유 목록
-            ...CommentReportReason.values.map((reason) {
-              return RadioListTile<CommentReportReason>(
-                value: reason,
-                groupValue: _selectedReason,
-                onChanged: _isSubmitting
-                    ? null
-                    : (value) => setState(() => _selectedReason = value),
-                title: Text(
-                  reason.displayName,
-                  style: const TextStyle(fontSize: 15),
-                ),
-                activeColor: colorScheme.primary,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              );
-            }),
+            RadioGroup<CommentReportReason>(
+              groupValue: _selectedReason,
+              onChanged: (value) {
+                if (_isSubmitting) return;
+                setState(() => _selectedReason = value);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: CommentReportReason.values.map((reason) {
+                  return RadioListTile<CommentReportReason>(
+                    value: reason,
+                    enabled: !_isSubmitting,
+                    title: Text(
+                      reason.displayName,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                    activeColor: colorScheme.primary,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 20),
+                  );
+                }).toList(),
+              ),
+            ),
             // 기타 상세 입력
             if (_selectedReason == CommentReportReason.other)
               Padding(

@@ -1,4 +1,5 @@
 /// F14: 이메일 인증 Mock 데이터
+library;
 
 /// Mock 인증번호 발송 (항상 성공, 1초 딜레이)
 Future<bool> mockSendVerificationCode(String email) async {

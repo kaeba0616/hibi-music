@@ -1,5 +1,6 @@
 /// F12 Management - 관리자용 신고 모델
 /// 신고 관리에 사용되는 데이터 모델
+library;
 
 import '../../report/models/report_models.dart';
 

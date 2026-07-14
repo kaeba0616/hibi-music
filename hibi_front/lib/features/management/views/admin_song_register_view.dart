@@ -1,4 +1,5 @@
 /// AE-01: 곡 등록 폼 (Enhanced Song Registration)
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

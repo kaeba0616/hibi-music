@@ -1,5 +1,6 @@
 /// F11 Report 모델 정의
 /// 신고 기능에 사용되는 데이터 모델
+library;
 
 /// 신고 대상 유형
 enum ReportTargetType {

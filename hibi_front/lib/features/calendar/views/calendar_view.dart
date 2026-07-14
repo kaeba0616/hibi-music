@@ -19,8 +19,6 @@ class CalendarView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(calendarViewModelProvider);
     final viewModel = ref.read(calendarViewModelProvider.notifier);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(

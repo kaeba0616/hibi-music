@@ -1,5 +1,6 @@
 /// 신고 사유 선택 타일 위젯
 /// RP-01 화면의 라디오 버튼 목록 항목
+library;
 
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class ReportReasonTile extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: theme.dividerColor.withOpacity(0.5),
+              color: theme.dividerColor.withValues(alpha: 0.5),
               width: 0.5,
             ),
           ),
@@ -45,7 +46,7 @@ class ReportReasonTile extends StatelessWidget {
               color: isSelected
                   ? theme.colorScheme.primary
                   : (enabled
-                      ? theme.colorScheme.onSurface.withOpacity(0.6)
+                      ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
                       : theme.disabledColor),
               size: 24,
             ),

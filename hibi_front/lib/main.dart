@@ -9,11 +9,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   log('API Base URL: $apiBaseUrl');
-  final _authRepo = AuthenticationRepository();
-  await _authRepo.init();
+  final authRepository = AuthenticationRepository();
+  await authRepository.init();
   runApp(
     ProviderScope(
-      overrides: [authRepo.overrideWithValue(_authRepo)],
+      overrides: [authRepo.overrideWithValue(authRepository)],
       child: Hidi(),
     ),
   );

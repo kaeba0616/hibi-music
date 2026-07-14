@@ -59,11 +59,11 @@ class _FAQSearchBarState extends State<FAQSearchBar> {
         decoration: InputDecoration(
           hintText: '검색어를 입력하세요',
           hintStyle: TextStyle(
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           prefixIcon: Icon(
             Icons.search,
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
@@ -72,7 +72,7 @@ class _FAQSearchBarState extends State<FAQSearchBar> {
                 )
               : null,
           filled: true,
-          fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,

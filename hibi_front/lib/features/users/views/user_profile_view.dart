@@ -49,14 +49,14 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
     super.dispose();
   }
 
-  void _OnEditProfile() {
+  void _onEditProfile() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => UserProfileEditView()),
     );
   }
 
-  void _OnSettings() {
+  void _onSettings() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SettingsView()),
@@ -104,7 +104,7 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: _OnSettings,
+            onPressed: _onSettings,
           ),
         ],
 
@@ -152,7 +152,7 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
                       _buildStatColumn('Followers', followers),
                       _buildStatColumn('Following', following),
                       OutlinedButton(
-                        onPressed: _OnEditProfile,
+                        onPressed: _onEditProfile,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Colors.white54),

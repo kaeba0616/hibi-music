@@ -1,5 +1,6 @@
 /// F12 Management Repository
 /// Mock Provider 패턴 적용 + Real API
+library;
 
 import 'dart:convert';
 import 'dart:developer';

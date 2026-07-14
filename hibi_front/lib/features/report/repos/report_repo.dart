@@ -1,5 +1,6 @@
 /// F11 Report Repository
 /// Mock Provider 패턴 적용
+library;
 
 import 'dart:convert';
 import 'dart:developer';

@@ -1,5 +1,6 @@
 /// 신고 상세 내용 입력 필드 위젯
 /// "기타" 사유 선택 시 표시되는 TextArea
+library;
 
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class ReportDescriptionField extends StatelessWidget {
           child: Text(
             '상세 내용 (선택)',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -43,10 +44,10 @@ class ReportDescriptionField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: '신고 사유를 상세히 적어주세요',
             hintStyle: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.4),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
             ),
             filled: true,
-            fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -54,7 +55,7 @@ class ReportDescriptionField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: theme.dividerColor.withOpacity(0.3),
+                color: theme.dividerColor.withValues(alpha: 0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -65,7 +66,7 @@ class ReportDescriptionField extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.all(16),
             counterStyle: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           style: theme.textTheme.bodyMedium,

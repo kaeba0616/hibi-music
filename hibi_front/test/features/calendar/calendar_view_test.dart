@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hidi/features/calendar/viewmodels/calendar_viewmodel.dart';
 import 'package:hidi/features/calendar/views/calendar_view.dart';
 import 'package:hidi/features/calendar/widgets/calendar_day_cell.dart';
-import 'package:hidi/features/calendar/widgets/calendar_song_card.dart';
 import 'package:hidi/features/calendar/widgets/month_navigator.dart';
 import 'package:hidi/features/daily-song/repos/daily_song_repo.dart';
 

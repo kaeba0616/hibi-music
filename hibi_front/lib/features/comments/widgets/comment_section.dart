@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hidi/features/comments/models/comment_models.dart';
 import 'package:hidi/features/comments/viewmodels/comment_viewmodel.dart';
 import 'package:hidi/features/comments/widgets/comment_card.dart';
 import 'package:hidi/features/comments/widgets/comment_report_sheet.dart';

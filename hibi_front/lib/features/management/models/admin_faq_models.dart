@@ -1,5 +1,6 @@
 /// F12 Management - 관리자용 FAQ 모델
 /// FAQ 관리에 사용되는 데이터 모델
+library;
 
 import '../../faq/models/faq_models.dart';
 

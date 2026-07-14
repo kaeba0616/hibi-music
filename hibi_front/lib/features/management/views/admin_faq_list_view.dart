@@ -1,4 +1,5 @@
 /// MG-06: FAQ 목록 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,14 +92,14 @@ class _AdminFAQListViewState extends ConsumerState<AdminFAQListView> {
                                   Icons.quiz_outlined,
                                   size: 64,
                                   color: theme.colorScheme.onSurface
-                                      .withOpacity(0.3),
+                                      .withValues(alpha: 0.3),
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
                                   'FAQ가 없습니다',
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -138,6 +139,8 @@ class _AdminFAQListViewState extends ConsumerState<AdminFAQListView> {
   }
 
   void _showDeleteDialog(int faqId) {
+    // 다이얼로그가 닫힌 뒤에도 스낵바를 띄울 수 있도록 미리 캡처
+    final messenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) => ConfirmActionDialog(
@@ -149,8 +152,8 @@ class _AdminFAQListViewState extends ConsumerState<AdminFAQListView> {
           final success = await ref
               .read(faqListViewModelProvider.notifier)
               .deleteFaq(faqId);
-          if (mounted && success) {
-            ScaffoldMessenger.of(context).showSnackBar(
+          if (success) {
+            messenger.showSnackBar(
               const SnackBar(content: Text('FAQ가 삭제되었습니다')),
             );
           }

@@ -1,5 +1,6 @@
 /// F12 Management 모델 정의
 /// 관리자 기능에 사용되는 데이터 모델
+library;
 
 /// 관리자 대시보드 통계
 class AdminStats {

@@ -107,7 +107,7 @@ class _LikedSongsViewState extends ConsumerState<LikedSongsView> {
             Icon(
               Icons.favorite_border,
               size: 64,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -121,7 +121,7 @@ class _LikedSongsViewState extends ConsumerState<LikedSongsView> {
               '오늘의 곡에서 마음에 드는\n노래에 좋아요를 눌러보세요!',
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 24),
@@ -207,7 +207,7 @@ class _LikedSongsViewState extends ConsumerState<LikedSongsView> {
           Text(
             dateStr,
             style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               fontSize: 11,
             ),
           ),

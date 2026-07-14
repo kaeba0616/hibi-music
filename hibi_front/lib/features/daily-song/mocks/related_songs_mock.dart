@@ -1,4 +1,3 @@
-import 'package:hidi/features/artists/models/artist_model.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/mocks/daily_song_mock.dart';
 

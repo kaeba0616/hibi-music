@@ -1,4 +1,5 @@
 /// MG-07: FAQ 편집 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,7 +99,7 @@ class _AdminFAQEditViewState extends ConsumerState<AdminFAQEditView> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<FAQCategory>(
-                    value: state.category,
+                    initialValue: state.category,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),

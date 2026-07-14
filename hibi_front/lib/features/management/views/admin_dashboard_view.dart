@@ -1,4 +1,5 @@
 /// MG-01: 관리자 대시보드 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

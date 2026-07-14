@@ -1,4 +1,5 @@
 /// 필터 칩 바 위젯
+library;
 
 import 'package:flutter/material.dart';
 

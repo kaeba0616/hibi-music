@@ -1,4 +1,5 @@
 /// 관리자 회원 목록 타일 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class AdminMemberTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                 backgroundImage: member.profileImage != null
                     ? NetworkImage(member.profileImage!)
                     : null,
@@ -62,7 +63,7 @@ class AdminMemberTile extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -80,14 +81,14 @@ class AdminMemberTile extends StatelessWidget {
                     Text(
                       member.email,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '가입일: ${_formatDate(member.createdAt)}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -103,7 +104,7 @@ class AdminMemberTile extends StatelessWidget {
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: member.reportReceivedCount > 0
                           ? theme.colorScheme.error
-                          : theme.colorScheme.onSurface.withOpacity(0.5),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

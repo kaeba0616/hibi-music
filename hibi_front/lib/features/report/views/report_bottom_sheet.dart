@@ -1,5 +1,6 @@
 /// RP-01: 신고 바텀시트 화면
 /// 신고 사유 선택 및 제출
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,13 +64,14 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
       (previous, next) async {
         if (next.isSuccess && previous?.isSuccess != true) {
           await ReportSuccessDialog.show(context);
-          if (mounted) {
+          if (context.mounted) {
             Navigator.of(context).pop(true);
           }
         }
         if (next.isDuplicate && previous?.isDuplicate != true) {
+          if (!context.mounted) return;
           await ReportDuplicateDialog.show(context);
-          if (mounted) {
+          if (context.mounted) {
             Navigator.of(context).pop(false);
           }
         }
@@ -98,7 +100,7 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface.withOpacity(0.2),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -129,7 +131,7 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
                   child: Text(
                     getReportTargetDescription(widget.targetType),
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
@@ -137,7 +139,7 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: theme.dividerColor.withOpacity(0.5),
+                  color: theme.dividerColor.withValues(alpha: 0.5),
                 ),
                 // 신고 사유 목록
                 ...ReportReason.values.map((reason) => ReportReasonTile(

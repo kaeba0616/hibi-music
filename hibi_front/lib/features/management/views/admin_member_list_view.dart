@@ -1,4 +1,5 @@
 /// MG-08: 회원 목록 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,7 +114,7 @@ class _AdminMemberListViewState extends ConsumerState<AdminMemberListView> {
                                   Icons.people_outline,
                                   size: 64,
                                   color: theme.colorScheme.onSurface
-                                      .withOpacity(0.3),
+                                      .withValues(alpha: 0.3),
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
@@ -122,7 +123,7 @@ class _AdminMemberListViewState extends ConsumerState<AdminMemberListView> {
                                       : '회원이 없습니다',
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],
@@ -146,7 +147,7 @@ class _AdminMemberListViewState extends ConsumerState<AdminMemberListView> {
                                     '총 ${state.totalCount}명',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.6),
+                                          .withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ),

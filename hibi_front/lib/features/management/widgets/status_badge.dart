@@ -1,4 +1,5 @@
 /// 상태 배지 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -55,20 +56,20 @@ class ReportStatusBadge extends StatelessWidget {
 
     switch (status) {
       case ReportStatus.pending:
-        backgroundColor = theme.colorScheme.error.withOpacity(0.1);
+        backgroundColor = theme.colorScheme.error.withValues(alpha: 0.1);
         textColor = theme.colorScheme.error;
         label = '대기중';
       case ReportStatus.reviewed:
-        backgroundColor = Colors.orange.withOpacity(0.1);
+        backgroundColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange.shade700;
         label = '검토됨';
       case ReportStatus.resolved:
-        backgroundColor = Colors.green.withOpacity(0.1);
+        backgroundColor = Colors.green.withValues(alpha: 0.1);
         textColor = Colors.green.shade700;
         label = '처리완료';
       case ReportStatus.dismissed:
-        backgroundColor = theme.colorScheme.onSurface.withOpacity(0.1);
-        textColor = theme.colorScheme.onSurface.withOpacity(0.6);
+        backgroundColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
+        textColor = theme.colorScheme.onSurface.withValues(alpha: 0.6);
         label = '기각';
     }
 
@@ -96,15 +97,15 @@ class QuestionStatusBadge extends StatelessWidget {
 
     switch (status) {
       case QuestionStatus.received:
-        backgroundColor = theme.colorScheme.error.withOpacity(0.1);
+        backgroundColor = theme.colorScheme.error.withValues(alpha: 0.1);
         textColor = theme.colorScheme.error;
         label = '접수됨';
       case QuestionStatus.processing:
-        backgroundColor = Colors.orange.withOpacity(0.1);
+        backgroundColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange.shade700;
         label = '처리중';
       case QuestionStatus.answered:
-        backgroundColor = Colors.green.withOpacity(0.1);
+        backgroundColor = Colors.green.withValues(alpha: 0.1);
         textColor = Colors.green.shade700;
         label = '답변완료';
     }
@@ -133,15 +134,15 @@ class MemberStatusBadge extends StatelessWidget {
 
     switch (status) {
       case MemberStatus.active:
-        backgroundColor = Colors.green.withOpacity(0.1);
+        backgroundColor = Colors.green.withValues(alpha: 0.1);
         textColor = Colors.green.shade700;
         label = '활성';
       case MemberStatus.suspended:
-        backgroundColor = Colors.orange.withOpacity(0.1);
+        backgroundColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange.shade700;
         label = '정지';
       case MemberStatus.banned:
-        backgroundColor = theme.colorScheme.error.withOpacity(0.1);
+        backgroundColor = theme.colorScheme.error.withValues(alpha: 0.1);
         textColor = theme.colorScheme.error;
         label = '탈퇴';
     }
@@ -167,11 +168,11 @@ class PublishedBadge extends StatelessWidget {
     return StatusBadge(
       label: isPublished ? '공개' : '비공개',
       backgroundColor: isPublished
-          ? Colors.green.withOpacity(0.1)
-          : theme.colorScheme.onSurface.withOpacity(0.1),
+          ? Colors.green.withValues(alpha: 0.1)
+          : theme.colorScheme.onSurface.withValues(alpha: 0.1),
       textColor: isPublished
           ? Colors.green.shade700
-          : theme.colorScheme.onSurface.withOpacity(0.6),
+          : theme.colorScheme.onSurface.withValues(alpha: 0.6),
     );
   }
 }

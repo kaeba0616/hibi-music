@@ -24,6 +24,7 @@ class _SocialAuthWaitingViewState
     super.initState();
     // 화면 진입 시 소셜 로그인 시작
     Future.microtask(() {
+      if (!mounted) return;
       ref.read(onboardingViewModelProvider.notifier).socialLogin(
             context,
             widget.provider,

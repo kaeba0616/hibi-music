@@ -1,7 +1,7 @@
 /// F11 Report ViewModel
 /// Riverpod StateNotifier를 사용한 신고 상태 관리
+library;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 import '../models/report_models.dart';

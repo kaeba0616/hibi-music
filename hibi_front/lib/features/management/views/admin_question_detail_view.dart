@@ -1,4 +1,5 @@
 /// MG-05: 문의 상세/답변 화면
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -104,7 +105,7 @@ class _AdminQuestionDetailViewState
                                 _formatDate(state.question!.createdAt),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color:
-                                      theme.colorScheme.onSurface.withOpacity(0.6),
+                                      theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -116,7 +117,7 @@ class _AdminQuestionDetailViewState
                               CircleAvatar(
                                 radius: 20,
                                 backgroundColor:
-                                    theme.colorScheme.primary.withOpacity(0.1),
+                                    theme.colorScheme.primary.withValues(alpha: 0.1),
                                 child: Icon(
                                   Icons.person,
                                   color: theme.colorScheme.primary,
@@ -136,7 +137,7 @@ class _AdminQuestionDetailViewState
                                     state.question!.memberEmail,
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
-                                          .withOpacity(0.6),
+                                          .withValues(alpha: 0.6),
                                     ),
                                   ),
                                 ],
@@ -172,7 +173,7 @@ class _AdminQuestionDetailViewState
                               state.question!.answer != null) ...[
                             // 기존 답변 표시
                             Card(
-                              color: theme.colorScheme.primary.withOpacity(0.05),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.05),
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
@@ -202,7 +203,7 @@ class _AdminQuestionDetailViewState
                                             style: theme.textTheme.bodySmall
                                                 ?.copyWith(
                                               color: theme.colorScheme.onSurface
-                                                  .withOpacity(0.5),
+                                                  .withValues(alpha: 0.5),
                                             ),
                                           ),
                                       ],

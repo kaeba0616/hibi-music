@@ -1,4 +1,5 @@
 /// 관리자 FAQ 목록 타일 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -40,7 +41,7 @@ class AdminFAQTile extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -81,7 +82,7 @@ class AdminFAQTile extends StatelessWidget {
               Text(
                 faq.answer,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -90,7 +91,7 @@ class AdminFAQTile extends StatelessWidget {
               Text(
                 '순서: ${faq.displayOrder}',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],

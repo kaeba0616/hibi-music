@@ -1,4 +1,5 @@
 /// Follow List ViewModel 테스트
+library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

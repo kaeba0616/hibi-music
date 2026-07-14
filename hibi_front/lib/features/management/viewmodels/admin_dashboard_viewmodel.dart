@@ -1,6 +1,6 @@
 /// F12 관리자 대시보드 ViewModel
+library;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 import '../models/admin_models.dart';

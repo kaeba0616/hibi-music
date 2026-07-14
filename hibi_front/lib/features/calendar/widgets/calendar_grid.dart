@@ -23,7 +23,6 @@ class CalendarGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -122,7 +121,7 @@ class CalendarGrid extends StatelessWidget {
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: isWeekend
-                    ? theme.colorScheme.error.withOpacity(0.7)
+                    ? theme.colorScheme.error.withValues(alpha: 0.7)
                     : theme.colorScheme.onSurfaceVariant,
               ),
             ),

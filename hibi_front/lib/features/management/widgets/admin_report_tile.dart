@@ -1,4 +1,5 @@
 /// 관리자 신고 목록 타일 위젯
+library;
 
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class AdminReportTile extends StatelessWidget {
                     child: Text(
                       _getTargetTypeLabel(),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ),
@@ -56,14 +57,14 @@ class AdminReportTile extends StatelessWidget {
               Text(
                 '신고자: ${report.reporterNickname}',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 _formatDate(report.createdAt),
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],

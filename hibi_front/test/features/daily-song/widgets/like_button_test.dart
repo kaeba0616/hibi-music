@@ -5,14 +5,12 @@ import 'package:hidi/features/daily-song/views/widgets/like_button.dart';
 void main() {
   group('LikeButton Widget', () {
     testWidgets('should display unfilled heart when not liked', (tester) async {
-      bool tapped = false;
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: LikeButton(
               isLiked: false,
-              onTap: () => tapped = true,
+              onTap: () {},
             ),
           ),
         ),

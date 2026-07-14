@@ -1,5 +1,6 @@
 /// 더보기 메뉴 헬퍼
 /// 신고하기 메뉴 아이템을 더보기 메뉴에 추가하기 위한 헬퍼 함수
+library;
 
 import 'package:flutter/material.dart';
 
@@ -117,7 +118,7 @@ class ReportMenuItem {
             Icon(
               icon,
               size: 22,
-              color: iconColor ?? theme.colorScheme.onSurface.withOpacity(0.7),
+              color: iconColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 14),
             Text(
@@ -165,7 +166,7 @@ Future<void> showPostMoreMenu(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withOpacity(0.2),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -269,7 +270,7 @@ Future<void> showCommentMoreMenu(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withOpacity(0.2),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -363,7 +364,7 @@ Future<void> showProfileMoreMenu(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withOpacity(0.2),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -436,7 +437,7 @@ class _MoreMenuItem extends StatelessWidget {
             Icon(
               icon,
               size: 22,
-              color: iconColor ?? theme.colorScheme.onSurface.withOpacity(0.7),
+              color: iconColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 14),
             Text(
