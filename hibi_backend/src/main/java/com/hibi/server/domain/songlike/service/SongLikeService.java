@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +63,17 @@ public class SongLikeService {
      */
     public long getLikeCount(Long songId) {
         return songLikeRepository.countBySongId(songId);
+    }
+
+    /**
+     * 여러 노래의 좋아요 개수 일괄 조회 (목록 화면 N+1 방지, 좋아요 없는 곡은 키가 없다)
+     */
+    public Map<Long, Long> getLikeCounts(List<Long> songIds) {
+        if (songIds == null || songIds.isEmpty()) {
+            return Map.of();
+        }
+        return songLikeRepository.countGroupedBySongIdIn(songIds).stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
     }
 
     /**

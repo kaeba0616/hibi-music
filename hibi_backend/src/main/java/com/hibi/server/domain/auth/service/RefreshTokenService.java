@@ -5,6 +5,7 @@ import com.hibi.server.domain.auth.dto.response.ReissueResponse;
 import com.hibi.server.domain.auth.entity.RefreshToken;
 import com.hibi.server.domain.auth.jwt.JwtUtils;
 import com.hibi.server.domain.auth.repository.RefreshTokenRepository;
+import com.hibi.server.domain.auth.util.TokenHasher;
 import com.hibi.server.domain.member.entity.Member;
 import com.hibi.server.domain.member.repository.MemberRepository;
 import com.hibi.server.global.exception.CustomException;
@@ -38,10 +39,11 @@ public class RefreshTokenService {
 
         String newRefreshTokenValue = jwtUtils.generateRefreshToken(authentication);
 
+        // DB에는 평문 대신 해시를 저장한다 (유출 시 토큰 재사용 방지)
         RefreshToken newRefreshToken = RefreshToken.of(
                 memberRepository.findById(memberId)
                         .orElseThrow(() -> new CustomException(ErrorCode.BAD_CREDENTIALS)),
-                newRefreshTokenValue,
+                TokenHasher.sha256(newRefreshTokenValue),
                 jwtUtils.getRefreshTokenExpiryDate(),
                 LocalDateTime.now()
         );
@@ -58,8 +60,9 @@ public class RefreshTokenService {
             throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
+        String submittedTokenHash = TokenHasher.sha256(submittedRefreshToken);
         Optional<RefreshToken> currentTokenRecordOpt = refreshTokenRepository
-                .findByMemberIdAndTokenValueAndRevokedFalse(memberId, submittedRefreshToken);
+                .findByMemberIdAndTokenValueAndRevokedFalse(memberId, submittedTokenHash);
 
         if (currentTokenRecordOpt.isPresent()) {
             RefreshToken currentTokenRecord = currentTokenRecordOpt.get();
@@ -76,10 +79,10 @@ public class RefreshTokenService {
             String newAccessToken = jwtUtils.generateAccessToken(authentication);
             String newRefreshToken = jwtUtils.generateRefreshToken(authentication);
 
-            // 토큰 회전: 새 토큰을 저장하고 이전 토큰 값을 보존해야 재발급 연쇄와 재사용 공격 탐지가 동작한다
+            // 토큰 회전: 새 토큰 해시를 저장하고 이전 토큰 해시를 보존해야 재발급 연쇄와 재사용 공격 탐지가 동작한다
             currentTokenRecord.updateToken(
-                    newRefreshToken,
-                    submittedRefreshToken,
+                    TokenHasher.sha256(newRefreshToken),
+                    submittedTokenHash,
                     jwtUtils.getRefreshTokenExpiryDate(),
                     LocalDateTime.now()
             );
@@ -87,7 +90,8 @@ public class RefreshTokenService {
             return ReissueResponse.of(newAccessToken, newRefreshToken);
 
         } else {
-            Optional<RefreshToken> previousTokenRecordOpt = refreshTokenRepository.findByMemberIdAndPreviousTokenValueAndRevokedFalse(memberId, submittedRefreshToken);
+            Optional<RefreshToken> previousTokenRecordOpt = refreshTokenRepository
+                    .findByMemberIdAndPreviousTokenValueAndRevokedFalse(memberId, submittedTokenHash);
 
             if (previousTokenRecordOpt.isPresent()) {
                 List<RefreshToken> activeTokens = refreshTokenRepository.findByMemberIdAndRevokedFalse(memberId);

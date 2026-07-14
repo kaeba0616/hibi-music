@@ -57,6 +57,12 @@ public interface FeedPostRepository extends JpaRepository<FeedPost, Long> {
     long countByMemberId(Long memberId);
 
     /**
+     * 여러 회원의 게시글 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT fp.member.id, COUNT(fp) FROM FeedPost fp WHERE fp.member.id IN :memberIds GROUP BY fp.member.id")
+    List<Object[]> countGroupedByMemberIdIn(@Param("memberIds") List<Long> memberIds);
+
+    /**
      * 게시글 검색 (내용으로 검색)
      */
     @EntityGraph(attributePaths = {"member"})

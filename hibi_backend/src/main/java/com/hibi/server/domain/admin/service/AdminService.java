@@ -100,19 +100,36 @@ public class AdminService {
             memberPage = memberRepository.findByDeletedAtIsNullOrderByCreatedAtDesc(pageable);
         }
 
+        List<Long> memberIds = memberPage.getContent().stream()
+                .map(Member::getId)
+                .toList();
+
+        // 회원별 개별 카운트 쿼리(회원당 6회) 대신 GROUP BY 일괄 조회로 N+1 방지
+        Map<Long, Integer> postCounts = toCountMap(feedPostRepository.countGroupedByMemberIdIn(memberIds));
+        Map<Long, Integer> commentCounts = toCountMap(commentRepository.countGroupedByMemberIdIn(memberIds));
+        Map<Long, Integer> followerCounts = toCountMap(memberFollowRepository.countFollowersGroupedByFollowingIdIn(memberIds));
+        Map<Long, Integer> followingCounts = toCountMap(memberFollowRepository.countFollowingGroupedByFollowerIdIn(memberIds));
+        Map<Long, Integer> receivedReportCounts = toCountMap(reportRepository.countReceivedReportsGroupedByMemberIdIn(memberIds));
+        Map<Long, Integer> sentReportCounts = toCountMap(reportRepository.countGroupedByReporterIdIn(memberIds));
+
         List<AdminMemberResponse> members = memberPage.getContent().stream()
                 .map(member -> AdminMemberResponse.from(
                         member,
-                        getPostCount(member.getId()),
-                        getCommentCount(member.getId()),
-                        getFollowerCount(member.getId()),
-                        getFollowingCount(member.getId()),
-                        (int) reportRepository.countReceivedReportsByMemberId(member.getId()),
-                        (int) reportRepository.countByReporterId(member.getId())
+                        postCounts.getOrDefault(member.getId(), 0),
+                        commentCounts.getOrDefault(member.getId(), 0),
+                        followerCounts.getOrDefault(member.getId(), 0),
+                        followingCounts.getOrDefault(member.getId(), 0),
+                        receivedReportCounts.getOrDefault(member.getId(), 0),
+                        sentReportCounts.getOrDefault(member.getId(), 0)
                 ))
                 .collect(Collectors.toList());
 
         return AdminMemberListResponse.of(members, memberPage.getTotalElements(), page, size);
+    }
+
+    private Map<Long, Integer> toCountMap(List<Object[]> rows) {
+        return rows.stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> ((Long) row[1]).intValue()));
     }
 
     /**

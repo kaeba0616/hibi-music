@@ -16,10 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 @DisplayName("DailySongService 연관곡/좋아요 단위 테스트")
 class RelatedSongServiceTest extends ServiceTestSupport {
@@ -92,7 +96,7 @@ class RelatedSongServiceTest extends ServiceTestSupport {
     class GetLikedSongsTest {
 
         @Test
-        @DisplayName("좋아요한 곡 목록을 반환한다")
+        @DisplayName("좋아요한 곡 목록을 일괄 쿼리로 조회한다")
         void getLikedSongs_목록반환_성공() {
             // given
             Long memberId = 1L;
@@ -100,8 +104,8 @@ class RelatedSongServiceTest extends ServiceTestSupport {
             Song song = createTestSong(10L, artist);
 
             given(songLikeService.getLikedSongIds(memberId)).willReturn(List.of(10L));
-            given(songRepository.findById(10L)).willReturn(Optional.of(song));
-            given(songLikeService.getLikeCount(10L)).willReturn(5L);
+            given(songRepository.findAllById(List.of(10L))).willReturn(List.of(song));
+            given(songLikeService.getLikeCounts(List.of(10L))).willReturn(Map.of(10L, 5L));
 
             // when
             List<DailySongResponse> result = dailySongService.getLikedSongs(memberId);
@@ -111,6 +115,43 @@ class RelatedSongServiceTest extends ServiceTestSupport {
             assertThat(result.get(0).id()).isEqualTo(10L);
             assertThat(result.get(0).isLiked()).isTrue();
             assertThat(result.get(0).likeCount()).isEqualTo(5L);
+
+            // 곡별 개별 조회는 더 이상 호출되지 않아야 한다
+            then(songRepository).should(never()).findById(anyLong());
+            then(songLikeService).should(never()).getLikeCount(anyLong());
+        }
+    }
+
+    @Nested
+    @DisplayName("getSongsByMonth 메서드")
+    class GetSongsByMonthTest {
+
+        @Test
+        @DisplayName("월별 곡 목록의 좋아요 수를 일괄 쿼리로 조회한다")
+        void getSongsByMonth_좋아요수_일괄조회() {
+            // given
+            Long memberId = 1L;
+            Artist artist = createTestArtist();
+            Song song1 = createTestSong(10L, artist);
+            Song song2 = createTestSong(11L, artist);
+
+            given(songRepository.findByRecommendDateYearAndMonth(2026, 7))
+                    .willReturn(List.of(song1, song2));
+            given(songLikeService.getLikedSongIds(memberId, List.of(10L, 11L)))
+                    .willReturn(List.of(10L));
+            given(songLikeService.getLikeCounts(List.of(10L, 11L)))
+                    .willReturn(Map.of(10L, 7L));
+
+            // when
+            List<DailySongResponse> result = dailySongService.getSongsByMonth(2026, 7, memberId);
+
+            // then
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).isLiked()).isTrue();
+            assertThat(result.get(0).likeCount()).isEqualTo(7L);
+            assertThat(result.get(1).isLiked()).isFalse();
+            assertThat(result.get(1).likeCount()).isZero();
+            then(songLikeService).should(never()).getLikeCount(anyLong());
         }
     }
 

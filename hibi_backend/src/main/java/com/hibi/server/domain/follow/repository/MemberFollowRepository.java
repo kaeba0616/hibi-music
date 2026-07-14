@@ -98,4 +98,16 @@ public interface MemberFollowRepository extends JpaRepository<MemberFollow, Long
      * 특정 사용자의 팔로잉 수 (간단 버전)
      */
     long countByFollowerId(Long followerId);
+
+    /**
+     * 여러 회원의 팔로워 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT mf.following.id, COUNT(mf) FROM MemberFollow mf WHERE mf.following.id IN :memberIds GROUP BY mf.following.id")
+    List<Object[]> countFollowersGroupedByFollowingIdIn(@Param("memberIds") List<Long> memberIds);
+
+    /**
+     * 여러 회원의 팔로잉 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT mf.follower.id, COUNT(mf) FROM MemberFollow mf WHERE mf.follower.id IN :memberIds GROUP BY mf.follower.id")
+    List<Object[]> countFollowingGroupedByFollowerIdIn(@Param("memberIds") List<Long> memberIds);
 }

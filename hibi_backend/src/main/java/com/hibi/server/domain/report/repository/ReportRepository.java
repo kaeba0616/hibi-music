@@ -133,4 +133,17 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      * 특정 회원이 보낸 신고 수 조회
      */
     long countByReporterId(Long reporterId);
+
+    /**
+     * 여러 회원이 받은 신고 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT r.targetId, COUNT(r) FROM Report r " +
+           "WHERE r.targetType = 'MEMBER' AND r.targetId IN :memberIds GROUP BY r.targetId")
+    List<Object[]> countReceivedReportsGroupedByMemberIdIn(@Param("memberIds") List<Long> memberIds);
+
+    /**
+     * 여러 회원이 보낸 신고 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT r.reporter.id, COUNT(r) FROM Report r WHERE r.reporter.id IN :memberIds GROUP BY r.reporter.id")
+    List<Object[]> countGroupedByReporterIdIn(@Param("memberIds") List<Long> memberIds);
 }

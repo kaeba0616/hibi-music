@@ -50,4 +50,10 @@ public interface SongLikeRepository extends JpaRepository<SongLike, Long> {
             @Param("memberId") Long memberId,
             @Param("songIds") List<Long> songIds
     );
+
+    /**
+     * 여러 노래의 좋아요 수 일괄 조회 ([songId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT sl.song.id, COUNT(sl) FROM SongLike sl WHERE sl.song.id IN :songIds GROUP BY sl.song.id")
+    List<Object[]> countGroupedBySongIdIn(@Param("songIds") List<Long> songIds);
 }

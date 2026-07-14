@@ -2,6 +2,7 @@ package com.hibi.server.domain.auth.service;
 
 import com.hibi.server.domain.auth.entity.RefreshToken;
 import com.hibi.server.domain.auth.jwt.JwtUtils;
+import com.hibi.server.domain.auth.util.TokenHasher;
 import com.hibi.server.domain.auth.repository.RefreshTokenRepository;
 import com.hibi.server.domain.member.entity.Member;
 import com.hibi.server.domain.member.entity.MemberStatus;
@@ -96,14 +97,16 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
             // when
             String result = refreshTokenService.createAndSaveRefreshToken(memberId, authentication);
 
-            // then
+            // then: 클라이언트에는 평문 토큰을 돌려주되, DB에는 해시만 저장한다
             assertThat(result).isEqualTo("new-refresh-token");
             assertThat(existingToken.isRevoked()).isTrue();
 
             ArgumentCaptor<RefreshToken> captor = ArgumentCaptor.forClass(RefreshToken.class);
             then(refreshTokenRepository).should(times(1)).save(captor.capture());
             RefreshToken savedToken = captor.getValue();
-            assertThat(savedToken.getTokenValue()).isEqualTo("new-refresh-token");
+            assertThat(savedToken.getTokenValue())
+                    .isNotEqualTo("new-refresh-token")
+                    .isEqualTo(TokenHasher.sha256("new-refresh-token"));
             assertThat(savedToken.getMember()).isEqualTo(member);
             assertThat(savedToken.isRevoked()).isFalse();
         }
@@ -144,7 +147,8 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
 
             willDoNothing().given(jwtUtils).validateJwtToken(submittedToken);
             given(jwtUtils.getMemberIdFromJwtToken(submittedToken)).willReturn(memberId);
-            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(memberId, submittedToken))
+            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(submittedToken)))
                     .willReturn(Optional.of(currentToken));
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("new-access-token");
@@ -158,9 +162,9 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
             assertThat(response.accessToken()).isEqualTo("new-access-token");
             assertThat(response.refreshToken()).isEqualTo("new-refresh-token");
 
-            // 토큰 회전: 기존 레코드가 새 토큰 값으로 갱신되고, 이전 토큰 값이 보존되어야 한다
-            assertThat(currentToken.getTokenValue()).isEqualTo("new-refresh-token");
-            assertThat(currentToken.getPreviousTokenValue()).isEqualTo(submittedToken);
+            // 토큰 회전: 기존 레코드가 새 토큰 해시로 갱신되고, 이전 토큰 해시가 보존되어야 한다
+            assertThat(currentToken.getTokenValue()).isEqualTo(TokenHasher.sha256("new-refresh-token"));
+            assertThat(currentToken.getPreviousTokenValue()).isEqualTo(TokenHasher.sha256(submittedToken));
             assertThat(currentToken.isRevoked()).isFalse();
         }
 
@@ -172,12 +176,14 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
             String secondToken = "second-refresh-token";
             Long memberId = 1L;
             Member member = createTestMember(memberId);
-            RefreshToken record = createActiveToken(member, firstToken);
-            record.updateToken(secondToken, firstToken, LocalDateTime.now().plusDays(7), LocalDateTime.now());
+            RefreshToken record = createActiveToken(member, TokenHasher.sha256(firstToken));
+            record.updateToken(TokenHasher.sha256(secondToken), TokenHasher.sha256(firstToken),
+                    LocalDateTime.now().plusDays(7), LocalDateTime.now());
 
             willDoNothing().given(jwtUtils).validateJwtToken(secondToken);
             given(jwtUtils.getMemberIdFromJwtToken(secondToken)).willReturn(memberId);
-            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(memberId, secondToken))
+            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(secondToken)))
                     .willReturn(Optional.of(record));
             given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
             given(jwtUtils.generateAccessToken(any(Authentication.class))).willReturn("new-access-token");
@@ -189,8 +195,8 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
 
             // then
             assertThat(response.refreshToken()).isEqualTo("third-refresh-token");
-            assertThat(record.getTokenValue()).isEqualTo("third-refresh-token");
-            assertThat(record.getPreviousTokenValue()).isEqualTo(secondToken);
+            assertThat(record.getTokenValue()).isEqualTo(TokenHasher.sha256("third-refresh-token"));
+            assertThat(record.getPreviousTokenValue()).isEqualTo(TokenHasher.sha256(secondToken));
             assertThat(record.isRevoked()).isFalse();
         }
 
@@ -223,9 +229,11 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
 
             willDoNothing().given(jwtUtils).validateJwtToken(submittedToken);
             given(jwtUtils.getMemberIdFromJwtToken(submittedToken)).willReturn(memberId);
-            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(memberId, submittedToken))
+            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(submittedToken)))
                     .willReturn(Optional.empty());
-            given(refreshTokenRepository.findByMemberIdAndPreviousTokenValueAndRevokedFalse(memberId, submittedToken))
+            given(refreshTokenRepository.findByMemberIdAndPreviousTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(submittedToken)))
                     .willReturn(Optional.of(activeToken));
             given(refreshTokenRepository.findByMemberIdAndRevokedFalse(memberId))
                     .willReturn(List.of(activeToken));
@@ -251,9 +259,11 @@ class RefreshTokenServiceTest extends ServiceTestSupport {
 
             willDoNothing().given(jwtUtils).validateJwtToken(submittedToken);
             given(jwtUtils.getMemberIdFromJwtToken(submittedToken)).willReturn(memberId);
-            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(memberId, submittedToken))
+            given(refreshTokenRepository.findByMemberIdAndTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(submittedToken)))
                     .willReturn(Optional.empty());
-            given(refreshTokenRepository.findByMemberIdAndPreviousTokenValueAndRevokedFalse(memberId, submittedToken))
+            given(refreshTokenRepository.findByMemberIdAndPreviousTokenValueAndRevokedFalse(
+                    memberId, TokenHasher.sha256(submittedToken)))
                     .willReturn(Optional.empty());
 
             // when & then

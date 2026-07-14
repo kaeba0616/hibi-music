@@ -169,20 +169,27 @@ class AdminServiceTest extends ServiceTestSupport {
     class GetMembersTest {
 
         @Test
-        @DisplayName("전체 회원 목록을 조회한다")
+        @DisplayName("전체 회원 목록을 조회하며 각 카운트는 GROUP BY 일괄 쿼리로 채운다")
         void getMembers_전체_성공() {
             // given
             Member member = createTestMember(1L, MemberStatus.ACTIVE);
             Page<Member> memberPage = new PageImpl<>(List.of(member));
+            List<Long> memberIds = List.of(1L);
 
             given(memberRepository.findByDeletedAtIsNullOrderByCreatedAtDesc(any(Pageable.class)))
                     .willReturn(memberPage);
-            given(feedPostRepository.countByMemberId(anyLong())).willReturn(5L);
-            given(commentRepository.countByMemberId(anyLong())).willReturn(10L);
-            given(memberFollowRepository.countByFollowingId(anyLong())).willReturn(20L);
-            given(memberFollowRepository.countByFollowerId(anyLong())).willReturn(15L);
-            given(reportRepository.countReceivedReportsByMemberId(anyLong())).willReturn(0L);
-            given(reportRepository.countByReporterId(anyLong())).willReturn(2L);
+            given(feedPostRepository.countGroupedByMemberIdIn(memberIds))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 5L}));
+            given(commentRepository.countGroupedByMemberIdIn(memberIds))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 10L}));
+            given(memberFollowRepository.countFollowersGroupedByFollowingIdIn(memberIds))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 20L}));
+            given(memberFollowRepository.countFollowingGroupedByFollowerIdIn(memberIds))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 15L}));
+            given(reportRepository.countReceivedReportsGroupedByMemberIdIn(memberIds))
+                    .willReturn(List.of());
+            given(reportRepository.countGroupedByReporterIdIn(memberIds))
+                    .willReturn(List.<Object[]>of(new Object[]{1L, 2L}));
 
             // when
             AdminMemberListResponse response = adminService.getMembers(null, null, 0, 10);
@@ -190,6 +197,21 @@ class AdminServiceTest extends ServiceTestSupport {
             // then
             assertThat(response.members()).hasSize(1);
             assertThat(response.totalCount()).isEqualTo(1);
+            var m = response.members().get(0);
+            assertThat(m.postCount()).isEqualTo(5);
+            assertThat(m.commentCount()).isEqualTo(10);
+            assertThat(m.followerCount()).isEqualTo(20);
+            assertThat(m.followingCount()).isEqualTo(15);
+            assertThat(m.reportReceivedCount()).isZero();
+            assertThat(m.reportSentCount()).isEqualTo(2);
+
+            // 회원별 개별 카운트 쿼리는 더 이상 호출되지 않아야 한다
+            then(feedPostRepository).should(never()).countByMemberId(anyLong());
+            then(commentRepository).should(never()).countByMemberId(anyLong());
+            then(memberFollowRepository).should(never()).countByFollowingId(anyLong());
+            then(memberFollowRepository).should(never()).countByFollowerId(anyLong());
+            then(reportRepository).should(never()).countReceivedReportsByMemberId(anyLong());
+            then(reportRepository).should(never()).countByReporterId(anyLong());
         }
 
         @Test
@@ -202,12 +224,7 @@ class AdminServiceTest extends ServiceTestSupport {
             given(memberRepository.findByStatusAndDeletedAtIsNullOrderByCreatedAtDesc(
                     eq(MemberStatus.SUSPENDED), any(Pageable.class)))
                     .willReturn(memberPage);
-            given(feedPostRepository.countByMemberId(anyLong())).willReturn(0L);
-            given(commentRepository.countByMemberId(anyLong())).willReturn(0L);
-            given(memberFollowRepository.countByFollowingId(anyLong())).willReturn(0L);
-            given(memberFollowRepository.countByFollowerId(anyLong())).willReturn(0L);
-            given(reportRepository.countReceivedReportsByMemberId(anyLong())).willReturn(0L);
-            given(reportRepository.countByReporterId(anyLong())).willReturn(0L);
+            stubEmptyBatchCounts(List.of(1L));
 
             // when
             AdminMemberListResponse response = adminService.getMembers(MemberStatus.SUSPENDED, null, 0, 10);
@@ -225,18 +242,22 @@ class AdminServiceTest extends ServiceTestSupport {
 
             given(memberRepository.searchForAdmin(eq("테스트"), any(Pageable.class)))
                     .willReturn(memberPage);
-            given(feedPostRepository.countByMemberId(anyLong())).willReturn(0L);
-            given(commentRepository.countByMemberId(anyLong())).willReturn(0L);
-            given(memberFollowRepository.countByFollowingId(anyLong())).willReturn(0L);
-            given(memberFollowRepository.countByFollowerId(anyLong())).willReturn(0L);
-            given(reportRepository.countReceivedReportsByMemberId(anyLong())).willReturn(0L);
-            given(reportRepository.countByReporterId(anyLong())).willReturn(0L);
+            stubEmptyBatchCounts(List.of(1L));
 
             // when
             AdminMemberListResponse response = adminService.getMembers(null, "테스트", 0, 10);
 
             // then
             assertThat(response.members()).hasSize(1);
+        }
+
+        private void stubEmptyBatchCounts(List<Long> memberIds) {
+            given(feedPostRepository.countGroupedByMemberIdIn(memberIds)).willReturn(List.of());
+            given(commentRepository.countGroupedByMemberIdIn(memberIds)).willReturn(List.of());
+            given(memberFollowRepository.countFollowersGroupedByFollowingIdIn(memberIds)).willReturn(List.of());
+            given(memberFollowRepository.countFollowingGroupedByFollowerIdIn(memberIds)).willReturn(List.of());
+            given(reportRepository.countReceivedReportsGroupedByMemberIdIn(memberIds)).willReturn(List.of());
+            given(reportRepository.countGroupedByReporterIdIn(memberIds)).willReturn(List.of());
         }
     }
 

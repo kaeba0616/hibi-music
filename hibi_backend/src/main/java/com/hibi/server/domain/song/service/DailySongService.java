@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,11 +74,13 @@ public class DailySongService {
         List<Long> likedSongIds = songLikeService.getLikedSongIds(memberId);
         if (likedSongIds.isEmpty()) return List.of();
 
-        return likedSongIds.stream()
-                .map(songRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(song -> DailySongResponse.from(song, true, songLikeService.getLikeCount(song.getId())))
+        // 곡/좋아요 수를 일괄 조회 (N+1 방지)
+        List<Song> songs = songRepository.findAllById(likedSongIds);
+        Map<Long, Long> likeCounts = songLikeService.getLikeCounts(likedSongIds);
+
+        return songs.stream()
+                .map(song -> DailySongResponse.from(
+                        song, true, likeCounts.getOrDefault(song.getId(), 0L)))
                 .toList();
     }
 
@@ -96,11 +99,12 @@ public class DailySongService {
         Set<Long> likedSongIds = memberId != null
                 ? Set.copyOf(songLikeService.getLikedSongIds(memberId, songIds))
                 : Set.of();
+        Map<Long, Long> likeCounts = songLikeService.getLikeCounts(songIds);
 
         return songs.stream()
                 .map(song -> {
                     boolean isLiked = likedSongIds.contains(song.getId());
-                    long likeCount = songLikeService.getLikeCount(song.getId());
+                    long likeCount = likeCounts.getOrDefault(song.getId(), 0L);
                     return DailySongResponse.from(song, isLiked, likeCount);
                 })
                 .collect(Collectors.toList());

@@ -63,6 +63,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     long countByMemberId(Long memberId);
 
     /**
+     * 여러 회원의 댓글 수 일괄 조회 ([memberId, count] 행 반환, N+1 방지)
+     */
+    @Query("SELECT c.member.id, COUNT(c) FROM Comment c WHERE c.member.id IN :memberIds GROUP BY c.member.id")
+    List<Object[]> countGroupedByMemberIdIn(@Param("memberIds") List<Long> memberIds);
+
+    /**
      * 게시글의 추천 Top3 댓글 조회 (F16: AC-F6-6)
      * 좋아요 수 내림차순, 동점 시 최신순. 삭제/필터링된 댓글 제외.
      */
