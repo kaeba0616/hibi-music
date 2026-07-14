@@ -85,10 +85,9 @@ public class MemberService {
      * 내가 쓴 댓글 목록 조회 (F17)
      */
     public List<MyCommentResponse> getMyComments(Long memberId) {
-        List<Comment> comments = commentRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
+        List<Comment> comments = commentRepository.findByMemberIdAndIsDeletedFalseOrderByCreatedAtDesc(memberId);
 
         return comments.stream()
-                .filter(c -> !c.getIsDeleted())
                 .map(comment -> {
                     var feedPost = comment.getFeedPost();
                     var taggedSong = feedPost.getTaggedSong();
@@ -105,7 +104,7 @@ public class MemberService {
     }
 
     public List<MemberProfileResponse> getAllMembers() {
-        return memberRepository.findAll().stream()
+        return memberRepository.findByDeletedAtIsNull().stream()
                 .map(MemberProfileResponse::from)
                 .collect(Collectors.toList());
     }

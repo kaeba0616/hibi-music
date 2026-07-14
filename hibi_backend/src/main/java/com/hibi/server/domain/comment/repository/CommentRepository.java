@@ -53,6 +53,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
     /**
+     * 사용자가 작성한 댓글 목록 조회 (삭제 제외)
+     */
+    List<Comment> findByMemberIdAndIsDeletedFalseOrderByCreatedAtDesc(Long memberId);
+
+    /**
      * 게시글 삭제 시 관련 댓글 모두 삭제
      */
     void deleteByFeedPostId(Long feedPostId);

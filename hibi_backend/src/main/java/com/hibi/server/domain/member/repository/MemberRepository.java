@@ -40,6 +40,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
            "LOWER(m.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Member> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
+    /**
+     * 탈퇴하지 않은 전체 회원 조회
+     */
+    List<Member> findByDeletedAtIsNull();
+
     // ========== F12 관리자 기능용 쿼리 메서드 ==========
 
     /**

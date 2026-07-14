@@ -18,6 +18,15 @@ public record CommentAuthorResponse(
         if (member == null) {
             return null;
         }
+        // 탈퇴 회원은 개인정보(닉네임/이메일)를 노출하지 않는다
+        if (member.isDeleted()) {
+            return CommentAuthorResponse.builder()
+                    .id(member.getId())
+                    .nickname("탈퇴한 사용자")
+                    .username("")
+                    .profileImage(null)
+                    .build();
+        }
         return CommentAuthorResponse.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())

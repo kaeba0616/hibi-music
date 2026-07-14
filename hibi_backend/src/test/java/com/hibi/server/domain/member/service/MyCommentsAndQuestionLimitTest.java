@@ -101,7 +101,7 @@ class MyCommentsAndQuestionLimitTest extends ServiceTestSupport {
                     .id(1L).feedPost(feedPost).member(member)
                     .content("내 댓글").likeCount(2).isDeleted(false).build();
 
-            given(commentRepository.findByMemberIdOrderByCreatedAtDesc(memberId))
+            given(commentRepository.findByMemberIdAndIsDeletedFalseOrderByCreatedAtDesc(memberId))
                     .willReturn(List.of(comment));
 
             // when
