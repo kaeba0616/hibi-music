@@ -231,10 +231,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_riverpod
-      sha256: "92145487d2dd709fe96fa638ec39eff3708ed4d3f0e0c81ecc8a33030e71e10e"
+      sha256: "9255e1e3ad6e38906a1b4f8287678f95f378744c5b46b1985588543f3f19046e"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0-dev.15"
+    version: "3.3.2"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -603,18 +603,10 @@ packages:
     dependency: transitive
     description:
       name: riverpod
-      sha256: "4369c46c43414a10adbabb8559515d5a35791db2d610e1daab69a2cb292a37f9"
+      sha256: "17100416c51db7810c71a7bb2c34d1f881faa0074fd452afb0c4db6f8f126c76"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0-dev.15"
-  riverpod_annotation:
-    dependency: "direct main"
-    description:
-      name: riverpod_annotation
-      sha256: "583a11d505a8bbd3bb9c5d64d5f6dbbe20711ffe6b97768d4413cf49e83d5cb1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0-dev.15"
+    version: "3.3.2"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -900,6 +892,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.3"
   vector_math:
     dependency: transitive
     description:

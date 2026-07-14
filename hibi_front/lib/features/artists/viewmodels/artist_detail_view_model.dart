@@ -29,11 +29,14 @@ class ArtistDetailState {
   }
 }
 
-class ArtistDetailViewModel extends FamilyNotifier<ArtistDetailState, int> {
+class ArtistDetailViewModel extends Notifier<ArtistDetailState> {
+  ArtistDetailViewModel(this.artistId);
+
+  final int artistId;
   late final ArtistRepository _artistRepo;
 
   @override
-  ArtistDetailState build(int artistId) {
+  ArtistDetailState build() {
     _artistRepo = ref.read(artistRepoProvider);
     // 초기 데이터 로드
     Future.microtask(() => fetchArtistDetail(artistId));
@@ -105,5 +108,5 @@ class ArtistDetailViewModel extends FamilyNotifier<ArtistDetailState, int> {
 
 final artistDetailProvider =
     NotifierProvider.family<ArtistDetailViewModel, ArtistDetailState, int>(
-  () => ArtistDetailViewModel(),
+  ArtistDetailViewModel.new,
 );

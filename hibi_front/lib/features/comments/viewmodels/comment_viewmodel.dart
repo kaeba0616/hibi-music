@@ -49,14 +49,15 @@ class CommentSectionState {
 }
 
 /// 댓글 섹션 ViewModel (게시글별)
-class CommentSectionViewModel extends FamilyNotifier<CommentSectionState, int> {
+class CommentSectionViewModel extends Notifier<CommentSectionState> {
+  CommentSectionViewModel(this._postId);
+
+  final int _postId;
   late final CommentRepository _repo;
-  late final int _postId;
 
   @override
-  CommentSectionState build(int postId) {
+  CommentSectionState build() {
     _repo = ref.read(commentRepoProvider);
-    _postId = postId;
     Future.microtask(() => loadComments());
     return CommentSectionState(isLoading: true);
   }

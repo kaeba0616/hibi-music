@@ -85,17 +85,20 @@ class FollowListArg {
 }
 
 /// 팔로워/팔로잉 목록 ViewModel
-class FollowListViewModel extends FamilyNotifier<FollowListState, FollowListArg> {
+class FollowListViewModel extends Notifier<FollowListState> {
+  FollowListViewModel(this._arg);
+
+  final FollowListArg _arg;
   late final FollowRepository _repo;
   late final int _userId;
 
   @override
-  FollowListState build(FollowListArg arg) {
+  FollowListState build() {
     _repo = ref.read(followRepoProvider);
-    _userId = arg.userId;
+    _userId = _arg.userId;
     Future.microtask(() => loadList());
     return FollowListState(
-      currentTab: arg.initialTab,
+      currentTab: _arg.initialTab,
       isLoading: true,
     );
   }

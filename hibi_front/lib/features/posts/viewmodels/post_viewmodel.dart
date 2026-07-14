@@ -30,9 +30,13 @@ class PostDetailState {
 }
 
 /// 게시글 상세 ViewModel
-class PostDetailViewModel extends FamilyNotifier<PostDetailState, int> {
+class PostDetailViewModel extends Notifier<PostDetailState> {
+  PostDetailViewModel(this.postId);
+
+  final int postId;
+
   @override
-  PostDetailState build(int postId) {
+  PostDetailState build() {
     // 초기 로드
     Future.microtask(() => loadPost(postId));
     return PostDetailState(isLoading: true);
@@ -102,7 +106,7 @@ class PostDetailViewModel extends FamilyNotifier<PostDetailState, int> {
 /// 게시글 상세 Provider (postId 파라미터)
 final postDetailViewModelProvider =
     NotifierProvider.family<PostDetailViewModel, PostDetailState, int>(
-  () => PostDetailViewModel(),
+  PostDetailViewModel.new,
 );
 
 /// 게시글 작성/수정 상태
@@ -227,11 +231,15 @@ final postCreateViewModelProvider =
 );
 
 /// 게시글 수정 ViewModel
-class PostEditViewModel extends FamilyNotifier<PostEditorState, int> {
+class PostEditViewModel extends Notifier<PostEditorState> {
+  PostEditViewModel(this.initialPostId);
+
+  final int initialPostId;
+
   @override
-  PostEditorState build(int postId) {
+  PostEditorState build() {
     // 초기 데이터 로드
-    Future.microtask(() => loadPost(postId));
+    Future.microtask(() => loadPost(initialPostId));
     return PostEditorState();
   }
 
@@ -318,7 +326,7 @@ class PostEditViewModel extends FamilyNotifier<PostEditorState, int> {
 /// 게시글 수정 Provider (postId 파라미터)
 final postEditViewModelProvider =
     NotifierProvider.family<PostEditViewModel, PostEditorState, int>(
-  () => PostEditViewModel(),
+  PostEditViewModel.new,
 );
 
 /// 노래 검색 상태

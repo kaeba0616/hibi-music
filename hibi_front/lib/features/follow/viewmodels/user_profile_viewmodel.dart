@@ -54,14 +54,15 @@ class UserProfileState {
 }
 
 /// 사용자 프로필 ViewModel
-class UserProfileViewModel extends FamilyNotifier<UserProfileState, int> {
+class UserProfileViewModel extends Notifier<UserProfileState> {
+  UserProfileViewModel(this._userId);
+
+  final int _userId;
   late final FollowRepository _repo;
-  late final int _userId;
 
   @override
-  UserProfileState build(int userId) {
+  UserProfileState build() {
     _repo = ref.read(followRepoProvider);
-    _userId = userId;
     Future.microtask(() => loadProfile());
     return UserProfileState(isLoading: true);
   }
