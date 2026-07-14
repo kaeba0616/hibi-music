@@ -15,7 +15,7 @@ class SocialAuthRepository {
   SocialAuthRepository({this.useMock = false});
 
   /// 소셜 로그인 API 호출
-  /// 반환: { accessToken, refreshToken, memberId, roleType, isNewUser }
+  /// 반환: 응답 전체 { success, message, data: { accessToken, refreshToken, memberId, roleType, isNewUser } }
   Future<Map<String, dynamic>> postSocialLogin({
     required SocialProvider provider,
     required String socialAccessToken,

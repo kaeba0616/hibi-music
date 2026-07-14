@@ -25,12 +25,10 @@ class SongRepository {
       ),
     );
     log("${response.statusCode}");
-    final data = jsonDecode(response.body)["data"];
-    log("data : ${data}");
-
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final song = Song.fromJson(data);
-      return song;
+      final data = jsonDecode(response.body)["data"];
+      log("data : ${data}");
+      return Song.fromJson(data);
     }
 
     log("Error :getSongById");
@@ -74,12 +72,10 @@ class SongRepository {
       ),
     );
     log("${response.statusCode}");
-    final data = jsonDecode(response.body)["data"];
-    log("data : ${data}");
-
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final song = Song.fromJson(data);
-      return song;
+      final data = jsonDecode(response.body)["data"];
+      log("data : ${data}");
+      return Song.fromJson(data);
     }
 
     log("Error :getSongByDate");

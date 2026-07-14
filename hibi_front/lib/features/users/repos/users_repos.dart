@@ -55,7 +55,12 @@ class UserRepository {
   Future<bool> patchCurrentUser(String nickname, String password) async {
     final uri = Env.apiUri(basepath);
 
-    Map<String, dynamic> body = {"nickname": nickname, "password": password};
+    // 부분 수정: 빈 필드는 보내지 않는다 (백엔드는 포함된 필드만 검증/변경)
+    Map<String, dynamic> body = {
+      if (nickname.isNotEmpty) "nickname": nickname,
+      if (password.isNotEmpty) "password": password,
+    };
+    if (body.isEmpty) return false;
 
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.patch(

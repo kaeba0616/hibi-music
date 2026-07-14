@@ -222,8 +222,8 @@ class PostRepository {
       return searchMockSongs(query);
     }
 
-    // Real API - 기존 daily-songs API 사용
-    final uri = Env.apiUri("/api/v1/songs/search", {'q': query});
+    // Real API - 통합 검색의 노래 카테고리 사용 (/api/v1/songs/search 엔드포인트는 없음)
+    final uri = Env.apiUri("/api/v1/search", {'q': query, 'category': 'songs'});
     final response = await AuthenticationRepository.requestWithRetry(
       (accessToken) => http.get(
         uri,
@@ -237,8 +237,9 @@ class PostRepository {
     log("searchSongs: ${response.statusCode}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final List<dynamic> data = jsonDecode(response.body)["data"] ?? [];
-      return data.map((json) => TaggedSong.fromJson(json)).toList();
+      final data = jsonDecode(response.body)["data"];
+      final List<dynamic> songs = data?["songs"] ?? [];
+      return songs.map((json) => TaggedSong.fromJson(json)).toList();
     }
 
     log("Error: searchSongs");
