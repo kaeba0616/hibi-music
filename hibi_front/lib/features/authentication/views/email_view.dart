@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/constants/sizes.dart';
-import 'package:hidi/features/authentication/mocks/verification_mock.dart';
 import 'package:hidi/features/authentication/viewmodels/signup_view_model.dart';
-import 'package:hidi/features/authentication/views/verification_code_view.dart';
+import 'package:hidi/features/authentication/views/password_view.dart';
 
 /// EV-01: 이메일 입력 화면 (F14 강화)
 class EmailView extends ConsumerStatefulWidget {
@@ -67,18 +64,13 @@ class _EmailViewState extends ConsumerState<EmailView> {
       return;
     }
 
-    // 2. 인증번호 발송
-    log('Sending verification code to $_email');
-    await mockSendVerificationCode(_email);
-
+    // 2. 비밀번호 입력 화면으로 이동
+    // (이메일 인증 단계는 실제 메일 발송 수단 연동 전까지 생략 - MVP)
     if (mounted) {
       setState(() => _isLoading = false);
-      // 3. 인증번호 확인 화면으로 이동
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => VerificationCodeView(email: _email),
-        ),
+        MaterialPageRoute(builder: (context) => const PasswordView()),
       );
     }
   }
@@ -99,7 +91,7 @@ class _EmailViewState extends ConsumerState<EmailView> {
             ),
             const SizedBox(height: Sizes.size4),
             Text(
-              '인증번호를 보내드립니다',
+              '로그인에 사용할 이메일 주소예요',
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
             const SizedBox(height: Sizes.size24),
@@ -159,7 +151,7 @@ class _EmailViewState extends ConsumerState<EmailView> {
                         ),
                       )
                     : const Text(
-                        '인증번호 받기',
+                        '다음',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),
