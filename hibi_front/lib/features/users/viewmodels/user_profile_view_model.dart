@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:hidi/features/authentication/views/login_view.dart';
+import 'package:hidi/features/follow/models/follow_models.dart';
+import 'package:hidi/features/follow/repos/follow_repo.dart';
 import 'package:hidi/features/users/models/user.dart';
 import 'package:hidi/features/users/repos/users_repos.dart';
 
@@ -52,3 +54,10 @@ class UserProfileViewModel extends AsyncNotifier<User> {
 final userProfileProvider = AsyncNotifierProvider<UserProfileViewModel, User>(
   () => UserProfileViewModel(),
 );
+
+/// 내 프로필 통계 (게시글/팔로워/팔로잉 수) - GET /users/{id}
+final myProfileStatsProvider = FutureProvider<UserProfile?>((ref) async {
+  final user = await ref.watch(userProfileProvider.future);
+  if (user.id == 0) return null;
+  return ref.read(followRepoProvider).getUserProfile(user.id);
+});

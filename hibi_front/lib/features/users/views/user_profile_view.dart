@@ -13,26 +13,15 @@ class MyPageView extends ConsumerStatefulWidget {
 }
 
 class _MyPageViewState extends ConsumerState<MyPageView> {
-  final String userName = 'Hidi';
-  final int followers = 1337;
-  final int following = 42;
-  final String profileImageUrl = ''; // Intentionally left blank for placeholder
-
-  final List<Map<String, dynamic>> playlists = [
-    {'name': 'Liked Songs', 'count': 128, 'icon': Icons.favorite},
-  ];
-
-  final List<Map<String, dynamic>> myActivities = [
-    {'name': '내가 쓴 댓글', 'icon': Icons.chat_bubble_outline},
-  ];
   final ScrollController _scrollController = ScrollController();
 
   double _appBarOpacity = 0.0;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      final maxScroll = 200.0; // The scroll distance to reach full opacity
+      const maxScroll = 200.0; // The scroll distance to reach full opacity
       final offset = _scrollController.offset;
       final newOpacity = (offset / maxScroll).clamp(0.0, 1.0);
       if (newOpacity != _appBarOpacity) {
@@ -63,12 +52,12 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
     );
   }
 
-  void deleteUser() async {
-    await ref.read(userProfileProvider.notifier).deleteCurrentUser(context);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProfileProvider).value;
+    final stats = ref.watch(myProfileStatsProvider).value;
+    final nickname = user?.nickname ?? '';
+
     return Scaffold(
       body: Stack(
         children: [
@@ -77,22 +66,27 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                _buildUserInfo(),
+                _buildUserInfo(
+                  nickname: nickname,
+                  followers: stats?.followerCount ?? 0,
+                  following: stats?.followingCount ?? 0,
+                ),
                 _buildSectionHeader('My Activity'),
                 _buildMyActivities(),
                 _buildSectionHeader('Public Playlists'),
                 _buildPlaylists(),
-                SliverFillRemaining(),
+                const SliverFillRemaining(),
               ],
             ),
           ),
-          _buildAppBar(),
+          _buildAppBar(nickname),
         ],
       ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(String nickname) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Positioned(
       top: 0,
       left: 0,
@@ -100,34 +94,40 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
       child: AppBar(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.teal.shade300.withValues(alpha: _appBarOpacity),
+        backgroundColor: colorScheme.primary.withValues(alpha: _appBarOpacity),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: _onSettings,
           ),
         ],
-
         title: Text(
-          userName,
+          nickname,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Colors.white.withValues(alpha: _appBarOpacity),
+            color: colorScheme.onPrimary.withValues(alpha: _appBarOpacity),
           ),
         ),
       ),
     );
   }
 
-  SliverToBoxAdapter _buildUserInfo() {
+  SliverToBoxAdapter _buildUserInfo({
+    required String nickname,
+    required int followers,
+    required int following,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final initial = nickname.isNotEmpty ? nickname.substring(0, 1) : '?';
+
     return SliverToBoxAdapter(
       child: Column(
         children: [
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.teal.shade800, Colors.white],
+                colors: [colorScheme.primaryContainer, colorScheme.surface],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -139,13 +139,23 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
                   const SizedBox(height: 30),
                   CircleAvatar(
                     radius: 50.0,
-                    backgroundColor: Colors.teal,
+                    backgroundColor: colorScheme.primary,
                     child: Text(
-                      userName.substring(0, 1),
-                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                      initial,
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: colorScheme.onPrimary,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 12),
+                  Text(
+                    nickname,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
@@ -154,8 +164,8 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
                       OutlinedButton(
                         onPressed: _onEditProfile,
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: const BorderSide(color: Colors.white54),
+                          foregroundColor: colorScheme.onSurface,
+                          side: BorderSide(color: colorScheme.outlineVariant),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
@@ -164,6 +174,7 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -197,147 +208,42 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
     );
   }
 
-  SliverList _buildMyActivities() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        final activity = myActivities[index];
-        return ListTile(
-          leading: Icon(activity['icon'], size: 30, color: Colors.teal),
-          title: Text(
-            activity['name'],
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            if (activity['name'] == '내가 쓴 댓글') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const MyCommentsView()),
-              );
-            }
-          },
-        );
-      }, childCount: myActivities.length),
+  SliverToBoxAdapter _buildMyActivities() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return SliverToBoxAdapter(
+      child: ListTile(
+        leading: Icon(
+          Icons.chat_bubble_outline,
+          size: 30,
+          color: colorScheme.primary,
+        ),
+        title: Text(
+          '내가 쓴 댓글',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyCommentsView()),
+          );
+        },
+      ),
     );
   }
 
-  SliverList _buildPlaylists() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        final playlist = playlists[index];
-        return ListTile(
-          leading: Icon(playlist['icon'], size: 30, color: Colors.greenAccent),
-          title: Text(
-            playlist['name'],
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          subtitle: Text(
-            '${playlist['count']} songs',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
-        );
-      }, childCount: playlists.length),
+  SliverToBoxAdapter _buildPlaylists() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return SliverToBoxAdapter(
+      child: ListTile(
+        leading: Icon(Icons.favorite, size: 30, color: colorScheme.primary),
+        title: Text(
+          'Liked Songs',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {},
+      ),
     );
   }
 }
-
-
-            // SliverToBoxAdapter(
-            //   child: TextButton(
-            //     child: Text("SignOut"),
-            //     onPressed: () => signOut(10),
-            //   ),
-            // ),
-            // SliverToBoxAdapter(
-            //   child: TextButton(
-            //     child: Text("ReIssue"),
-            //     onPressed: () => reIssue(),
-            //   ),
-            // ),
-            // SliverToBoxAdapter(
-            //   child: Column(
-            //     children: [
-            //       userState.when(
-            //         data: (user) {
-            //           return Column(
-            //             children: [
-            //               Text("${user.id}"),
-            //               Text("${user.email}"),
-            //               Text("${user.nickname}"),
-            //             ],
-            //           );
-            //         },
-            //         error:
-            //             (error, stackTrace) =>
-            //                 Center(child: Text("Error: $error")),
-            //         loading:
-            //             () =>
-            //                 Center(child: CircularProgressIndicator.adaptive()),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // SliverToBoxAdapter(
-            //   child: TextButton(onPressed: deleteUser, child: Text("delete")),
-            // ),
-            // SliverToBoxAdapter(
-            //   child: Column(
-            //     children: [
-            //       TextField(
-            //         controller: _nicknameController,
-            //         onChanged: (value) {
-            //           formData['nickname'] = value;
-            //         },
-            //         decoration: InputDecoration(
-            //           hintText: "nickname",
-            //           // errorText:  ,
-            //           suffix: GestureDetector(
-            //             onTap: () => _onClearTap(_nicknameController),
-            //             child: const FaIcon(FontAwesomeIcons.circleXmark),
-            //           ),
-            //           enabledBorder: UnderlineInputBorder(
-            //             borderSide: BorderSide(color: Colors.grey.shade400),
-            //           ),
-            //         ),
-            //       ),
-            //       TextField(
-            //         controller: _passwordController,
-            //         onChanged: (value) {
-            //           formData['password'] = value;
-            //         },
-            //         decoration: InputDecoration(
-            //           hintText: "password",
-            //           // errorText:  ,
-            //           suffix: GestureDetector(
-            //             onTap: () => _onClearTap(_passwordController),
-            //             child: const FaIcon(FontAwesomeIcons.circleXmark),
-            //           ),
-            //           enabledBorder: UnderlineInputBorder(
-            //             borderSide: BorderSide(color: Colors.grey.shade400),
-            //           ),
-            //         ),
-            //       ),
-            //       GestureDetector(
-            //         onTap: _onSubmit,
-            //         child: FractionallySizedBox(
-            //           widthFactor: 1,
-            //           child: AnimatedContainer(
-            //             duration: Duration(milliseconds: 300),
-            //             decoration: BoxDecoration(
-            //               borderRadius: BorderRadius.circular(Sizes.size5),
-            //               color: Colors.orange.shade300,
-            //             ),
-            //             child: AnimatedDefaultTextStyle(
-            //               style: TextStyle(color: Colors.black),
-            //               duration: Duration(milliseconds: 300),
-            //               child: Text("edit", textAlign: TextAlign.center),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
