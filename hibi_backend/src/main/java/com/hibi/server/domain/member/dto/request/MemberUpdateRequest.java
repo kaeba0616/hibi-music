@@ -5,6 +5,7 @@ package com.hibi.server.domain.member.dto.request;
  */
 public record MemberUpdateRequest(
         String nickname,
-        String password
+        String password,
+        Boolean pushEnabled
 ) {
 }

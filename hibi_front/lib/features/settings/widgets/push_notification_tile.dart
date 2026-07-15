@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/env.dart';
+import 'package:hidi/features/users/repos/users_repos.dart';
 
 /// 푸시 알림 설정 상태
 class PushNotificationState {
@@ -27,15 +28,20 @@ class PushNotificationState {
 /// 푸시 알림 설정 ViewModel
 class PushNotificationViewModel extends StateNotifier<PushNotificationState> {
   final bool useMock;
+  final UserRepository _userRepository;
 
-  PushNotificationViewModel({this.useMock = false})
-      : super(const PushNotificationState());
+  PushNotificationViewModel({
+    this.useMock = false,
+    UserRepository? userRepository,
+  })  : _userRepository = userRepository ?? UserRepository(),
+        super(const PushNotificationState());
 
-  /// 푸시 알림 토글
+  /// 푸시 알림 토글 (낙관적 업데이트, 서버 실패 시 롤백)
   Future<void> toggle() async {
     final previousState = state.isEnabled;
+    final newValue = !previousState;
     state = state.copyWith(
-      isEnabled: !previousState,
+      isEnabled: newValue,
       isLoading: true,
     );
 
@@ -46,7 +52,11 @@ class PushNotificationViewModel extends StateNotifier<PushNotificationState> {
         return;
       }
 
-      // TODO: Real API - PATCH /api/v1/members/me (pushEnabled)
+      final success = await _userRepository.patchPushEnabled(newValue);
+      if (!success) {
+        state = state.copyWith(isEnabled: previousState, isLoading: false);
+        return;
+      }
       state = state.copyWith(isLoading: false);
     } catch (e) {
       // 실패 시 롤백
@@ -66,7 +76,10 @@ class PushNotificationViewModel extends StateNotifier<PushNotificationState> {
         return;
       }
 
-      // TODO: Real API - GET /api/v1/members/me -> pushEnabled
+      final user = await _userRepository.getCurrentUser();
+      if (user != null) {
+        state = state.copyWith(isEnabled: user.pushEnabled);
+      }
     } catch (e) {
       // 기본값 유지
     }
@@ -78,7 +91,10 @@ final pushNotificationProvider =
     StateNotifierProvider<PushNotificationViewModel, PushNotificationState>(
         (ref) {
   const useMock = Env.useMock;
-  return PushNotificationViewModel(useMock: useMock);
+  return PushNotificationViewModel(
+    useMock: useMock,
+    userRepository: ref.read(userRepo),
+  )..loadSettings();
 });
 
 /// MP-02: 푸시 알림 토글 타일 위젯
@@ -95,7 +111,9 @@ class PushNotificationTile extends ConsumerWidget {
             ? Icons.notifications_active
             : Icons.notifications_off_outlined,
         size: 28,
-        color: state.isEnabled ? Colors.teal : Colors.grey,
+        color: state.isEnabled
+            ? Theme.of(context).colorScheme.primary
+            : Colors.grey,
       ),
       title: const Text('푸시 알림'),
       subtitle: Text(

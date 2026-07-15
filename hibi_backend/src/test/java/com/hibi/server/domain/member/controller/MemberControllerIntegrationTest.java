@@ -140,7 +140,7 @@ class MemberControllerIntegrationTest extends IntegrationTestSupport {
         @DisplayName("인증된 유저가 자신의 정보를 수정한다")
         void updateMyInfo_성공() throws Exception {
             // given
-            MemberUpdateRequest request = new MemberUpdateRequest("수정된닉네임", "newPassword1");
+            MemberUpdateRequest request = new MemberUpdateRequest("수정된닉네임", "newPassword1", null);
 
             // when & then
             mockMvc.perform(patch("/api/v1/members/me")
@@ -174,6 +174,32 @@ class MemberControllerIntegrationTest extends IntegrationTestSupport {
         }
 
         @Test
+        @DisplayName("푸시 알림 설정을 변경하면 내 정보 조회에 반영된다")
+        void updateMyInfo_푸시설정_성공() throws Exception {
+            // 기본값은 true
+            mockMvc.perform(get("/api/v1/members/me")
+                            .header("Authorization", "Bearer " + userAccessToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.pushEnabled").value(true));
+
+            // 푸시 알림 끄기 (부분 수정)
+            mockMvc.perform(patch("/api/v1/members/me")
+                            .header("Authorization", "Bearer " + userAccessToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"pushEnabled\": false}"))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.pushEnabled").value(false))
+                    .andExpect(jsonPath("$.data.nickname").value("멤버테스터"));
+
+            // 조회에 반영 확인
+            mockMvc.perform(get("/api/v1/members/me")
+                            .header("Authorization", "Bearer " + userAccessToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.pushEnabled").value(false));
+        }
+
+        @Test
         @DisplayName("비밀번호만 보내면 닉네임은 유지된다 (부분 수정)")
         void updateMyInfo_비밀번호만_성공() throws Exception {
             // when & then
@@ -197,7 +223,7 @@ class MemberControllerIntegrationTest extends IntegrationTestSupport {
         @DisplayName("비인증 유저는 정보를 수정할 수 없다")
         void updateMyInfo_비인증_실패() throws Exception {
             // given
-            MemberUpdateRequest request = new MemberUpdateRequest("수정닉네임", "newPassword1");
+            MemberUpdateRequest request = new MemberUpdateRequest("수정닉네임", "newPassword1", null);
 
             // when & then
             mockMvc.perform(patch("/api/v1/members/me")

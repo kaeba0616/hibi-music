@@ -14,6 +14,7 @@ public record MemberProfileResponse(
         Long id,
         String email,
         String nickname,
+        Boolean pushEnabled,
         LocalDateTime createdAt
 ) {
 
@@ -22,6 +23,7 @@ public record MemberProfileResponse(
                 .id(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .pushEnabled(member.getPushEnabled())
                 .createdAt(member.getCreatedAt())
                 .build();
     }

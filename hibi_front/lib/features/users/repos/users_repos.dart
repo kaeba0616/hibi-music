@@ -34,6 +34,24 @@ class UserRepository {
     }
   }
 
+  /// 푸시 알림 설정 변경 - PATCH /api/v1/members/me {pushEnabled}
+  Future<bool> patchPushEnabled(bool enabled) async {
+    final uri = Env.apiUri(basepath);
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (accessToken) => http.patch(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+        body: jsonEncode({"pushEnabled": enabled}),
+      ),
+    );
+    log("patchPushEnabled: ${response.statusCode}");
+    return response.statusCode >= 200 && response.statusCode < 300;
+  }
+
   /// 내가 쓴 댓글 목록 - GET /api/v1/members/me/comments
   Future<List<MyComment>> getMyComments() async {
     final uri = Env.apiUri("$basepath/comments");

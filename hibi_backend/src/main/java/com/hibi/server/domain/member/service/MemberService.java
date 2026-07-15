@@ -52,8 +52,9 @@ public class MemberService {
 
         String nickname = request.nickname();
         String password = request.password();
+        Boolean pushEnabled = request.pushEnabled();
 
-        if (nickname == null && password == null) {
+        if (nickname == null && password == null && pushEnabled == null) {
             throw new CustomException(INVALID_INPUT_VALUE);
         }
 
@@ -68,6 +69,10 @@ public class MemberService {
         if (password != null) {
             memberValidator.validatePassword(password);
             member.updatePasswordHash(passwordEncoder.encode(password));
+        }
+
+        if (pushEnabled != null) {
+            member.updatePushEnabled(pushEnabled);
         }
 
         return MemberProfileResponse.from(member);
