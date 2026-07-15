@@ -62,10 +62,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       appBar: AppBar(
         title: const Text(
           'hibi',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         centerTitle: false,
         actions: [
@@ -81,29 +78,34 @@ class _HomeViewState extends ConsumerState<HomeView> {
         onRefresh: _onRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 오늘 날짜 표시
-                _buildDateHeader(context, textTheme, colorScheme),
-                const SizedBox(height: 24),
+          // 세로 스크롤뷰는 폭 제약을 느슨하게 주므로, 명시적으로 화면 폭을 채워야
+          // Column의 center 정렬이 동작한다 (없으면 내용이 왼쪽으로 쏠림)
+          child: SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // 오늘 날짜 표시
+                  _buildDateHeader(context, textTheme, colorScheme),
+                  const SizedBox(height: 24),
 
-                // 노래 카드 또는 상태 표시
-                _buildContent(state),
+                  // 노래 카드 또는 상태 표시
+                  _buildContent(state),
 
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // 힌트 텍스트 (노래가 있을 때만)
-                if (state.hasData)
-                  Text(
-                    '탭해서 자세히 보기',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  // 힌트 텍스트 (노래가 있을 때만)
+                  if (state.hasData)
+                    Text(
+                      '탭해서 자세히 보기',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -125,9 +127,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       children: [
         Text(
           koreanDate,
-          style: textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Text(
@@ -146,16 +146,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
     }
 
     if (state.hasError) {
-      return ErrorSongView(
-        message: state.error!,
-        onRetry: _onRefresh,
-      );
+      return ErrorSongView(message: state.error!, onRetry: _onRefresh);
     }
 
     if (state.isEmpty || state.song == null) {
-      return EmptySongView(
-        onRefresh: _onRefresh,
-      );
+      return EmptySongView(onRefresh: _onRefresh);
     }
 
     final song = state.song!;
