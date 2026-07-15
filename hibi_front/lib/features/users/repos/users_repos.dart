@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/env.dart';
 import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:hidi/features/common/common_repos.dart';
+import 'package:hidi/features/users/models/my_comment.dart';
 import 'package:hidi/features/users/models/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,6 +32,29 @@ class UserRepository {
     } else {
       return null;
     }
+  }
+
+  /// 내가 쓴 댓글 목록 - GET /api/v1/members/me/comments
+  Future<List<MyComment>> getMyComments() async {
+    final uri = Env.apiUri("$basepath/comments");
+
+    final response = await AuthenticationRepository.requestWithRetry(
+      (accessToken) => http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+      ),
+    );
+    log("getMyComments: ${response.statusCode}");
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final List<dynamic> data = jsonDecode(response.body)["data"] ?? [];
+      return data
+          .map((json) => MyComment.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
   }
 
   Future<void> deleteCurrentUser(Ref ref) async {

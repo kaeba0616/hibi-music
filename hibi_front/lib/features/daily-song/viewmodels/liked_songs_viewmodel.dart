@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
-import 'package:hidi/features/daily-song/mocks/related_songs_mock.dart';
+import 'package:hidi/features/daily-song/repos/daily_song_repo.dart';
 
 /// 좋아요 곡 목록 상태 (F15)
 class LikedSongsState {
@@ -28,12 +28,14 @@ class LikedSongsState {
 }
 
 class LikedSongsViewModel extends StateNotifier<LikedSongsState> {
-  LikedSongsViewModel() : super(const LikedSongsState());
+  final DailySongRepository _repo;
+
+  LikedSongsViewModel(this._repo) : super(const LikedSongsState());
 
   Future<void> loadLikedSongs() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final songs = await getMockLikedSongsWithDelay();
+      final songs = await _repo.getLikedSongs();
       state = state.copyWith(songs: songs, isLoading: false);
     } catch (e) {
       state = state.copyWith(
@@ -43,7 +45,11 @@ class LikedSongsViewModel extends StateNotifier<LikedSongsState> {
     }
   }
 
-  void removeLike(int songId) {
+  /// 좋아요 해제: 서버 토글이 성공했을 때만 목록에서 제거한다
+  Future<void> removeLike(int songId) async {
+    final success = await _repo.toggleLike(songId);
+    if (!success) return;
+
     final updated = state.songs.where((s) => s.id != songId).toList();
     state = state.copyWith(songs: updated);
   }
@@ -51,5 +57,5 @@ class LikedSongsViewModel extends StateNotifier<LikedSongsState> {
 
 final likedSongsViewModelProvider =
     StateNotifierProvider<LikedSongsViewModel, LikedSongsState>(
-  (ref) => LikedSongsViewModel(),
+  (ref) => LikedSongsViewModel(ref.read(dailySongRepoProvider)),
 );

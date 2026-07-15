@@ -1,28 +1,7 @@
 import 'package:hidi/features/comments/models/comment_models.dart';
+import 'package:hidi/features/users/models/my_comment.dart';
 
-/// 내가 쓴 댓글에 포함되는 곡 정보
-class MyCommentSongInfo {
-  final int songId;
-  final String songTitle;
-  final String artistName;
-
-  const MyCommentSongInfo({
-    required this.songId,
-    required this.songTitle,
-    required this.artistName,
-  });
-}
-
-/// 내가 쓴 댓글 (곡 정보 포함)
-class MyComment {
-  final Comment comment;
-  final MyCommentSongInfo songInfo;
-
-  const MyComment({
-    required this.comment,
-    required this.songInfo,
-  });
-}
+export 'package:hidi/features/users/models/my_comment.dart';
 
 /// Mock 현재 사용자 작성자 정보
 final mockCurrentAuthor = CommentAuthor(

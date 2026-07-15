@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hidi/env.dart';
-import '../mocks/my_comments_mock.dart';
+import 'package:hidi/features/users/models/my_comment.dart';
+import 'package:hidi/features/users/repos/users_repos.dart';
+import '../mocks/my_comments_mock.dart' show mockMyComments;
 
 /// 내가 쓴 댓글 목록 상태
 class MyCommentsState {
@@ -30,8 +32,11 @@ class MyCommentsState {
 /// 내가 쓴 댓글 ViewModel
 class MyCommentsViewModel extends StateNotifier<MyCommentsState> {
   final bool useMock;
+  final UserRepository _userRepository;
 
-  MyCommentsViewModel({this.useMock = false}) : super(const MyCommentsState());
+  MyCommentsViewModel({this.useMock = false, UserRepository? userRepository})
+      : _userRepository = userRepository ?? UserRepository(),
+        super(const MyCommentsState());
 
   /// 내가 쓴 댓글 목록 로드
   Future<void> loadMyComments() async {
@@ -47,8 +52,8 @@ class MyCommentsViewModel extends StateNotifier<MyCommentsState> {
         return;
       }
 
-      // TODO: Real API - GET /api/v1/members/me/comments
-      state = state.copyWith(isLoading: false);
+      final comments = await _userRepository.getMyComments();
+      state = state.copyWith(comments: comments, isLoading: false);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -62,5 +67,8 @@ class MyCommentsViewModel extends StateNotifier<MyCommentsState> {
 final myCommentsProvider =
     StateNotifierProvider<MyCommentsViewModel, MyCommentsState>((ref) {
   const useMock = Env.useMock;
-  return MyCommentsViewModel(useMock: useMock);
+  return MyCommentsViewModel(
+    useMock: useMock,
+    userRepository: ref.read(userRepo),
+  );
 });

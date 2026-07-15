@@ -7,6 +7,8 @@ import 'package:hidi/env.dart';
 import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:hidi/features/daily-song/models/daily_song_model.dart';
 import 'package:hidi/features/daily-song/mocks/daily_song_mock.dart';
+import 'package:hidi/features/daily-song/mocks/related_songs_mock.dart'
+    show getMockLikedSongsWithDelay;
 import 'package:http/http.dart' as http;
 
 class DailySongRepository {
@@ -142,6 +144,34 @@ class DailySongRepository {
     }
 
     log("Error: getSongsByMonth");
+    return [];
+  }
+
+  /// 좋아요한 곡 목록 - GET /api/v1/daily-songs/liked
+  Future<List<DailySong>> getLikedSongs() async {
+    if (useMock) {
+      return getMockLikedSongsWithDelay();
+    }
+
+    final uri = Env.apiUri("$basepath/liked");
+    final response = await AuthenticationRepository.requestWithRetry(
+      (accessToken) => http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+      ),
+    );
+
+    log("getLikedSongs: ${response.statusCode}");
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final List<dynamic> data = jsonDecode(response.body)["data"] ?? [];
+      return data.map((json) => DailySong.fromJson(json)).toList();
+    }
+
+    log("Error: getLikedSongs");
     return [];
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hidi/features/daily-song/views/liked_songs_view.dart';
 import 'package:hidi/features/settings/views/settings_view.dart';
 import 'package:hidi/features/users/viewmodels/user_profile_view_model.dart';
 import 'package:hidi/features/users/views/my_comments_view.dart';
@@ -242,7 +244,7 @@ class _MyPageViewState extends ConsumerState<MyPageView> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+        onTap: () => context.push(LikedSongsView.routeURL),
       ),
     );
   }
