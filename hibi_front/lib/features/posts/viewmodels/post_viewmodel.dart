@@ -1,3 +1,5 @@
+import 'package:hidi/env.dart';
+import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/features/posts/models/post_models.dart';
 import 'package:hidi/features/posts/repos/post_repo.dart';
@@ -96,8 +98,10 @@ class PostDetailViewModel extends Notifier<PostDetailState> {
     return await _repo.deletePost(post.id);
   }
 
-  /// 현재 사용자 ID (본인 게시글 확인용)
-  int get currentUserId => mockCurrentUserId;
+  /// 현재 로그인한 회원 ID (본인 콘텐츠 판별용).
+  /// 미로그인 시 mock 모드에서만 mock ID, 실모드에서는 0(어떤 작성자와도 불일치).
+  int get currentUserId =>
+      ref.read(authRepo).user?.id ?? (Env.useMock ? mockCurrentUserId : 0);
 
   /// 본인 게시글 여부
   bool get isOwnPost => state.post?.isAuthor(currentUserId) ?? false;

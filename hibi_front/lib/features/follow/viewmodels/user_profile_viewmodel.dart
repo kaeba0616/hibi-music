@@ -1,3 +1,5 @@
+import 'package:hidi/env.dart';
+import 'package:hidi/features/authentication/repos/authentication_repo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidi/features/follow/mocks/follow_mock.dart';
 import 'package:hidi/features/follow/models/follow_models.dart';
@@ -67,8 +69,10 @@ class UserProfileViewModel extends Notifier<UserProfileState> {
     return UserProfileState(isLoading: true);
   }
 
-  /// 현재 사용자 ID (Mock용)
-  int get currentUserId => mockCurrentUserId;
+  /// 현재 로그인한 회원 ID (본인 콘텐츠 판별용).
+  /// 미로그인 시 mock 모드에서만 mock ID, 실모드에서는 0(어떤 작성자와도 불일치).
+  int get currentUserId =>
+      ref.read(authRepo).user?.id ?? (Env.useMock ? mockCurrentUserId : 0);
 
   /// 프로필 로드
   Future<void> loadProfile() async {
